@@ -1,5 +1,6 @@
 package ru.furman.smartnotes;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,10 +29,17 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_note:
-                //Добавление новой заметки
+                Intent intent = new Intent(this,EditNoteActivity.class);
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //обновить список
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

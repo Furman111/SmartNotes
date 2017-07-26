@@ -16,9 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ViewNoteActivity">
+        <activity android:name=".ViewNoteActivity"
+            android:label="@string/view">
         </activity>
-        <activity android:name=".EditNoteActivity">
+        <activity android:name=".EditNoteActivity"
+            android:label="@string/to_edit">
         </activity>
     </application>
 

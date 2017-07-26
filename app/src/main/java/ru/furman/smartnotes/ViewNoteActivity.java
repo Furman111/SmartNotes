@@ -27,7 +27,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.delete:
+            case R.id.delete_note:
                 //удалить заметку
                 break;
             case R.id.edit_note:
