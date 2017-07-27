@@ -3,12 +3,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:padding="5dp"
+    android:focusableInTouchMode="true"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-<!--    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">-->
 
     <LinearLayout
         android:id="@+id/importance_background"
@@ -79,8 +76,6 @@
         </ScrollView>
 
     </LinearLayout>
-
-    <!--    </ScrollView>-->
 
     <LinearLayout
         android:layout_width="match_parent"

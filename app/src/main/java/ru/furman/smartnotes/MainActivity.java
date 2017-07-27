@@ -3,17 +3,17 @@ package ru.furman.smartnotes;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
-
-import ru.furman.smartnotes.database.DB;
 
 public class MainActivity extends AppCompatActivity {
 
-    DB db;
-    NotesListAdapter adapter;
+    private RecyclerView notesRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private MyAdapter mAdapter;
     public static final String NOTE_TAG  = "note";
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
     public static final int CREATE_NOTE_REQUEST_CODE = 2;
@@ -24,14 +24,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = new DB(this);
-        adapter = new NotesListAdapter(this,db.getNotes());
+        notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
+        notesRecyclerView.setHasFixedSize(true);
 
-        ListView lv =(ListView) findViewById(R.id.notes_list_view);
-        lv.setAdapter(adapter);
+        mLayoutManager = new LinearLayoutManager(this);
+        notesRecyclerView.setLayoutManager(mLayoutManager);
 
-        lv.setOnItemClickListener(new OnNoteClickListener(this));
-
+        mAdapter = new MyAdapter(this);
+        notesRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        adapter.notifyDataSetChanged(db.getNotes());
+        mAdapter.notifyDataSetChanged();
         switch (resultCode){
             case EditNoteActivity.SAVED_RESULT_CODE:
                 Toast.makeText(this,R.string.note_is_saved,Toast.LENGTH_SHORT).show();

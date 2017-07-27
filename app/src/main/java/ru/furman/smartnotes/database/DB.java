@@ -38,7 +38,7 @@ public class DB {
     }
 
     public List<Note> getNotes() {
-        List<Note> list = new ArrayList<Note>();
+        List<Note> list = new ArrayList<>();
 
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getReadableDatabase();
