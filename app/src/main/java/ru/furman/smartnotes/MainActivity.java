@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import ru.furman.smartnotes.database.DB;
 
@@ -15,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
     NotesListAdapter adapter;
     public static final String NOTE_TAG  = "note";
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
+    public static final int CREATE_NOTE_REQUEST_CODE = 2;
+    public static final int EDIT_NOTE_REQUEST_CODE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.add_note:
                 Intent intent = new Intent(this,EditNoteActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,CREATE_NOTE_REQUEST_CODE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -50,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         adapter.notifyDataSetChanged(db.getNotes());
+        switch (resultCode){
+            case EditNoteActivity.SAVED_RESULT_CODE:
+                Toast.makeText(this,R.string.note_is_saved,Toast.LENGTH_SHORT).show();
+                break;
+            case EditNoteActivity.DELETED_RESULT_CODE:
+                Toast.makeText(this,R.string.note_is_deleted,Toast.LENGTH_SHORT).show();
+                break;
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 }

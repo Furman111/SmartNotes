@@ -3,12 +3,12 @@ package ru.furman.smartnotes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import ru.furman.smartnotes.database.DB;
 
@@ -20,6 +20,8 @@ public class ViewNoteActivity extends AppCompatActivity {
 
     Note note;
     DB db;
+    TextView body, title;
+    View view;
 
     public static final int EDIT_REQUEST_CODE = 1;
 
@@ -32,44 +34,34 @@ public class ViewNoteActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         note = intent.getParcelableExtra(MainActivity.NOTE_TAG);
-        ((TextView) findViewById(R.id.note_title)).setText(note.getTitle());
-        ((TextView) findViewById(R.id.note_body)).setText(note.getBody());
+        body = (TextView) findViewById(R.id.note_body);
+        title = (TextView) findViewById(R.id.note_title);
+        title.setText(note.getTitle());
+        body.setText(note.getBody());
 
-        View view = findViewById(R.id.importance_background);
-        switch (note.getImportance()){
-            case Note.GREEN_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(this,R.color.greenImportance));
-                break;
-            case Note.RED_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(this,R.color.redImportance));
-                break;
-            case Note.YELLOW_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(this,R.color.yellowImportance));
-                break;
-            case Note.NO_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(this,R.color.zeroImportance));
-                break;
-        }
+        view = findViewById(R.id.importance_background);
+        Util.setBackgroundWithImportance(this, view, note);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.view_menu,menu);
+        getMenuInflater().inflate(R.menu.view_menu, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.delete_note:
                 db.deleteNote(note.getId());
-                onBackPressed();
+                setResult(EditNoteActivity.DELETED_RESULT_CODE);
+                finish();
                 break;
             case R.id.edit_note:
-                Intent intent = new Intent(this,EditNoteActivity.class);
-                intent.putExtra(MainActivity.NOTE_TAG,note);
-                startActivityForResult(intent,EDIT_REQUEST_CODE);
+                Intent intent = new Intent(this, EditNoteActivity.class);
+                intent.putExtra(MainActivity.NOTE_TAG, note);
+                startActivityForResult(intent, EDIT_REQUEST_CODE);
                 break;
         }
 
@@ -78,6 +70,19 @@ public class ViewNoteActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case EditNoteActivity.SAVED_RESULT_CODE:
+                note = db.getNote(note.getId());
+                title.setText(note.getTitle());
+                body.setText(note.getBody());
+                Util.setBackgroundWithImportance(this, view, note);
+                Toast.makeText(this,getResources().getString(R.string.note_is_edited),Toast.LENGTH_SHORT).show();
+                break;
+            case EditNoteActivity.DELETED_RESULT_CODE:
+                setResult(EditNoteActivity.DELETED_RESULT_CODE);
+                finish();
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
     }
 }

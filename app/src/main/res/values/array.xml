@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="spinner_array">
+        <item>Срочная</item>
+        <item>Важная</item>
+        <item>Обычная</item>
+        <item>Без важности</item>
+    </array>
+</resources>

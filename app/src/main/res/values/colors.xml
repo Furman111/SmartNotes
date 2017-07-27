@@ -8,4 +8,5 @@
     <color name="greenImportance">#b992e9ab</color>
     <color name="zeroImportance">#0092e9ab</color>
     <color name="black">#000000</color>
+    <color name="textColorButton">#FFFFFF</color>
 </resources>

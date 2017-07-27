@@ -3,4 +3,16 @@
     <string name="view">Просмотр заметки</string>
     <string name="to_edit">Редактировать</string>
     <string name="new_note">Новая заметка</string>
+    <string name="note_tile">Имя:</string>
+    <string name="note_body">Описание:</string>
+    <string name="enter_note_name">Введите имя заметки</string>
+    <string name="enter_note_body">Введите описание заметки</string>
+    <string name="importance_of_note">Важность:</string>
+    <string name="to_save">Сохранить</string>
+    <string name="to_cancel">Отмена</string>
+    <string name="no_importance">Неважная</string>
+    <string name="name_is_not_entered">Имя не введено!</string>
+    <string name="note_is_edited">Заметка изменена</string>
+    <string name="note_is_saved">Заметка сохранена</string>
+    <string name="note_is_deleted">Заметка удалена</string>
 </resources>

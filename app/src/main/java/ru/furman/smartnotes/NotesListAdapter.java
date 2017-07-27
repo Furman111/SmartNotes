@@ -55,26 +55,13 @@ public class NotesListAdapter extends BaseAdapter {
         final Note note = getItem(position);
 
         ((TextView) view.findViewById(R.id.note_title)).setText(note.getTitle());
-        switch (note.getImportance()){
-            case Note.GREEN_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.greenImportance));
-                break;
-            case Note.RED_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.redImportance));
-                break;
-            case Note.YELLOW_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.yellowImportance));
-                break;
-            case Note.NO_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.zeroImportance));
-                break;
-        }
+        Util.setBackgroundWithImportance(ctx,view,note);
         ((ImageView) view.findViewById(R.id.edit_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, EditNoteActivity.class);
                 intent.putExtra(MainActivity.NOTE_TAG, note);
-                ctx.startActivity(intent);
+                ((MainActivity)ctx).startActivityForResult(intent,MainActivity.EDIT_NOTE_REQUEST_CODE);
             }
         });
 

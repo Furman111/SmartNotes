@@ -37,9 +37,8 @@ public class DB {
         dbHelper.close();
     }
 
-    @Nullable
     public List<Note> getNotes() {
-        ArrayList<Note> list = null;
+        List<Note> list = new ArrayList<Note>();
 
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getReadableDatabase();
