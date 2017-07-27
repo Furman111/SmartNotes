@@ -68,7 +68,6 @@ public class NotesListAdapter extends BaseAdapter {
             case Note.NO_IMPORTANCE:
                 view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.zeroImportance));
                 break;
-
         }
         ((ImageView) view.findViewById(R.id.edit_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,5 +83,6 @@ public class NotesListAdapter extends BaseAdapter {
 
     public void notifyDataSetChanged(List<Note> notes) {
         noteList = notes;
+        super.notifyDataSetChanged();
     }
 }

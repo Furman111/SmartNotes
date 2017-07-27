@@ -12,6 +12,7 @@ import ru.furman.smartnotes.database.DB;
 public class MainActivity extends AppCompatActivity {
 
     DB db;
+    NotesListAdapter adapter;
     public static final String NOTE_TAG  = "note";
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
 
@@ -21,9 +22,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = new DB(this);
+        adapter = new NotesListAdapter(this,db.getNotes());
 
         ListView lv =(ListView) findViewById(R.id.notes_list_view);
-        lv.setAdapter(new NotesListAdapter(this,db.getNotes()));
+        lv.setAdapter(adapter);
 
         lv.setOnItemClickListener(new OnNoteClickListener(this));
     }
@@ -45,4 +47,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        adapter.notifyDataSetChanged(db.getNotes());
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
