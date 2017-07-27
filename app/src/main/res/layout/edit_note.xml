@@ -47,6 +47,7 @@
                     android:gravity="center_vertical"
                     android:hint="@string/enter_note_name"
                     android:padding="3dp"
+                    android:inputType="text"
                     android:textSize="20sp" />
 
             </ScrollView>
@@ -72,6 +73,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_note_body"
                 android:padding="5dp"
+                android:inputType="textMultiLine"
                 android:textSize="20sp" />
 
         </ScrollView>
@@ -114,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/colorPrimaryDark"
+            android:background="@color/colorPrimaryDark"
             android:text="@string/to_save"
             android:textColor="@color/textColorButton" />
 
@@ -124,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/redImportance"
+            android:background="@color/redImportance"
             android:text="@string/to_cancel"
             android:textColor="@color/textColorButton" />
 

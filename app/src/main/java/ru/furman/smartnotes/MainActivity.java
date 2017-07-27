@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         lv.setAdapter(adapter);
 
         lv.setOnItemClickListener(new OnNoteClickListener(this));
+
     }
 
     @Override

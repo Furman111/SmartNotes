@@ -34,6 +34,11 @@ public class EditNoteActivity extends AppCompatActivity {
     public static final int DELETED_RESULT_CODE = 2;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.edit_note);
 
@@ -83,6 +88,8 @@ public class EditNoteActivity extends AppCompatActivity {
 
             }
         });
+
+
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
