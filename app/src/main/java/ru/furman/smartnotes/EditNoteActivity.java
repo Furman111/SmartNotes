@@ -13,14 +13,12 @@ import android.view.MenuItem;
 
 public class EditNoteActivity extends AppCompatActivity {
 
-    public static final String NOTE_TAG  = "note";
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Intent intent = getIntent();
         super.onCreate(savedInstanceState);
 
-        if (intent.getBundleExtra(NOTE_TAG)!=null){
+        if (intent.getParcelableExtra(MainActivity.NOTE_TAG)!=null){
             //если не пустой
         }
         else

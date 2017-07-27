@@ -16,7 +16,6 @@ import ru.furman.smartnotes.Note;
  */
 
 public class DB {
-
     private DBHelper dbHelper;
     private SQLiteDatabase db;
     private Context ctx;
@@ -54,7 +53,7 @@ public class DB {
             int bodyIndex = cursor.getColumnIndex(DBHelper.KEY_BODY);
             int importanceIndex = cursor.getColumnIndex(DBHelper.KEY_IMPORTANCE);
             do {
-                list.add(new Note(cursor.getString(titleIndex),cursor.getString(bodyIndex),cursor.getString(importanceIndex),cursor.getInt(idIndex)));
+                list.add(new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex), cursor.getInt(idIndex)));
             } while (cursor.moveToNext());
         }
 
@@ -64,16 +63,16 @@ public class DB {
         return list;
     }
 
-    public void deleteNote(int id){
+    public void deleteNote(int id) {
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getWritableDatabase();
 
-        db.delete(DBHelper.TABLE_NOTES,"id = "+id,null);
+        db.delete(DBHelper.TABLE_NOTES, "_id = " + id, null);
 
         dbHelper.close();
     }
 
-    public void editNote(int id, Note note){
+    public void editNote(int id, Note note) {
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getWritableDatabase();
 
@@ -82,9 +81,31 @@ public class DB {
         cv.put(DBHelper.KEY_BODY, note.getBody());
         cv.put(DBHelper.KEY_IMPORTANCE, note.getImportance());
 
-        db.update(DBHelper.TABLE_NOTES,cv,"id = "+id,null);
+        db.update(DBHelper.TABLE_NOTES, cv, "_id = " + id, null);
 
         dbHelper.close();
+    }
+
+    @Nullable
+    public Note getNote(long id) {
+
+        dbHelper = new DBHelper(ctx);
+        db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(DBHelper.TABLE_NOTES, null, "_id = "+id,null, null, null, null);
+        Note res = null;
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
+            int titleIndex = cursor.getColumnIndex(DBHelper.KEY_TITLE);
+            int bodyIndex = cursor.getColumnIndex(DBHelper.KEY_BODY);
+            int importanceIndex = cursor.getColumnIndex(DBHelper.KEY_IMPORTANCE);
+            res = new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex), cursor.getInt(idIndex));
+        }
+
+        cursor.close();
+        dbHelper.close();
+
+        return res;
     }
 
 }
