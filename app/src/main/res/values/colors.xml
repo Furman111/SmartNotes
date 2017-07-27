@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#aaeaed</color>
-    <color name="colorPrimaryDark">#75dfed</color>
-    <color name="colorAccent">#ff4081</color>
-    <color name="redImportance">#b9ff4545</color>
-    <color name="yellowImportance">#b9ffe345</color>
-    <color name="greenImportance">#b992e9ab</color>
+    <color name="colorPrimary">#37a8ae</color>
+    <color name="colorPrimaryDark">#004650</color>
+    <color name="colorAccent">#317bdc</color>
+    <color name="redImportance">#7fe95a5a</color>
+    <color name="yellowImportance">#7fffe345</color>
+    <color name="greenImportance">#7f92e9ab</color>
     <color name="zeroImportance">#0092e9ab</color>
     <color name="black">#000000</color>
     <color name="textColorButton">#FFFFFF</color>

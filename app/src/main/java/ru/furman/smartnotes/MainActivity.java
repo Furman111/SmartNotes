@@ -5,9 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import ru.furman.smartnotes.database.DB;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +35,23 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new MyAdapter(this);
         notesRecyclerView.setAdapter(mAdapter);
+
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                DB db = new DB(MainActivity.this);
+                db.deleteNote(((MyAdapter.ViewHolder) viewHolder).getId());
+                mAdapter.notifyDataSetChanged();
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(notesRecyclerView);
     }
 
     @Override

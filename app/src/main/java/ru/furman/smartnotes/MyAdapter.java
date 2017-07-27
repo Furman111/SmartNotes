@@ -31,10 +31,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public CardView backgroundCV;
         public TextView titleTV;
         public ImageView editIV;
+        private int id;
+
+        public int getId() {
+            return id;
+        }
 
         public ViewHolder(View view) {
             super(view);
-            Log.d("TAG",view.getClass().toString());
             this.backgroundCV = (CardView) view.findViewById(R.id.background);
             this.titleTV = (TextView) view.findViewById(R.id.note_title);
             this.editIV = (ImageView) view.findViewById(R.id.edit_btn);
@@ -69,7 +73,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx,R.color.zeroImportance));
                 break;
         }
-
+        holder.id = notes.get(position).getId();
         holder.titleTV.setText(notes.get(position).getTitle());
         holder.editIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,4 +98,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return db.getNotes().size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return db.getNotes().get(position).getId();
+    }
 }
