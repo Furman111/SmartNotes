@@ -2,14 +2,18 @@ package ru.furman.smartnotes;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 import android.os.Bundle;
+import android.os.Environment;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +23,10 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import ru.furman.smartnotes.database.DB;
 
@@ -63,7 +70,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         properties.offset = new File(DialogConfigs.DEFAULT_DIR);
         properties.extensions = null;
 
-        dialog = new FilePickerDialog(this,properties);
+        dialog = new FilePickerDialog(this, properties);
         dialog.setTitle(getResources().getString(R.string.to_choose_directory));
         dialog.setPositiveBtnName(getResources().getString(R.string.to_choose));
         dialog.setNegativeBtnName(getResources().getString(R.string.cancel));
@@ -71,7 +78,34 @@ public class ViewNoteActivity extends AppCompatActivity {
         dialog.setDialogSelectionListener(new DialogSelectionListener() {
             @Override
             public void onSelectedFilePaths(String[] files) {
-                Log.d("DSDSD",files[0]);
+                if (files != null) {
+                    if (files[0].contains(Environment.getExternalStorageDirectory().getAbsolutePath())) {
+                        if (!Environment.getExternalStorageState().equals(
+                                Environment.MEDIA_MOUNTED)) {
+                            Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                        } else {
+                            try {
+                                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(files[0] + "/" + note.getTitle() + ".txt")));
+                                bufferedWriter.write(getResources().getString(R.string.note_tile) + "\n" + note.getTitle() + "\n" + getResources().getString(R.string.note_body) + "\n" + note.getBody());
+                                bufferedWriter.close();
+                                Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.note_is_exported), Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        try {
+                            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(files[0] + "/" + note.getTitle() + ".txt")));
+                            bufferedWriter.write(getResources().getString(R.string.note_tile) + "\n" + note.getTitle() + "\n" + getResources().getString(R.string.note_body) + "\n" + note.getBody());
+                            bufferedWriter.close();
+                            Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.note_is_exported), Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
             }
         });
 
@@ -123,7 +157,7 @@ public class ViewNoteActivity extends AppCompatActivity {
                 title.setText(note.getTitle());
                 body.setText(note.getBody());
                 Util.setBackgroundWithImportance(this, view, note);
-                Toast.makeText(this,getResources().getString(R.string.note_is_edited),Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getResources().getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;
             case EditNoteActivity.DELETED_RESULT_CODE:
                 setResult(EditNoteActivity.DELETED_RESULT_CODE);
@@ -138,13 +172,11 @@ public class ViewNoteActivity extends AppCompatActivity {
         switch (requestCode) {
             case FilePickerDialog.EXTERNAL_READ_PERMISSION_GRANT: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(dialog!=null)
-                    {
+                    if (dialog != null) {
                         dialog.show();
                     }
-                }
-                else {
-                    Toast.makeText(this,getResources().getString(R.string.permissions_are_not_granted),Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getResources().getString(R.string.permissions_are_not_granted), Toast.LENGTH_SHORT).show();
                 }
             }
         }

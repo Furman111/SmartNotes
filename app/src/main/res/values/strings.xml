@@ -19,4 +19,6 @@
     <string name="to_choose_directory">Выбрать директорию</string>
     <string name="to_choose">Выбрать</string>
     <string name="permissions_are_not_granted">Права не были предоставлены</string>
+    <string name="note_is_exported">Заметка экспортирована</string>
+    <string name="error">Ошибка</string>
 </resources>
