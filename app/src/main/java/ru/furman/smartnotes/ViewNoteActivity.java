@@ -3,6 +3,7 @@ package ru.furman.smartnotes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +32,8 @@ public class ViewNoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_note);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         db = new DB(this);
 
         Intent intent = getIntent();
@@ -54,6 +57,9 @@ public class ViewNoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.delete_note:
                 db.deleteNote(note.getId());
                 setResult(EditNoteActivity.DELETED_RESULT_CODE);

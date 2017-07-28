@@ -15,4 +15,5 @@
     <string name="note_is_edited">Заметка изменена</string>
     <string name="note_is_saved">Заметка сохранена</string>
     <string name="note_is_deleted">Заметка удалена</string>
+    <string name="export_to_txt">Экспортировать в .txt</string>
 </resources>

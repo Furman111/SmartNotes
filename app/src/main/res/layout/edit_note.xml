@@ -2,28 +2,28 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:padding="5dp"
-    android:focusableInTouchMode="true"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:padding="5dp">
 
     <LinearLayout
         android:id="@+id/importance_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/greenImportance"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="55dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
                 android:gravity="center_vertical|center_horizontal"
                 android:padding="5dp"
                 android:text="@string/note_tile"
@@ -32,22 +32,18 @@
                 android:textSize="25sp"
                 android:textStyle="bold|italic" />
 
-            <ScrollView
+            <EditText
+                android:id="@+id/note_title_edit"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:background="@android:drawable/edit_text"
+                android:gravity="center_vertical"
+                android:hint="@string/enter_note_name"
+                android:inputType="text"
+                android:padding="3dp"
+                android:textSize="20sp" />
 
-                <EditText
-                    android:id="@+id/note_title_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:hint="@string/enter_note_name"
-                    android:padding="3dp"
-                    android:inputType="text"
-                    android:textSize="20sp" />
-
-            </ScrollView>
 
         </LinearLayout>
 
@@ -62,25 +58,27 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="250dp">
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/note_body_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:drawable/edit_text"
                 android:hint="@string/enter_note_body"
-                android:padding="5dp"
                 android:inputType="textMultiLine"
+                android:maxHeight="300dp"
+                android:padding="5dp"
                 android:textSize="20sp" />
-
         </ScrollView>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
@@ -93,16 +91,17 @@
 
         <Spinner
             android:id="@+id/importance_spinner"
+            android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </Spinner>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
+        android:gravity="center_horizontal"
+        android:paddingTop="10dp"
         android:orientation="horizontal">
 
         <Button
@@ -111,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/ColorBtnBackground"
             android:text="@string/to_save"
             android:textColor="@color/textColorButton" />
 

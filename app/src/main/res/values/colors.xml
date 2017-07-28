@@ -9,4 +9,5 @@
     <color name="zeroImportance">#0092e9ab</color>
     <color name="black">#000000</color>
     <color name="textColorButton">#FFFFFF</color>
+    <color name="ColorBtnBackground">#004650</color>
 </resources>

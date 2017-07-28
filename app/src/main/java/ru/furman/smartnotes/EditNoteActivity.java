@@ -42,6 +42,8 @@ public class EditNoteActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.edit_note);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         note = getIntent().getParcelableExtra(MainActivity.NOTE_TAG);
         title = (EditText) findViewById(R.id.note_title_edit);
         body = (EditText) findViewById(R.id.note_body_edit);
@@ -174,6 +176,9 @@ public class EditNoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.delete_note_edit_menu:
                 if(note!=null){
                     db.deleteNote(note.getId());
