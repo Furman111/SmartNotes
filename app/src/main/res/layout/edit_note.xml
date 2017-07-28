@@ -121,7 +121,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:background="@color/redImportance"
-            android:text="@string/to_cancel"
+            android:text="@string/cancel"
             android:textColor="@color/textColorButton" />
 
     </LinearLayout>

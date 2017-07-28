@@ -9,11 +9,14 @@
     <string name="enter_note_body">Введите описание заметки</string>
     <string name="importance_of_note">Важность:</string>
     <string name="to_save">Сохранить</string>
-    <string name="to_cancel">Отмена</string>
+    <string name="cancel">Отмена</string>
     <string name="no_importance">Неважная</string>
     <string name="name_is_not_entered">Имя не введено!</string>
     <string name="note_is_edited">Заметка изменена</string>
     <string name="note_is_saved">Заметка сохранена</string>
     <string name="note_is_deleted">Заметка удалена</string>
     <string name="export_to_txt">Экспортировать в .txt</string>
+    <string name="to_choose_directory">Выбрать директорию</string>
+    <string name="to_choose">Выбрать</string>
+    <string name="permissions_are_not_granted">Права не были предоставлены</string>
 </resources>
