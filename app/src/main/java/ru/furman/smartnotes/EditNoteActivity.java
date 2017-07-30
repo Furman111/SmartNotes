@@ -398,6 +398,7 @@ public class EditNoteActivity extends AppCompatActivity {
                                     return;
                                 case 2:
                                     ((EditNoteActivity) getActivity()).onDeletePhoto();
+                                    ((EditNoteActivity) getActivity()).setPhotoIV(null);
                             }
                         }
                     });

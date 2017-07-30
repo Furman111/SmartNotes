@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     private View view;
     private Button importBtn;
     private FilePickerDialog dialog;
+    private ImageView noteIV;
 
 
     public static final int EDIT_REQUEST_CODE = 1;
@@ -59,8 +61,20 @@ public class ViewNoteActivity extends AppCompatActivity {
         note = intent.getParcelableExtra(MainActivity.NOTE_TAG);
         body = (TextView) findViewById(R.id.note_body);
         title = (TextView) findViewById(R.id.note_title);
+        noteIV = (ImageView) findViewById(R.id.note_image);
         title.setText(note.getTitle());
         body.setText(note.getBody());
+        if(!note.getPhoto().equals(Note.NO_PHOTO)) {
+            Util.loadPhotoInImageView(noteIV, note.getPhoto());
+            noteIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent photoView = new Intent(ViewNoteActivity.this, ViewImageActivity.class);
+                    photoView.putExtra(ViewImageActivity.IMAGE_SRC, note.getPhoto());
+                    ViewNoteActivity.this.startActivity(photoView);
+                }
+            });
+        }
 
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
@@ -156,6 +170,10 @@ public class ViewNoteActivity extends AppCompatActivity {
                 note = db.getNote(note.getId());
                 title.setText(note.getTitle());
                 body.setText(note.getBody());
+                if(!note.getPhoto().equals(Note.NO_PHOTO))
+                    Util.loadPhotoInImageView(noteIV, note.getPhoto());
+                else
+                    noteIV.setImageDrawable(null);
                 Util.setBackgroundWithImportance(this, view, note);
                 Toast.makeText(this, getResources().getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;

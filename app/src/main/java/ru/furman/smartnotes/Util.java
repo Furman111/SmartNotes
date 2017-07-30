@@ -80,5 +80,8 @@ public class Util {
         }
     }
 
+    public static void loadPhotoInImageView(ImageView iv,String pathPhoto){
+        iv.setImageURI(Uri.fromFile(new File(pathPhoto)));
+    }
 
 }

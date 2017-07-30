@@ -2,6 +2,7 @@ package ru.furman.smartnotes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.List;
 
 import ru.furman.smartnotes.database.DB;
@@ -31,6 +33,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public CardView backgroundCV;
         public TextView titleTV;
         public ImageView editIV;
+        public ImageView noteIV;
         private int id;
 
         public int getId() {
@@ -42,6 +45,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             this.backgroundCV = (CardView) view.findViewById(R.id.background);
             this.titleTV = (TextView) view.findViewById(R.id.note_title);
             this.editIV = (ImageView) view.findViewById(R.id.edit_btn);
+            this.noteIV = (ImageView) view.findViewById(R.id.note_image);
         }
     }
 
@@ -57,7 +61,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(final MyAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final MyAdapter.ViewHolder holder, final int position) {
         final List<Note> notes = db.getNotes();
         switch (notes.get(position).getImportance()){
             case Note.GREEN_IMPORTANCE:
@@ -83,6 +87,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 ((MainActivity)ctx).startActivityForResult(intent,MainActivity.EDIT_NOTE_REQUEST_CODE);
             }
         });
+        if(!notes.get(position).getPhoto().equals(Note.NO_PHOTO)) {
+            Util.loadPhotoInImageView(holder.noteIV, notes.get(position).getPhoto());
+            holder.noteIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent photoView = new Intent(ctx, ViewImageActivity.class);
+                    photoView.putExtra(ViewImageActivity.IMAGE_SRC, notes.get(position).getPhoto());
+                    ctx.startActivity(photoView);
+                }
+            });
+        }
+        else
+            holder.noteIV.setImageDrawable(null);
         holder.backgroundCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

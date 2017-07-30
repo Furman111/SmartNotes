@@ -7,7 +7,7 @@
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="450dp">
+        android:layout_height="250dp">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/importance_background"
@@ -63,6 +63,13 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_margin="5dp"
+        android:id="@+id/note_image"
+        android:scaleType="fitCenter"/>
 
     <Button
         android:id="@+id/export_to_TXT_btn"
