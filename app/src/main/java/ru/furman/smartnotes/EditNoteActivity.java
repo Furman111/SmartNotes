@@ -1,6 +1,7 @@
 package ru.furman.smartnotes;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -12,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -23,12 +25,15 @@ import ru.furman.smartnotes.database.DB;
 
 public class EditNoteActivity extends AppCompatActivity {
 
-    EditText title, body;
-    Button saveBtn, cancelBtn;
-    Spinner importanceSpinner;
-    View background;
-    Note note;
-    DB db;
+    private EditText title, body;
+    private Button saveBtn, cancelBtn;
+    private ImageView photo;
+    private Spinner importanceSpinner;
+    private View background;
+    private Note note;
+    private DB db;
+
+    public static final int PHOTO_PICK_REQUEST_CODE = 3;
 
     public static final int SAVED_RESULT_CODE = 1;
     public static final int DELETED_RESULT_CODE = 2;
@@ -50,6 +55,7 @@ public class EditNoteActivity extends AppCompatActivity {
         saveBtn = (Button) findViewById(R.id.save_btn);
         cancelBtn = (Button) findViewById(R.id.cancel_btn);
         background = findViewById(R.id.importance_background);
+        photo = (ImageView) findViewById(R.id.note_mageIV);
         db = new DB(this);
 
         importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
@@ -90,7 +96,6 @@ public class EditNoteActivity extends AppCompatActivity {
 
             }
         });
-
 
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -149,12 +154,19 @@ public class EditNoteActivity extends AppCompatActivity {
                     }
                     setResult(SAVED_RESULT_CODE);
                     finish();
-                }
-                else
-                    Toast.makeText(EditNoteActivity.this,getResources().getString(R.string.name_is_not_entered),Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(EditNoteActivity.this, getResources().getString(R.string.name_is_not_entered), Toast.LENGTH_SHORT).show();
             }
         });
 
+        photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent photoPickerItent = new Intent(Intent.ACTION_PICK);
+                photoPickerItent.setType("image/*");
+                startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
+            }
+        });
 
         Intent intent = getIntent();
         if (note != null) {
@@ -180,7 +192,7 @@ public class EditNoteActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.delete_note_edit_menu:
-                if(note!=null){
+                if (note != null) {
                     db.deleteNote(note.getId());
                     setResult(DELETED_RESULT_CODE);
                     finish();
@@ -205,5 +217,20 @@ public class EditNoteActivity extends AppCompatActivity {
                 importanceSpinner.setSelection(3);
                 break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PHOTO_PICK_REQUEST_CODE:
+                if (data != null) {
+                    Uri selectedPhoto = data.getData();
+                    photo.setImageURI(null);
+                    photo.setImageURI(selectedPhoto);
+                }
+                return;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
