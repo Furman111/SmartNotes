@@ -3,18 +3,16 @@ package ru.furman.smartnotes;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +25,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -47,7 +49,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private Note note;
     private DB db;
 
-    private String currentPhoto;
+    private String oldPhoto, currentPhoto, newPhoto;
 
     public static final int PHOTO_PICK_REQUEST_CODE = 3;
     public static final int CAMERA_REQUSET_CODE = 4;
@@ -121,10 +123,16 @@ public class EditNoteActivity extends AppCompatActivity {
                     setDefaultSelection();
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
+                    setPhotoIV(oldPhoto);
+                    if (!currentPhoto.equals(oldPhoto))
+                        deletePhoto(currentPhoto);
                 } else {
                     importanceSpinner.setSelection(3);
                     title.setText("");
                     body.setText("");
+                    photoIV.setImageResource(R.mipmap.nophoto);
+                    if (currentPhoto != null)
+                        deletePhoto(currentPhoto);
                 }
             }
         });
@@ -149,7 +157,14 @@ public class EditNoteActivity extends AppCompatActivity {
                                 importance = Note.NO_IMPORTANCE;
                                 break;
                         }
-                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), Note.NO_PHOTO, importance, -1));
+                        if (currentPhoto == null)
+                            currentPhoto = Note.NO_PHOTO;
+                        else {
+                            if (oldPhoto != null && !oldPhoto.equals(currentPhoto)) {
+                                deletePhoto(oldPhoto);
+                            }
+                        }
+                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), currentPhoto, importance, -1));
                     } else {
                         String importance = null;
                         switch (importanceSpinner.getSelectedItemPosition()) {
@@ -166,7 +181,8 @@ public class EditNoteActivity extends AppCompatActivity {
                                 importance = Note.NO_IMPORTANCE;
                                 break;
                         }
-                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, Note.NO_PHOTO, -1));
+                        if (currentPhoto == null) currentPhoto = Note.NO_PHOTO;
+                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, -1));
                     }
                     setResult(SAVED_RESULT_CODE);
                     finish();
@@ -197,8 +213,14 @@ public class EditNoteActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getResources().getString(R.string.new_note));
         }
 
-        if (note != null && !note.getPhoto().equals(Note.NO_PHOTO))
+        if (note != null && !note.getPhoto().equals(Note.NO_PHOTO)) {
+            oldPhoto = note.getPhoto();
             photoIV.setImageURI(Uri.parse("file://" + note.getPhoto()));
+            currentPhoto = note.getPhoto();
+        } else {
+            currentPhoto = null;
+            oldPhoto = null;
+        }
 
         super.onCreate(savedInstanceState);
     }
@@ -248,37 +270,40 @@ public class EditNoteActivity extends AppCompatActivity {
         switch (requestCode) {
             case CAMERA_REQUSET_CODE:
                 if (resultCode == RESULT_OK) {
-                    Bundle extras = data.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    photoIV.setImageBitmap(imageBitmap);
+                    setPhotoIV(newPhoto);
+                    if (currentPhoto != null && !currentPhoto.equals(oldPhoto)) {
+                        deletePhoto(currentPhoto);
+                    }
+                    currentPhoto = newPhoto;
                 }
                 return;
             case PHOTO_PICK_REQUEST_CODE:
                 if (data != null) {
                     Uri selectedPhoto = data.getData();
-                    photoIV.setImageURI(null);
-                    photoIV.setImageURI(selectedPhoto);
+                    File file = null;
+                    try {
+                        file = PhotoPickerDialogFragment.createImageFile(this);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (file != null) {
+                        newPhoto = selectedPhoto.getPath();
+                        try {
+                            Util.copyFile(new File(newPhoto), file);
+                        } catch (IOException e) {
+                            Toast.makeText(this, getResources().getString(R.string.error), Toast.LENGTH_SHORT);
+                        }
+                        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
+                            deletePhoto(currentPhoto);
+                        currentPhoto = file.getPath();
+                    }
+                    setPhotoIV(currentPhoto);
                 }
                 return;
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getFilesDir();
-        File image = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                storageDir
-        );
-        currentPhoto = image.getAbsolutePath();
-        return image;
-    }
-
 
     public static class PhotoPickerDialogFragment extends DialogFragment {
         @Override
@@ -300,7 +325,7 @@ public class EditNoteActivity extends AppCompatActivity {
                                     if (photoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                                         File photoFile = null;
                                         try {
-                                            photoFile = createImageFile();
+                                            photoFile = createImageFile(getActivity());
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
@@ -320,16 +345,16 @@ public class EditNoteActivity extends AppCompatActivity {
         }
 
 
-        private File createImageFile() throws IOException {
+        public static File createImageFile(Context ctx) throws IOException {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String imageFileName = "JPEG_" + timeStamp + "_";
-            File storageDir = getActivity().getFilesDir();
+            File storageDir = ctx.getFilesDir();
             File image = File.createTempFile(
                     imageFileName,
                     ".jpg",
                     storageDir
             );
-            ((EditNoteActivity) getActivity()).currentPhoto = image.getAbsolutePath();
+            ((EditNoteActivity) ctx).newPhoto = image.getAbsolutePath();
             return image;
         }
     }
@@ -360,5 +385,14 @@ public class EditNoteActivity extends AppCompatActivity {
 
             return builder.create();
         }
+    }
+
+    private void setPhotoIV(String path) {
+        photoIV.setImageURI(Uri.fromFile(new File(path)));
+    }
+
+    private void deletePhoto(String path) {
+        File file = new File(path);
+        file.delete();
     }
 }
