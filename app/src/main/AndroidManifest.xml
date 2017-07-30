@@ -32,10 +32,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ViewNoteActivity"
-            android:label="@string/view">
+            android:label="@string/view_note">
         </activity>
         <activity android:name=".EditNoteActivity"
             android:label="@string/to_edit">
+        </activity>
+        <activity android:name=".ViewImageActivity"
+            android:label="@string/view">
         </activity>
     </application>
 

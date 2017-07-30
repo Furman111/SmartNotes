@@ -120,8 +120,9 @@ public class EditNoteActivity extends AppCompatActivity {
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
                     setPhotoIV(oldPhoto);
-                    if (!currentPhoto.equals(oldPhoto))
+                    if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                         deletePhoto(currentPhoto);
+                    currentPhoto = oldPhoto;
                 } else {
                     importanceSpinner.setSelection(3);
                     title.setText("");
@@ -153,14 +154,16 @@ public class EditNoteActivity extends AppCompatActivity {
                                 importance = Note.NO_IMPORTANCE;
                                 break;
                         }
-                        if (currentPhoto == null)
+                        if (currentPhoto == null) {
+                            if (oldPhoto != null)
+                                deletePhoto(oldPhoto);
                             currentPhoto = Note.NO_PHOTO;
-                        else {
+                        } else {
                             if (oldPhoto != null && !oldPhoto.equals(currentPhoto)) {
                                 deletePhoto(oldPhoto);
                             }
                         }
-                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance,currentPhoto, -1));
+                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, -1));
                     } else {
                         String importance = null;
                         switch (importanceSpinner.getSelectedItemPosition()) {
@@ -187,19 +190,6 @@ public class EditNoteActivity extends AppCompatActivity {
             }
         });
 
-        photoIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (note == null || note.getPhoto() == Note.NO_PHOTO) {
-                    PhotoPickerDialogFragment dialog = new PhotoPickerDialogFragment();
-                    dialog.show(getFragmentManager(), null);
-                } else {
-                    PhotoChangeDialogFragment chDialog = new PhotoChangeDialogFragment();
-                    chDialog.show(getFragmentManager(), null);
-                }
-            }
-        });
-
         Intent intent = getIntent();
         if (note != null) {
             title.setText(note.getTitle());
@@ -218,6 +208,19 @@ public class EditNoteActivity extends AppCompatActivity {
             oldPhoto = null;
         }
 
+        photoIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentPhoto == null) {
+                    PhotoPickerDialogFragment dialog = new PhotoPickerDialogFragment();
+                    dialog.show(getFragmentManager(), null);
+                } else {
+                    PhotoChangeDialogFragment chDialog = new PhotoChangeDialogFragment();
+                    chDialog.show(getFragmentManager(), null);
+                }
+            }
+        });
+
         super.onCreate(savedInstanceState);
     }
 
@@ -229,7 +232,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(currentPhoto!=null && !currentPhoto.equals(oldPhoto))
+        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
             deletePhoto(currentPhoto);
         super.onBackPressed();
     }
@@ -238,7 +241,7 @@ public class EditNoteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(currentPhoto!=null && !currentPhoto.equals(oldPhoto))
+                if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                     deletePhoto(currentPhoto);
                 finish();
                 break;
@@ -310,6 +313,13 @@ public class EditNoteActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void onDeletePhoto() {
+        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
+            deletePhoto(currentPhoto);
+        currentPhoto = null;
+        setPhotoIV(currentPhoto);
+    }
+
     public static class PhotoPickerDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -367,6 +377,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
 
     public static class PhotoChangeDialogFragment extends DialogFragment {
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -377,14 +388,16 @@ public class EditNoteActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case 0:
-                                    //Просмотр
+                                    Intent photoView = new Intent(getActivity(),ViewImageActivity.class);
+                                    photoView.putExtra(ViewImageActivity.IMAGE_SRC,((EditNoteActivity)getActivity()).currentPhoto);
+                                    startActivity(photoView);
                                     return;
                                 case 1:
                                     PhotoPickerDialogFragment mdialog = new PhotoPickerDialogFragment();
                                     mdialog.show(getActivity().getFragmentManager(), null);
                                     return;
                                 case 2:
-                                    //удаление
+                                    ((EditNoteActivity) getActivity()).onDeletePhoto();
                             }
                         }
                     });
@@ -394,7 +407,10 @@ public class EditNoteActivity extends AppCompatActivity {
     }
 
     private void setPhotoIV(String path) {
-        photoIV.setImageURI(Uri.fromFile(new File(path)));
+        if (path == null)
+            photoIV.setImageResource(R.mipmap.nophoto);
+        else
+            photoIV.setImageURI(Uri.fromFile(new File(path)));
     }
 
     private void deletePhoto(String path) {
