@@ -25,11 +25,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -164,7 +160,7 @@ public class EditNoteActivity extends AppCompatActivity {
                                 deletePhoto(oldPhoto);
                             }
                         }
-                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), currentPhoto, importance, -1));
+                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance,currentPhoto, -1));
                     } else {
                         String importance = null;
                         switch (importanceSpinner.getSelectedItemPosition()) {
@@ -215,7 +211,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
         if (note != null && !note.getPhoto().equals(Note.NO_PHOTO)) {
             oldPhoto = note.getPhoto();
-            photoIV.setImageURI(Uri.parse("file://" + note.getPhoto()));
+            setPhotoIV(oldPhoto);
             currentPhoto = note.getPhoto();
         } else {
             currentPhoto = null;
@@ -232,9 +228,18 @@ public class EditNoteActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if(currentPhoto!=null && !currentPhoto.equals(oldPhoto))
+            deletePhoto(currentPhoto);
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                if(currentPhoto!=null && !currentPhoto.equals(oldPhoto))
+                    deletePhoto(currentPhoto);
                 finish();
                 break;
             case R.id.delete_note_edit_menu:
@@ -316,6 +321,7 @@ public class EditNoteActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case 1:
+                                    Util.verifyStoragePermissions(getActivity());
                                     Intent photoPickerItent = new Intent(Intent.ACTION_PICK);
                                     photoPickerItent.setType("image/*");
                                     getActivity().startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
