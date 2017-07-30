@@ -3,6 +3,9 @@ package ru.furman.smartnotes;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -44,6 +47,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     private Button importBtn;
     private FilePickerDialog dialog;
     private ImageView noteIV;
+    private ImageLoader loader;
 
 
     public static final int EDIT_REQUEST_CODE = 1;
@@ -54,6 +58,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         setContentView(R.layout.view_note);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        loader = new ImageLoader();
 
         db = new DB(this);
 
@@ -65,7 +70,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         title.setText(note.getTitle());
         body.setText(note.getBody());
         if(!note.getPhoto().equals(Note.NO_PHOTO)) {
-            Util.loadPhotoInImageView(noteIV, note.getPhoto());
+            loader.execute(note.getPhoto());
             noteIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -171,7 +176,7 @@ public class ViewNoteActivity extends AppCompatActivity {
                 title.setText(note.getTitle());
                 body.setText(note.getBody());
                 if(!note.getPhoto().equals(Note.NO_PHOTO))
-                    Util.loadPhotoInImageView(noteIV, note.getPhoto());
+                    loader.execute(note.getPhoto());
                 else
                     noteIV.setImageDrawable(null);
                 Util.setBackgroundWithImportance(this, view, note);
@@ -197,6 +202,21 @@ public class ViewNoteActivity extends AppCompatActivity {
                     Toast.makeText(this, getResources().getString(R.string.permissions_are_not_granted), Toast.LENGTH_SHORT).show();
                 }
             }
+        }
+    }
+
+    private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            noteIV.setImageBitmap(bitmap);
+            super.onPostExecute(bitmap);
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            String path = params[0];
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            return bitmap;
         }
     }
 

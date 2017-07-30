@@ -2,18 +2,18 @@ package ru.furman.smartnotes;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.List;
 
 import ru.furman.smartnotes.database.DB;
@@ -88,7 +88,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
         });
         if(!notes.get(position).getPhoto().equals(Note.NO_PHOTO)) {
-            Util.loadPhotoInImageView(holder.noteIV, notes.get(position).getPhoto());
+            ImageLoader loader = new ImageLoader();
+            loader.execute(holder);
             holder.noteIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -119,4 +120,28 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public long getItemId(int position) {
         return db.getNotes().get(position).getId();
     }
+
+    private class ImageLoader extends AsyncTask<ViewHolder,Void,ImageLoader.ResultContainer>{
+        @Override
+        protected void onPostExecute(ResultContainer resultContainer) {
+            resultContainer.viewHolder.noteIV.setImageBitmap(resultContainer.bitmap);
+            super.onPostExecute(resultContainer);
+        }
+
+        @Override
+        protected ResultContainer doInBackground(ViewHolder... params) {
+            ViewHolder vh = params[0];
+            Bitmap bitmap = BitmapFactory.decodeFile(db.getNote(vh.getId()).getPhoto());
+            ResultContainer resultContainer = new ResultContainer();
+            resultContainer.bitmap = bitmap;
+            resultContainer.viewHolder = vh;
+            return resultContainer;
+        }
+
+        public class ResultContainer{
+            public ViewHolder viewHolder;
+            public Bitmap bitmap;
+        }
+    }
+
 }

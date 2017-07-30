@@ -2,6 +2,7 @@ package ru.furman.smartnotes;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +26,8 @@ public class ViewImageActivity extends AppCompatActivity {
         setContentView(R.layout.view_image);
 
         imageViewTouch = (ImageViewTouch) findViewById(R.id.iv);
-        imageViewTouch.setImageBitmap(BitmapFactory.decodeFile(getIntent().getStringExtra(IMAGE_SRC)));
+        ImageLoader loader = new ImageLoader();
+        loader.execute(getIntent().getStringExtra(IMAGE_SRC));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -39,5 +41,20 @@ public class ViewImageActivity extends AppCompatActivity {
                 finish();
         }
         return true;
+    }
+
+    private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            imageViewTouch.setImageBitmap(bitmap);
+            super.onPostExecute(bitmap);
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            String path = params[0];
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            return bitmap;
+        }
     }
 }

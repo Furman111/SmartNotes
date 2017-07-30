@@ -24,7 +24,7 @@ public class DB {
         this.ctx = context;
     }
 
-    public void addNote(Note note) {
+    public synchronized void addNote(Note note) {
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getWritableDatabase();
 
@@ -38,7 +38,7 @@ public class DB {
         dbHelper.close();
     }
 
-    public List<Note> getNotes() {
+    public synchronized List<Note> getNotes() {
         List<Note> list = new ArrayList<>();
 
         dbHelper = new DBHelper(ctx);
@@ -64,7 +64,7 @@ public class DB {
         return list;
     }
 
-    public void deleteNote(int id) {
+    public synchronized void deleteNote(int id) {
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getWritableDatabase();
 
@@ -73,7 +73,7 @@ public class DB {
         dbHelper.close();
     }
 
-    public void editNote(int id, Note note) {
+    public synchronized void editNote(int id, Note note) {
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getWritableDatabase();
 
@@ -89,7 +89,7 @@ public class DB {
     }
 
     @Nullable
-    public Note getNote(long id) {
+    public synchronized Note getNote(long id) {
 
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getReadableDatabase();
