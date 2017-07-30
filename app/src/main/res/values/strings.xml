@@ -21,4 +21,6 @@
     <string name="permissions_are_not_granted">Права не были предоставлены</string>
     <string name="note_is_exported">Заметка экспортирована</string>
     <string name="error">Ошибка</string>
+    <string name="add_photo">Добавить фотографию</string>
+    <string name="photo">Фотография</string>
 </resources>

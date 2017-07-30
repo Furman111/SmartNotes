@@ -18,6 +18,7 @@ class DBHelper extends SQLiteOpenHelper {
     public static final String KEY_TITLE = "title";
     public static final String KEY_BODY = "body";
     public static final String KEY_IMPORTANCE = "importance";
+    public static final String KEY_PHOTO = "photo";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,7 +26,7 @@ class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table if not exists " + TABLE_NOTES + " (" + KEY_ID + " integer primary key, " + KEY_TITLE + " text, " + KEY_BODY + " text, " + KEY_IMPORTANCE + " text)");
+        db.execSQL("create table if not exists " + TABLE_NOTES + " (" + KEY_ID + " integer primary key, " + KEY_TITLE + " text, " + KEY_BODY + " text, " + KEY_IMPORTANCE + " text, "+KEY_PHOTO + " text)");
     }
 
     @Override

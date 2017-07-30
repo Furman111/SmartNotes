@@ -32,6 +32,7 @@ public class DB {
         cv.put(DBHelper.KEY_TITLE, note.getTitle());
         cv.put(DBHelper.KEY_BODY, note.getBody());
         cv.put(DBHelper.KEY_IMPORTANCE, note.getImportance());
+        cv.put(DBHelper.KEY_PHOTO,note.getPhoto());
 
         db.insert(DBHelper.TABLE_NOTES, null, cv);
         dbHelper.close();
@@ -51,8 +52,9 @@ public class DB {
             int titleIndex = cursor.getColumnIndex(DBHelper.KEY_TITLE);
             int bodyIndex = cursor.getColumnIndex(DBHelper.KEY_BODY);
             int importanceIndex = cursor.getColumnIndex(DBHelper.KEY_IMPORTANCE);
+            int photoIndex = cursor.getColumnIndex(DBHelper.KEY_PHOTO);
             do {
-                list.add(new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex), cursor.getInt(idIndex)));
+                list.add(new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex),cursor.getString(photoIndex), cursor.getInt(idIndex)));
             } while (cursor.moveToNext());
         }
 
@@ -79,6 +81,7 @@ public class DB {
         cv.put(DBHelper.KEY_TITLE, note.getTitle());
         cv.put(DBHelper.KEY_BODY, note.getBody());
         cv.put(DBHelper.KEY_IMPORTANCE, note.getImportance());
+        cv.put(DBHelper.KEY_PHOTO,note.getPhoto());
 
         db.update(DBHelper.TABLE_NOTES, cv, "_id = " + id, null);
 
@@ -98,7 +101,8 @@ public class DB {
             int titleIndex = cursor.getColumnIndex(DBHelper.KEY_TITLE);
             int bodyIndex = cursor.getColumnIndex(DBHelper.KEY_BODY);
             int importanceIndex = cursor.getColumnIndex(DBHelper.KEY_IMPORTANCE);
-            res = new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex), cursor.getInt(idIndex));
+            int photoIndex = cursor.getColumnIndex(DBHelper.KEY_PHOTO);
+            res = new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex),cursor.getString(photoIndex), cursor.getInt(idIndex));
         }
 
         cursor.close();

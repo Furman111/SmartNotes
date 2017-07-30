@@ -11,6 +11,7 @@ public class Note implements Parcelable {
     private String title;
     private String body;
     private String importance;
+    private String photo;
     private int id;
 
     public static final String RED_IMPORTANCE = "red";
@@ -18,9 +19,13 @@ public class Note implements Parcelable {
     public static final String GREEN_IMPORTANCE = "green";
     public static final String NO_IMPORTANCE = "null";
 
-    public Note(String title,String body,String importance, int id){
+
+    public static final String NO_PHOTO = "noPhoto";
+
+    public Note(String title,String body,String importance,String photo, int id){
         this.title = title;
         this.body = body;
+        this.photo = photo;
         this.importance = importance;
         this.id = id;
     }
@@ -37,6 +42,10 @@ public class Note implements Parcelable {
         return importance;
     }
 
+    public String getPhoto(){
+        return photo;
+    }
+
     public int getId(){
         return id;
     }
@@ -51,6 +60,7 @@ public class Note implements Parcelable {
         dest.writeString(title);
         dest.writeString(body);
         dest.writeString(importance);
+        dest.writeString(photo);
         dest.writeInt(id);
     }
 
@@ -69,6 +79,7 @@ public class Note implements Parcelable {
         title = in.readString();
         body = in.readString();
         importance = in.readString();
+        photo = in.readString();
         id = in.readInt();
     }
 }

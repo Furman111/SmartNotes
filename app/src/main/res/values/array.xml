@@ -6,4 +6,16 @@
         <item>Обычная</item>
         <item>Без важности</item>
     </array>
+
+    <array name="photo_picker_array">
+        <item>Сделать фотографию</item>
+        <item>Загрузить из галереи</item>
+    </array>
+
+    <array name="photo_array">
+        <item>Просмотр</item>
+        <item>Изменить</item>
+        <item>Удалить</item>
+    </array>
+
 </resources>

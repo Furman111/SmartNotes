@@ -1,11 +1,20 @@
 package ru.furman.smartnotes;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +26,11 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import ru.furman.smartnotes.database.DB;
 
 /**
@@ -27,14 +41,16 @@ public class EditNoteActivity extends AppCompatActivity {
 
     private EditText title, body;
     private Button saveBtn, cancelBtn;
-    private ImageView photo;
+    private ImageView photoIV;
     private Spinner importanceSpinner;
     private View background;
     private Note note;
     private DB db;
 
-    public static final int PHOTO_PICK_REQUEST_CODE = 3;
+    private String currentPhoto;
 
+    public static final int PHOTO_PICK_REQUEST_CODE = 3;
+    public static final int CAMERA_REQUSET_CODE = 4;
     public static final int SAVED_RESULT_CODE = 1;
     public static final int DELETED_RESULT_CODE = 2;
 
@@ -55,7 +71,7 @@ public class EditNoteActivity extends AppCompatActivity {
         saveBtn = (Button) findViewById(R.id.save_btn);
         cancelBtn = (Button) findViewById(R.id.cancel_btn);
         background = findViewById(R.id.importance_background);
-        photo = (ImageView) findViewById(R.id.note_mageIV);
+        photoIV = (ImageView) findViewById(R.id.note_mageIV);
         db = new DB(this);
 
         importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
@@ -133,7 +149,7 @@ public class EditNoteActivity extends AppCompatActivity {
                                 importance = Note.NO_IMPORTANCE;
                                 break;
                         }
-                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance, -1));
+                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), Note.NO_PHOTO, importance, -1));
                     } else {
                         String importance = null;
                         switch (importanceSpinner.getSelectedItemPosition()) {
@@ -150,7 +166,7 @@ public class EditNoteActivity extends AppCompatActivity {
                                 importance = Note.NO_IMPORTANCE;
                                 break;
                         }
-                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, -1));
+                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, Note.NO_PHOTO, -1));
                     }
                     setResult(SAVED_RESULT_CODE);
                     finish();
@@ -159,12 +175,16 @@ public class EditNoteActivity extends AppCompatActivity {
             }
         });
 
-        photo.setOnClickListener(new View.OnClickListener() {
+        photoIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent photoPickerItent = new Intent(Intent.ACTION_PICK);
-                photoPickerItent.setType("image/*");
-                startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
+                if (note == null || note.getPhoto() == Note.NO_PHOTO) {
+                    PhotoPickerDialogFragment dialog = new PhotoPickerDialogFragment();
+                    dialog.show(getFragmentManager(), null);
+                } else {
+                    PhotoChangeDialogFragment chDialog = new PhotoChangeDialogFragment();
+                    chDialog.show(getFragmentManager(), null);
+                }
             }
         });
 
@@ -176,6 +196,10 @@ public class EditNoteActivity extends AppCompatActivity {
         } else {
             getSupportActionBar().setTitle(getResources().getString(R.string.new_note));
         }
+
+        if (note != null && !note.getPhoto().equals(Note.NO_PHOTO))
+            photoIV.setImageURI(Uri.parse("file://" + note.getPhoto()));
+
         super.onCreate(savedInstanceState);
     }
 
@@ -222,15 +246,119 @@ public class EditNoteActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case CAMERA_REQUSET_CODE:
+                if (resultCode == RESULT_OK) {
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    photoIV.setImageBitmap(imageBitmap);
+                }
+                return;
             case PHOTO_PICK_REQUEST_CODE:
                 if (data != null) {
                     Uri selectedPhoto = data.getData();
-                    photo.setImageURI(null);
-                    photo.setImageURI(selectedPhoto);
+                    photoIV.setImageURI(null);
+                    photoIV.setImageURI(selectedPhoto);
                 }
                 return;
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getFilesDir();
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        currentPhoto = image.getAbsolutePath();
+        return image;
+    }
+
+
+    public static class PhotoPickerDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(getResources().getString(R.string.add_photo))
+                    .setItems(R.array.photo_picker_array, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case 1:
+                                    Intent photoPickerItent = new Intent(Intent.ACTION_PICK);
+                                    photoPickerItent.setType("image/*");
+                                    getActivity().startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
+                                    return;
+                                case 0:
+                                    Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    if (photoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                                        File photoFile = null;
+                                        try {
+                                            photoFile = createImageFile();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        if (photoFile != null) {
+                                            Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                                    "ru.furman.smartnotes.fileprovider",
+                                                    photoFile);
+                                            photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                                            getActivity().startActivityForResult(photoIntent, CAMERA_REQUSET_CODE);
+                                        }
+                                    }
+                            }
+                        }
+                    });
+
+            return builder.create();
+        }
+
+
+        private File createImageFile() throws IOException {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+            File storageDir = getActivity().getFilesDir();
+            File image = File.createTempFile(
+                    imageFileName,
+                    ".jpg",
+                    storageDir
+            );
+            ((EditNoteActivity) getActivity()).currentPhoto = image.getAbsolutePath();
+            return image;
+        }
+    }
+
+
+    public static class PhotoChangeDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(getResources().getString(R.string.photo))
+                    .setItems(R.array.photo_array, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case 0:
+                                    //Просмотр
+                                    return;
+                                case 1:
+                                    PhotoPickerDialogFragment mdialog = new PhotoPickerDialogFragment();
+                                    mdialog.show(getActivity().getFragmentManager(), null);
+                                    return;
+                                case 2:
+                                    //удаление
+                            }
+                        }
+                    });
+
+            return builder.create();
+        }
     }
 }
