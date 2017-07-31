@@ -3,11 +3,9 @@ package ru.furman.smartnotes;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -15,6 +13,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -23,12 +22,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public static final String NOTE_TITLE = "title";
     public static final String NOTE_LOCATION = "location";
-    public static final String NOTE_LIST = "noteList";
     public static final String CHOSEN_LOCATION = "chosenLoc";
     public static final String REQUEST_CODE = "requestCode";
+    public static final String NOTES_ARRAY_LIST_BUNDLE = "array";
 
     public static final float DEFAULT_ZOOM_BIG_MAP = 15;
     public static final int DEFAULT_ZOOM_LITTLE_MAP = 12;
+    public static final int DEFAULT_ZOOM_LARGE_MAP = 8;
 
 
     public static final int SHOW_NOTE_REQUEST_CODE = 1;
@@ -71,6 +71,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 LatLng loc = getIntent().getParcelableExtra(NOTE_LOCATION);
 
                 if (title == null) {
+                    currentLoc = DEFAULT_LOCATION;
                     mMap.addMarker(new MarkerOptions().title(getResources().getString(R.string.new_note))
                             .position(DEFAULT_LOCATION)
                             .draggable(true)).showInfoWindow();
@@ -78,7 +79,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 } else {
                     currentLoc = loc;
                     Marker marker;
-                    if(currentLoc.longitude == Note.NO_LONGITUDE)
+                    if (currentLoc.longitude == Note.NO_LONGITUDE)
                         marker = mMap.addMarker(new MarkerOptions().title(title).draggable(true).position(DEFAULT_LOCATION));
                     else
                         marker = mMap.addMarker(new MarkerOptions().title(title).draggable(true).position(currentLoc));
@@ -103,11 +104,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case SHOW_NOTE_REQUEST_CODE:
                 LatLng loc1 = (LatLng) getIntent().getParcelableExtra(NOTE_LOCATION);
                 mMap.addMarker(new MarkerOptions().title(getIntent().getStringExtra(NOTE_TITLE)
-                                                ).position(loc1)).showInfoWindow();
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc1,DEFAULT_ZOOM_BIG_MAP));
+                ).position(loc1)).showInfoWindow();
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc1, DEFAULT_ZOOM_BIG_MAP));
                 break;
             case SHOW_LIST_NOTES_REQUEST_CODE:
+                Bundle bundle = getIntent().getBundleExtra(NOTES_ARRAY_LIST_BUNDLE);
+                List<Note> notes = bundle.getParcelableArrayList(NOTES_ARRAY_LIST_BUNDLE);
 
+                LatLng locat = DEFAULT_LOCATION;
+
+                if (!notes.isEmpty()) {
+                    for (Note note : notes)
+                        if (note.getLocation().longitude != Note.NO_LONGITUDE) {
+                            locat = note.getLocation();
+                            mMap.addMarker(new MarkerOptions().position(locat).title(note.getTitle())).setTag(note);
+                        }
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locat, DEFAULT_ZOOM_LARGE_MAP));
+                }
+
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        //написать запуск активити
+                    }
+                });
                 break;
         }
 
@@ -115,7 +135,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.map_menu,menu);
+        getMenuInflater().inflate(R.menu.map_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -127,11 +147,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 finish();
                 return true;
             case R.id.save:
-                Intent resIntent = new Intent();
-                resIntent.putExtra(CHOSEN_LOCATION, currentLoc);
-                setResult(RESULT_OK, resIntent);
-                finish();
-                return true;
+                if (getIntent().getIntExtra(REQUEST_CODE, 0) == CHANGE_NOTE_LOCATION_REQUEST_CODE) {
+                    Intent resIntent = new Intent();
+                    resIntent.putExtra(CHOSEN_LOCATION, currentLoc);
+                    setResult(RESULT_OK, resIntent);
+                    finish();
+                    return true;
+                }
         }
         return super.onOptionsItemSelected(item);
     }

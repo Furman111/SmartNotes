@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedWriter;
@@ -54,6 +55,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private ImageView noteIV;
     private MapView mapView;
     private GoogleMap map;
+    private Marker marker;
 
     public static final int EDIT_REQUEST_CODE = 1;
 
@@ -179,6 +181,15 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        LatLng loc;
+        if(note.getLocation().longitude!=Note.NO_LONGITUDE)
+            loc = note.getLocation();
+        else
+            loc = MapActivity.DEFAULT_LOCATION;
+        marker.setPosition(loc);
+        marker.setTitle(note.getTitle());
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(loc,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        marker.showInfoWindow();
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
                 note = db.getNote(note.getId());
@@ -227,7 +238,8 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         else
             loc = MapActivity.DEFAULT_LOCATION;
 
-        map.addMarker(new MarkerOptions().position(loc).title(note.getTitle())).showInfoWindow();
+        marker = map.addMarker(new MarkerOptions().position(loc).title(note.getTitle()));
+        marker.showInfoWindow();
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(loc,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -237,7 +249,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 intent.putExtra(MapActivity.REQUEST_CODE,MapActivity.SHOW_NOTE_REQUEST_CODE);
                 intent.putExtra(MapActivity.NOTE_TITLE,note.getTitle());
                 intent.putExtra(MapActivity.NOTE_LOCATION,loc);
-                ViewNoteActivity.this.startActivity(intent);
+                ViewNoteActivity.this.startActivityForResult(intent,MapActivity.SHOW_NOTE_REQUEST_CODE);
             }
         });
     }
