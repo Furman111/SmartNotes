@@ -26,10 +26,13 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,11 +56,15 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private DB db;
     private MapView mapView;
     private GoogleMap googleMap;
+    private Marker marker;
 
     private String oldPhoto, currentPhoto, newPhoto;
 
+    private LatLng currentLoc, newLoc;
+
     public static final int PHOTO_PICK_REQUEST_CODE = 3;
     public static final int CAMERA_REQUSET_CODE = 4;
+
     public static final int SAVED_RESULT_CODE = 1;
     public static final int DELETED_RESULT_CODE = 2;
 
@@ -83,10 +90,14 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         importanceSpinner.setAdapter(adapter);
 
-        if (note != null)
+        currentLoc = null;
+        if (note != null) {
             setDefaultSelection();
-        else
+            currentLoc = note.getLocation();
+        } else
             importanceSpinner.setSelection(3);
+
+        newLoc = null;
 
         importanceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -120,7 +131,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {          //дописать для локаций
                 if (note != null) {
                     setDefaultSelection();
                     title.setText(note.getTitle());
@@ -133,6 +144,17 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                         deletePhoto(currentPhoto);
                     currentPhoto = oldPhoto;
+                    if(note.getLocation().longitude!=Note.NO_LONGITUDE) {
+                        currentLoc = note.getLocation();
+                        marker.setPosition(currentLoc);
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+                    }
+                    else{
+                        currentLoc = null;
+                        marker.setPosition(MapActivity.DEFAULT_LOCATION);
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+                    }
+                    newLoc = null;
                 } else {
                     importanceSpinner.setSelection(3);
                     title.setText("");
@@ -140,6 +162,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     photoIV.setImageResource(R.mipmap.nophoto);
                     if (currentPhoto != null)
                         deletePhoto(currentPhoto);
+                    marker.setPosition(MapActivity.DEFAULT_LOCATION);
+                    currentLoc = null;
+                    newLoc = null;
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
                 }
             }
         });
@@ -173,7 +199,9 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                                 deletePhoto(oldPhoto);
                             }
                         }
-                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, -1));
+                        if (newLoc != null)               //изменение местоположения
+                            currentLoc = newLoc;
+                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, currentLoc, -1));
                     } else {
                         String importance = null;
                         switch (importanceSpinner.getSelectedItemPosition()) {
@@ -191,7 +219,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                                 break;
                         }
                         if (currentPhoto == null) currentPhoto = Note.NO_PHOTO;
-                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, -1));
+                        currentLoc = newLoc;
+                        if (currentLoc == null)
+                            currentLoc = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
+                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, currentLoc, -1));
                     }
                     setResult(SAVED_RESULT_CODE);
                     finish();
@@ -366,6 +397,12 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     loader.execute(currentPhoto);
                 }
                 return;
+            case MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE:
+                if (resultCode == MapActivity.RESULT_OK) {
+                    newLoc = data.getParcelableExtra(MapActivity.CHOSEN_LOCATION);
+                    setMapLocation(newLoc);
+                }
+                return;
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -383,11 +420,35 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         EditNoteActivity.this.googleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
+        if (note != null)
+            if (note.getLocation().longitude != Note.NO_LONGITUDE) {
+                marker = googleMap.addMarker(new MarkerOptions().position(note.getLocation())
+                        .title(note.getTitle()));
+                marker.showInfoWindow();
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(),MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            }
+            else
+            {
+                marker = googleMap.addMarker(new MarkerOptions().position(MapActivity.DEFAULT_LOCATION)
+                        .title(getResources().getString(R.string.new_note)));
+                marker.showInfoWindow();
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            }
+
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                Intent intent = new Intent(EditNoteActivity.this,MapsActivity.class);
-                EditNoteActivity.this.startActivity(intent);
+                Intent intent = new Intent(EditNoteActivity.this, MapActivity.class);
+                String title = null;
+                LatLng latLng1 = null;
+                if(note!=null){
+                    title = note.getTitle();
+                    latLng1 = currentLoc;
+                }
+                intent.putExtra(MapActivity.NOTE_TITLE, title);
+                intent.putExtra(MapActivity.NOTE_LOCATION, currentLoc);
+                intent.putExtra(MapActivity.REQUEST_CODE,MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE);
+                EditNoteActivity.this.startActivityForResult(intent, MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE);
             }
         });
     }
@@ -482,6 +543,17 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private void deletePhoto(String path) {
         File file = new File(path);
         file.delete();
+    }
+
+    private void setMapLocation(LatLng location) {
+        if (marker != null) {
+            marker.setPosition(location);
+        } else {
+            marker = googleMap.addMarker(new MarkerOptions().position(location)
+                    .title(getResources().getString(R.string.new_note)));
+        }
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        marker.showInfoWindow();
     }
 
     private class ImageLoader extends AsyncTask<String, Void, Bitmap> {

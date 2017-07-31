@@ -25,10 +25,12 @@ import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -219,10 +221,22 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
+        final LatLng loc;
+        if(note.getLocation().longitude!=Note.NO_LONGITUDE)
+            loc = note.getLocation();
+        else
+            loc = MapActivity.DEFAULT_LOCATION;
+
+        map.addMarker(new MarkerOptions().position(loc).title(note.getTitle())).showInfoWindow();
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(loc,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                Intent intent = new Intent(ViewNoteActivity.this,MapsActivity.class);
+                Intent intent = new Intent(ViewNoteActivity.this,MapActivity.class);
+                intent.putExtra(MapActivity.REQUEST_CODE,MapActivity.SHOW_NOTE_REQUEST_CODE);
+                intent.putExtra(MapActivity.NOTE_TITLE,note.getTitle());
+                intent.putExtra(MapActivity.NOTE_LOCATION,loc);
                 ViewNoteActivity.this.startActivity(intent);
             }
         });

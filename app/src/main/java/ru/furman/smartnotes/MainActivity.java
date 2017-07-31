@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent,CREATE_NOTE_REQUEST_CODE);
                 return true;
             case R.id.show_on_map:
-                Intent intent1 = new Intent(this,MapsActivity.class);
+                Intent intent1 = new Intent(this,MapActivity.class);
                 startActivity(intent1);
                 return true;
         }

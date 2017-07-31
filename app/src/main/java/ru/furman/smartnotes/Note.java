@@ -3,6 +3,8 @@ package ru.furman.smartnotes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by Furman on 26.07.2017.
  */
@@ -12,6 +14,7 @@ public class Note implements Parcelable {
     private String body;
     private String importance;
     private String photo;
+    private LatLng location;
     private int id;
 
     public static final String RED_IMPORTANCE = "red";
@@ -19,15 +22,23 @@ public class Note implements Parcelable {
     public static final String GREEN_IMPORTANCE = "green";
     public static final String NO_IMPORTANCE = "null";
 
+    public static final double NO_LONGITUDE = 200;
+    public static final double NO_LATITUDE = 200;
+
 
     public static final String NO_PHOTO = "noPhoto";
 
-    public Note(String title,String body,String importance,String photo, int id){
+    public Note(String title,String body,String importance,String photo, LatLng location, int id){
         this.title = title;
         this.body = body;
         this.photo = photo;
         this.importance = importance;
         this.id = id;
+        this.location = location;
+    }
+
+    public LatLng getLocation() {
+        return location;
     }
 
     public String getTitle() {
@@ -61,6 +72,8 @@ public class Note implements Parcelable {
         dest.writeString(body);
         dest.writeString(importance);
         dest.writeString(photo);
+        dest.writeDouble(location.latitude);
+        dest.writeDouble(location.longitude);
         dest.writeInt(id);
     }
 
@@ -80,6 +93,9 @@ public class Note implements Parcelable {
         body = in.readString();
         importance = in.readString();
         photo = in.readString();
+        double latitude = in.readDouble();
+        double longitude = in.readDouble();
+        location = new LatLng(latitude,longitude);
         id = in.readInt();
     }
 }

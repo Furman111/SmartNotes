@@ -56,7 +56,7 @@
         <activity
             android:name=".ViewImageActivity"
             android:label="@string/view"></activity>
-        <activity android:name=".MapsActivity"
+        <activity android:name=".MapActivity"
             android:label="@string/title_activity_maps">
         </activity>
     </application>
