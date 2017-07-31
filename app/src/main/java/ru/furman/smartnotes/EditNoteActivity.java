@@ -429,7 +429,7 @@ public class EditNoteActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_height);
-            reqWidth = getResources().getDisplayMetrics().widthPixels;
+            reqWidth = getResources().getDisplayMetrics().widthPixels / 2;
             super.onPreExecute();
         }
 
