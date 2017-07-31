@@ -90,8 +90,7 @@
         android:layout_weight="1"
         android:src="@mipmap/nophoto" />
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+        <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/map"
             android:layout_margin="5dp"
             android:layout_width="match_parent"

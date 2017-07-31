@@ -27,7 +27,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 import java.io.File;
@@ -50,7 +50,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private View background;
     private Note note;
     private DB db;
-    private MapFragment mapFragment;
+    private MapView mapView;
     private GoogleMap googleMap;
 
     private String oldPhoto, currentPhoto, newPhoto;
@@ -62,7 +62,38 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onResume() {
+        mapView.onResume();
         super.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        mapView.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        mapView.onLowMemory();
+        super.onLowMemory();
+    }
+
+    @Override
+    protected void onStop() {
+        mapView.onStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
     }
 
     @Override
@@ -78,7 +109,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         cancelBtn = (Button) findViewById(R.id.cancel_btn);
         background = findViewById(R.id.importance_background);
         photoIV = (ImageView) findViewById(R.id.note_mageIV);
-        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapView = (MapView) findViewById(R.id.map);
         db = new DB(this);
 
         importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
@@ -236,7 +267,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        mapFragment.getMapAsync(this);
+        mapView.getMapAsync(this);
+        mapView.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
     }
 
@@ -251,6 +283,12 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
             deletePhoto(currentPhoto);
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onStart() {
+        mapView.onStart();
+        super.onStart();
     }
 
     @Override
