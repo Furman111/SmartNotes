@@ -1,167 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/background_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    android:weightSum="13">
+    android:padding="5dp">
 
-    <android.support.v7.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
+        android:id="@+id/importance_background"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="@dimen/edit_note_margin"
-        android:layout_weight="6"
-        app:cardElevation="@dimen/card_view_elevation">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="5dp"
-            android:weightSum="1">
+            android:layout_height="55dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="3dp"
-                android:text="@string/note_title"
-                android:textSize="18sp" />
+            <!--            <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:padding="5dp"
+                            android:text="@string/note_tile"
+                            android:textAllCaps="false"
+                            android:textColor="@color/black"
+                            android:textSize="25sp"
+                            android:textStyle="bold|italic" />-->
 
             <EditText
-                android:id="@+id/note_title_et"
+                android:id="@+id/note_title_edit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:background="@android:drawable/editbox_background_normal"
+                android:background="@android:drawable/edit_text"
                 android:gravity="center_vertical"
                 android:hint="@string/enter_note_name"
                 android:inputType="text"
                 android:padding="3dp"
                 android:textSize="20sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="3dp"
-                android:text="@string/note_body"
-                android:textSize="18sp" />
-
-
-            <EditText
-                android:id="@+id/note_body_et"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:drawable/editbox_background_normal"
-                android:hint="@string/enter_note_body"
-                android:inputType="textMultiLine"
-                android:maxHeight="@dimen/edit_note_body_edit_text_max_height"
-                android:padding="3dp"
-                android:textSize="20sp" />
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/note_body"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold|italic" />-->
 
-    <android.support.v7.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="150dp">
+
+            <EditText
+                android:id="@+id/note_body_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/edit_text"
+                android:hint="@string/enter_note_body"
+                android:inputType="textMultiLine"
+                android:maxHeight="150dp"
+                android:padding="5dp"
+                android:textSize="20sp" />
+        </ScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="@dimen/edit_note_margin"
-        android:layout_weight="4"
-        app:cardCornerRadius="@dimen/card_view_radius"
-        app:cardElevation="@dimen/card_view_elevation">
+        android:layout_height="@dimen/edit_note_iv_height"
+        android:orientation="horizontal">
 
-        <RelativeLayout
+        <ImageView
+            android:id="@+id/note_mageIV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:adjustViewBounds="true"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:layout_weight="1"
+            android:src="@mipmap/nophoto" />
 
-            <ImageView
-                android:id="@+id/note_photo_iv"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:adjustViewBounds="true"
-                android:maxWidth="@dimen/edit_note_iv_max_width"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/nophoto" />
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
-            <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/map_view"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_toEndOf="@id/note_photo_iv"
-                android:layout_toRightOf="@id/note_photo_iv" />
+    </LinearLayout>
 
-        </RelativeLayout>
 
-    </android.support.v7.widget.CardView>
-
-    <RadioGroup
-        android:id="@+id/importance_radio_group"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_margin="@dimen/edit_note_margin"
-        android:layout_weight="1"
-        android:gravity="center_horizontal|center_vertical"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/red_importance_radio_btn"
+        <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/importance_note_red"
-            android:textSize="@dimen/radio_group_text_size" />
+            android:padding="5dp"
+            android:text="@string/importance_of_note"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold|italic" />
 
-        <RadioButton
-            android:id="@+id/yellow_importance_radio_btn"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/importance_spinner"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/importance_note_yellow"
-            android:textSize="@dimen/radio_group_text_size" />
+            android:padding="5dp" />
 
-        <RadioButton
-            android:id="@+id/green_importance_radio_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/importance_note_green"
-            android:textSize="@dimen/radio_group_text_size" />
-    </RadioGroup>
+    </LinearLayout>
 
-    <android.support.v7.widget.ButtonBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="@dimen/edit_note_margin"
-        android:layout_weight="2"
-        android:gravity="center_horizontal|center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingTop="10dp">
 
         <Button
             android:id="@+id/save_btn"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:background="@color/positiveBtnBackground"
+            android:background="@color/ColorBtnBackground"
             android:text="@string/to_save"
             android:textColor="@color/textColorButton" />
 
         <Button
             android:id="@+id/cancel_btn"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:background="@color/negativeBtnBackground"
             android:layout_weight="1"
+            android:background="@color/redImportance"
             android:text="@string/cancel"
             android:textColor="@color/textColorButton" />
 
-    </android.support.v7.widget.ButtonBarLayout>
+    </LinearLayout>
 
 </LinearLayout>
