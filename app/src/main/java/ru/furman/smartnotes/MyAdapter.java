@@ -3,7 +3,6 @@ package ru.furman.smartnotes;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -49,32 +48,32 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
     }
 
-    public MyAdapter(Context ctx){
+    public MyAdapter(Context ctx) {
         this.db = new DB(ctx);
         this.ctx = ctx;
     }
 
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_in_list,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_in_list, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final MyAdapter.ViewHolder holder, final int position) {
         final List<Note> notes = db.getNotes();
-        switch (notes.get(position).getImportance()){
+        switch (notes.get(position).getImportance()) {
             case Note.GREEN_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx,R.color.greenImportance));
+                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.greenImportance));
                 break;
             case Note.RED_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx,R.color.redImportance));
+                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.redImportance));
                 break;
             case Note.YELLOW_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx,R.color.yellowImportance));
+                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.yellowImportance));
                 break;
             case Note.NO_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx,R.color.zeroImportance));
+                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.zeroImportance));
                 break;
         }
         holder.id = notes.get(position).getId();
@@ -84,10 +83,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, EditNoteActivity.class);
                 intent.putExtra(MainActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
-                ((MainActivity)ctx).startActivityForResult(intent,MainActivity.EDIT_NOTE_REQUEST_CODE);
+                ((MainActivity) ctx).startActivityForResult(intent, MainActivity.EDIT_NOTE_REQUEST_CODE);
             }
         });
-        if(!notes.get(position).getPhoto().equals(Note.NO_PHOTO)) {
+        if (!notes.get(position).getPhoto().equals(Note.NO_PHOTO)) {
             ImageLoader loader = new ImageLoader();
             loader.execute(holder);
             holder.noteIV.setOnClickListener(new View.OnClickListener() {
@@ -98,15 +97,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     ctx.startActivity(photoView);
                 }
             });
-        }
-        else
+        } else
             holder.noteIV.setImageDrawable(null);
         holder.backgroundCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, ViewNoteActivity.class);
                 intent.putExtra(MainActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
-                ((MainActivity) ctx).startActivityForResult(intent,MainActivity.VIEW_NOTE_REQUEST_CODE);
+                ((MainActivity) ctx).startActivityForResult(intent, MainActivity.VIEW_NOTE_REQUEST_CODE);
             }
         });
     }
@@ -121,7 +119,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return db.getNotes().get(position).getId();
     }
 
-    private class ImageLoader extends AsyncTask<ViewHolder,Void,ImageLoader.ResultContainer>{
+    private class ImageLoader extends AsyncTask<ViewHolder, Void, ImageLoader.ResultContainer> {
+
+        private int reqWidth, reqHeight;
+
         @Override
         protected void onPostExecute(ResultContainer resultContainer) {
             resultContainer.viewHolder.noteIV.setImageBitmap(resultContainer.bitmap);
@@ -129,16 +130,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
         @Override
+        protected void onPreExecute() {
+            reqHeight = ctx.getResources().getDimensionPixelSize(R.dimen.image_view_tumbnail);
+            reqWidth = reqHeight;
+        }
+
+        @Override
         protected ResultContainer doInBackground(ViewHolder... params) {
             ViewHolder vh = params[0];
-            Bitmap bitmap = BitmapFactory.decodeFile(db.getNote(vh.getId()).getPhoto());
+            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(db.getNote(vh.getId()).getPhoto(),reqWidth,reqHeight);
             ResultContainer resultContainer = new ResultContainer();
             resultContainer.bitmap = bitmap;
             resultContainer.viewHolder = vh;
             return resultContainer;
         }
 
-        public class ResultContainer{
+        public class ResultContainer {
             public ViewHolder viewHolder;
             public Bitmap bitmap;
         }

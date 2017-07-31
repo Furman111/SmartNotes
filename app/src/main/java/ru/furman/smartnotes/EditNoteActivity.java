@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -424,6 +423,16 @@ public class EditNoteActivity extends AppCompatActivity {
     }
 
     private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
+
+        private int reqHeight,reqWidth;
+
+        @Override
+        protected void onPreExecute() {
+            reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_height);
+            reqWidth = getResources().getDisplayMetrics().widthPixels;
+            super.onPreExecute();
+        }
+
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             photoIV.setImageBitmap(bitmap);
@@ -433,8 +442,9 @@ public class EditNoteActivity extends AppCompatActivity {
         @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path,reqWidth,reqHeight);
             return bitmap;
         }
     }
+
 }

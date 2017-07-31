@@ -21,9 +21,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            android:layout_margin="3dp"
-            android:maxHeight="54dp"
-            android:maxWidth="54dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="3dp"
+            android:maxHeight="@dimen/image_view_tumbnail"
+            android:maxWidth="@dimen/image_view_tumbnail"
             android:scaleType="fitCenter" />
 
         <TextView

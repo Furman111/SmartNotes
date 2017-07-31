@@ -207,6 +207,8 @@ public class ViewNoteActivity extends AppCompatActivity {
     }
 
     private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
+        int reqWidth,reqHeight;
+
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             noteIV.setImageBitmap(bitmap);
@@ -214,9 +216,16 @@ public class ViewNoteActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+            reqHeight = getResources().getDimensionPixelSize(R.dimen.view_note_iv_height);
+            reqWidth = getResources().getDisplayMetrics().widthPixels;
+            super.onPreExecute();
+        }
+
+        @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path,reqWidth,reqHeight);
             return bitmap;
         }
     }
