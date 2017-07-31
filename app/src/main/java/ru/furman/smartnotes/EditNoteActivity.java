@@ -26,6 +26,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,7 +41,7 @@ import ru.furman.smartnotes.database.DB;
  * Created by Furman on 26.07.2017.
  */
 
-public class EditNoteActivity extends AppCompatActivity {
+public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private EditText title, body;
     private Button saveBtn, cancelBtn;
@@ -46,6 +50,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private View background;
     private Note note;
     private DB db;
+    private MapFragment mapFragment;
+    private GoogleMap googleMap;
 
     private String oldPhoto, currentPhoto, newPhoto;
 
@@ -72,6 +78,7 @@ public class EditNoteActivity extends AppCompatActivity {
         cancelBtn = (Button) findViewById(R.id.cancel_btn);
         background = findViewById(R.id.importance_background);
         photoIV = (ImageView) findViewById(R.id.note_mageIV);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         db = new DB(this);
 
         importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
@@ -229,6 +236,7 @@ public class EditNoteActivity extends AppCompatActivity {
             }
         });
 
+        mapFragment.getMapAsync(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -328,6 +336,12 @@ public class EditNoteActivity extends AppCompatActivity {
             deletePhoto(currentPhoto);
         currentPhoto = null;
         photoIV.setImageResource(R.mipmap.nophoto);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        EditNoteActivity.this.googleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
     public static class PhotoPickerDialogFragment extends DialogFragment {

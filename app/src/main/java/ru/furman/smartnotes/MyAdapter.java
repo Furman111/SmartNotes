@@ -88,7 +88,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         });
         if (!notes.get(position).getPhoto().equals(Note.NO_PHOTO)) {
             ImageLoader loader = new ImageLoader();
-            loader.execute(holder);
+            loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,holder);
             holder.noteIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
