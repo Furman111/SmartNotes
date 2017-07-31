@@ -47,7 +47,6 @@ public class ViewNoteActivity extends AppCompatActivity {
     private Button importBtn;
     private FilePickerDialog dialog;
     private ImageView noteIV;
-    private ImageLoader loader;
 
 
     public static final int EDIT_REQUEST_CODE = 1;
@@ -58,7 +57,6 @@ public class ViewNoteActivity extends AppCompatActivity {
         setContentView(R.layout.view_note);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        loader = new ImageLoader();
 
         db = new DB(this);
 
@@ -70,6 +68,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         title.setText(note.getTitle());
         body.setText(note.getBody());
         if(!note.getPhoto().equals(Note.NO_PHOTO)) {
+            ImageLoader loader = new ImageLoader();
             loader.execute(note.getPhoto());
             noteIV.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -175,8 +174,10 @@ public class ViewNoteActivity extends AppCompatActivity {
                 note = db.getNote(note.getId());
                 title.setText(note.getTitle());
                 body.setText(note.getBody());
-                if(!note.getPhoto().equals(Note.NO_PHOTO))
+                if(!note.getPhoto().equals(Note.NO_PHOTO)) {
+                    ImageLoader loader = new ImageLoader();
                     loader.execute(note.getPhoto());
+                }
                 else
                     noteIV.setImageDrawable(null);
                 Util.setBackgroundWithImportance(this, view, note);

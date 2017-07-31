@@ -6,7 +6,10 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -119,7 +122,12 @@ public class EditNoteActivity extends AppCompatActivity {
                     setDefaultSelection();
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
-                    setPhotoIV(oldPhoto);
+                    if(oldPhoto!=null) {
+                        ImageLoader loader = new ImageLoader();
+                        loader.execute(oldPhoto);
+                    }
+                    else
+                        photoIV.setImageResource(R.mipmap.nophoto);
                     if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                         deletePhoto(currentPhoto);
                     currentPhoto = oldPhoto;
@@ -201,7 +209,8 @@ public class EditNoteActivity extends AppCompatActivity {
 
         if (note != null && !note.getPhoto().equals(Note.NO_PHOTO)) {
             oldPhoto = note.getPhoto();
-            setPhotoIV(oldPhoto);
+            ImageLoader loader = new ImageLoader();
+            loader.execute(oldPhoto);
             currentPhoto = note.getPhoto();
         } else {
             currentPhoto = null;
@@ -278,7 +287,8 @@ public class EditNoteActivity extends AppCompatActivity {
         switch (requestCode) {
             case CAMERA_REQUSET_CODE:
                 if (resultCode == RESULT_OK) {
-                    setPhotoIV(newPhoto);
+                    ImageLoader loader = new ImageLoader();
+                    loader.execute(newPhoto);
                     if (currentPhoto != null && !currentPhoto.equals(oldPhoto)) {
                         deletePhoto(currentPhoto);
                     }
@@ -305,7 +315,8 @@ public class EditNoteActivity extends AppCompatActivity {
                             deletePhoto(currentPhoto);
                         currentPhoto = file.getPath();
                     }
-                    setPhotoIV(currentPhoto);
+                    ImageLoader loader = new ImageLoader();
+                    loader.execute(currentPhoto);
                 }
                 return;
         }
@@ -317,7 +328,7 @@ public class EditNoteActivity extends AppCompatActivity {
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
             deletePhoto(currentPhoto);
         currentPhoto = null;
-        setPhotoIV(currentPhoto);
+        photoIV.setImageResource(R.mipmap.nophoto);
     }
 
     public static class PhotoPickerDialogFragment extends DialogFragment {
@@ -398,7 +409,7 @@ public class EditNoteActivity extends AppCompatActivity {
                                     return;
                                 case 2:
                                     ((EditNoteActivity) getActivity()).onDeletePhoto();
-                                    ((EditNoteActivity) getActivity()).setPhotoIV(null);
+                                    ((EditNoteActivity)getActivity()).photoIV.setImageResource(R.mipmap.nophoto);
                             }
                         }
                     });
@@ -407,15 +418,23 @@ public class EditNoteActivity extends AppCompatActivity {
         }
     }
 
-    private void setPhotoIV(String path) {
-        if (path == null)
-            photoIV.setImageResource(R.mipmap.nophoto);
-        else
-            photoIV.setImageURI(Uri.fromFile(new File(path)));
-    }
-
     private void deletePhoto(String path) {
         File file = new File(path);
         file.delete();
+    }
+
+    private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            photoIV.setImageBitmap(bitmap);
+            super.onPostExecute(bitmap);
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            String path = params[0];
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            return bitmap;
+        }
     }
 }
