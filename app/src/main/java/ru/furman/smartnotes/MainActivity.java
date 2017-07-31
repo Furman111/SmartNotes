@@ -66,7 +66,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.add_note:
                 Intent intent = new Intent(this,EditNoteActivity.class);
                 startActivityForResult(intent,CREATE_NOTE_REQUEST_CODE);
-                break;
+                return true;
+            case R.id.show_on_map:
+                Intent intent1 = new Intent(this,MapsActivity.class);
+                startActivity(intent1);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

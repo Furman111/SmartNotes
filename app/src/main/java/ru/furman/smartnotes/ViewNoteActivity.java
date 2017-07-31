@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,6 +25,10 @@ import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,7 +41,7 @@ import ru.furman.smartnotes.database.DB;
  * Created by Furman on 26.07.2017.
  */
 
-public class ViewNoteActivity extends AppCompatActivity {
+public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private Note note;
     private DB db;
@@ -47,13 +50,13 @@ public class ViewNoteActivity extends AppCompatActivity {
     private Button importBtn;
     private FilePickerDialog dialog;
     private ImageView noteIV;
-
+    private MapView mapView;
+    private GoogleMap map;
 
     public static final int EDIT_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.view_note);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -65,6 +68,8 @@ public class ViewNoteActivity extends AppCompatActivity {
         body = (TextView) findViewById(R.id.note_body);
         title = (TextView) findViewById(R.id.note_title);
         noteIV = (ImageView) findViewById(R.id.note_image);
+        mapView = (MapView) findViewById(R.id.map_view);
+        mapView.getMapAsync(this);
         title.setText(note.getTitle());
         body.setText(note.getBody());
         if(!note.getPhoto().equals(Note.NO_PHOTO)) {
@@ -137,6 +142,9 @@ public class ViewNoteActivity extends AppCompatActivity {
 
         view = findViewById(R.id.importance_background);
         Util.setBackgroundWithImportance(this, view, note);
+
+        mapView.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -206,6 +214,62 @@ public class ViewNoteActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Intent intent = new Intent(ViewNoteActivity.this,MapsActivity.class);
+                ViewNoteActivity.this.startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        mapView.onStart();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mapView.onStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onLowMemory() {
+        mapView.onLowMemory();
+        super.onLowMemory();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        mapView.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        mapView.onResume();
+        super.onResume();
+    }
+
     private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
         int reqWidth,reqHeight;
 
@@ -218,7 +282,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             reqHeight = getResources().getDimensionPixelSize(R.dimen.view_note_iv_height);
-            reqWidth = getResources().getDisplayMetrics().widthPixels;
+            reqWidth = getResources().getDisplayMetrics().widthPixels / 2;
             super.onPreExecute();
         }
 

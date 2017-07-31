@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,41 +61,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public static final int SAVED_RESULT_CODE = 1;
     public static final int DELETED_RESULT_CODE = 2;
 
-    @Override
-    protected void onResume() {
-        mapView.onResume();
-        super.onResume();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        mapView.onSaveInstanceState(outState);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mapView.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        mapView.onLowMemory();
-        super.onLowMemory();
-    }
-
-    @Override
-    protected void onStop() {
-        mapView.onStop();
-        super.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        mapView.onPause();
-        super.onPause();
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -159,11 +125,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     setDefaultSelection();
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
-                    if(oldPhoto!=null) {
+                    if (oldPhoto != null) {
                         ImageLoader loader = new ImageLoader();
                         loader.execute(oldPhoto);
-                    }
-                    else
+                    } else
                         photoIV.setImageResource(R.mipmap.nophoto);
                     if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                         deletePhoto(currentPhoto);
@@ -268,6 +233,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         });
 
         mapView.getMapAsync(this);
+
         mapView.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
     }
@@ -328,6 +294,42 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     @Override
+    protected void onResume() {
+        mapView.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        mapView.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        mapView.onLowMemory();
+        super.onLowMemory();
+    }
+
+    @Override
+    protected void onStop() {
+        mapView.onStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case CAMERA_REQUSET_CODE:
@@ -377,9 +379,17 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         EditNoteActivity.this.googleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Intent intent = new Intent(EditNoteActivity.this,MapsActivity.class);
+                EditNoteActivity.this.startActivity(intent);
+            }
+        });
     }
 
     public static class PhotoPickerDialogFragment extends DialogFragment {
@@ -450,8 +460,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case 0:
-                                    Intent photoView = new Intent(getActivity(),ViewImageActivity.class);
-                                    photoView.putExtra(ViewImageActivity.IMAGE_SRC,((EditNoteActivity)getActivity()).currentPhoto);
+                                    Intent photoView = new Intent(getActivity(), ViewImageActivity.class);
+                                    photoView.putExtra(ViewImageActivity.IMAGE_SRC, ((EditNoteActivity) getActivity()).currentPhoto);
                                     startActivity(photoView);
                                     return;
                                 case 1:
@@ -460,7 +470,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                                     return;
                                 case 2:
                                     ((EditNoteActivity) getActivity()).onDeletePhoto();
-                                    ((EditNoteActivity)getActivity()).photoIV.setImageResource(R.mipmap.nophoto);
+                                    ((EditNoteActivity) getActivity()).photoIV.setImageResource(R.mipmap.nophoto);
                             }
                         }
                     });
@@ -474,9 +484,9 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         file.delete();
     }
 
-    private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
+    private class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 
-        private int reqHeight,reqWidth;
+        private int reqHeight, reqWidth;
 
         @Override
         protected void onPreExecute() {
@@ -494,7 +504,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path,reqWidth,reqHeight);
+            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
             return bitmap;
         }
     }
