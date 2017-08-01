@@ -6,15 +6,21 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,7 +54,6 @@ import ru.furman.smartnotes.database.DB;
 public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private EditText title, body;
-    private Button saveBtn, cancelBtn;
     private ImageView photoIV;
     private Spinner importanceSpinner;
     private View background;
@@ -57,6 +62,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private MapView mapView;
     private GoogleMap googleMap;
     private Marker marker;
+    private LocationManager locationManager;
 
     private String oldPhoto, currentPhoto, newPhoto;
 
@@ -80,11 +86,12 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         note = getIntent().getParcelableExtra(MainActivity.NOTE_TAG);
         title = (EditText) findViewById(R.id.note_title_edit);
         body = (EditText) findViewById(R.id.note_body_edit);
-        saveBtn = (Button) findViewById(R.id.save_btn);
-        cancelBtn = (Button) findViewById(R.id.cancel_btn);
+        Button saveBtn = (Button) findViewById(R.id.save_btn);
+        Button cancelBtn = (Button) findViewById(R.id.cancel_btn);
         background = findViewById(R.id.importance_background);
         photoIV = (ImageView) findViewById(R.id.note_mageIV);
         mapView = (MapView) findViewById(R.id.map);
+
         db = new DB(this);
 
         importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
@@ -95,10 +102,15 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         currentLoc = null;
         if (note != null) {
             setDefaultSelection();
-            currentLoc = note.getLocation();
-        } else
+            if (note.getLocation().longitude != Note.NO_LONGITUDE)
+                currentLoc = note.getLocation();
+            else
+                currentLoc = null;
+        } else {
             importanceSpinner.setSelection(3);
-
+            currentLoc = null;
+            requestLocation();
+        }
         newLoc = null;
 
         importanceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -146,17 +158,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                         deletePhoto(currentPhoto);
                     currentPhoto = oldPhoto;
-                    if(note.getLocation().longitude!=Note.NO_LONGITUDE) {
-                        currentLoc = note.getLocation();
-                        marker.setPosition(currentLoc);
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-                    }
-                    else{
-                        currentLoc = null;
-                        marker.setPosition(MapActivity.DEFAULT_LOCATION);
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-                    }
-                    newLoc = null;
                 } else {
                     importanceSpinner.setSelection(3);
                     title.setText("");
@@ -164,11 +165,9 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     photoIV.setImageResource(R.mipmap.nophoto);
                     if (currentPhoto != null)
                         deletePhoto(currentPhoto);
-                    marker.setPosition(MapActivity.DEFAULT_LOCATION);
-                    currentLoc = null;
-                    newLoc = null;
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
                 }
+                setMapLocation(currentLoc);
+                newLoc = null;
             }
         });
 
@@ -201,8 +200,11 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                                 deletePhoto(oldPhoto);
                             }
                         }
-                        if (newLoc != null)               //изменение местоположения
+                        if (newLoc != null)
                             currentLoc = newLoc;
+                        else if (currentLoc == null) {
+                            currentLoc = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
+                        }
                         db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, currentLoc, -1));
                     } else {
                         String importance = null;
@@ -221,9 +223,11 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                                 break;
                         }
                         if (currentPhoto == null) currentPhoto = Note.NO_PHOTO;
-                        currentLoc = newLoc;
-                        if (currentLoc == null)
+                        if (newLoc != null)
+                            currentLoc = newLoc;
+                        else if (currentLoc == null) {
                             currentLoc = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
+                        }
                         db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, currentLoc, -1));
                     }
                     setResult(SAVED_RESULT_CODE);
@@ -403,6 +407,13 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 if (resultCode == MapActivity.RESULT_OK) {
                     newLoc = data.getParcelableExtra(MapActivity.CHOSEN_LOCATION);
                     setMapLocation(newLoc);
+                } else {
+                    LatLng lng;
+                    if (newLoc != null)
+                        lng = newLoc;
+                    else
+                        lng = currentLoc;
+                    setMapLocation(lng);
                 }
                 return;
         }
@@ -421,35 +432,34 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public void onMapReady(final GoogleMap googleMap) {
         EditNoteActivity.this.googleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        if (note != null)
-            if (note.getLocation().longitude != Note.NO_LONGITUDE) {
-                marker = googleMap.addMarker(new MarkerOptions().position(note.getLocation())
-                        .title(note.getTitle()));
-                marker.showInfoWindow();
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(),MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-            }
-            else
-            {
-                marker = googleMap.addMarker(new MarkerOptions().position(MapActivity.DEFAULT_LOCATION)
-                        .title(getResources().getString(R.string.new_note)));
-                marker.showInfoWindow();
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-            }
+        if (currentLoc != null) {
+            marker = googleMap.addMarker(new MarkerOptions().position(currentLoc)
+                    .title(note.getTitle()));
+            marker.showInfoWindow();
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(), MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        }
+        else
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
+                if(locationManager!=null)
+                    locationManager.removeUpdates(locationListener);
                 Intent intent = new Intent(EditNoteActivity.this, MapActivity.class);
                 String title = null;
                 LatLng latLng1 = null;
-                if(note!=null){
+                if (note != null)
                     title = note.getTitle();
+                if (newLoc != null)
+                    latLng1 = newLoc;
+                else
                     latLng1 = currentLoc;
-                }
                 intent.putExtra(MapActivity.NOTE_TITLE, title);
-                intent.putExtra(MapActivity.NOTE_LOCATION, currentLoc);
-                intent.putExtra(MapActivity.REQUEST_CODE,MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE);
+                intent.putExtra(MapActivity.NOTE_LOCATION, latLng1);
+                intent.putExtra(MapActivity.REQUEST_CODE, MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE);
                 EditNoteActivity.this.startActivityForResult(intent, MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE);
             }
         });
@@ -548,14 +558,24 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void setMapLocation(LatLng location) {
-        if (marker != null) {
-            marker.setPosition(location);
+        if (location == null) {
+            if (marker != null)
+                marker.remove();
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
         } else {
+            String title;
+            if (marker != null) {
+                title = marker.getTitle();
+                marker.remove();
+            } else if (note != null)
+                title = note.getTitle();
+            else
+                title = getResources().getString(R.string.new_note);
             marker = googleMap.addMarker(new MarkerOptions().position(location)
-                    .title(getResources().getString(R.string.new_note)));
+                    .title(title));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            marker.showInfoWindow();
         }
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-        marker.showInfoWindow();
     }
 
     private class ImageLoader extends AsyncTask<String, Void, Bitmap> {
@@ -582,5 +602,51 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             return bitmap;
         }
     }
+
+    public void requestLocation() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        Util.verifyLocationPermissions(this);
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("Location", "no permissions");
+            return;
+        }
+
+        Log.d("Location", "request location");
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d("Location", "request location gps");
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+        }
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            Log.d("Location", "request location network");
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
+        }
+    }
+
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d("Location", "location got");
+            newLoc = new LatLng(location.getLatitude(), location.getLongitude());
+            setMapLocation(newLoc);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 
 }

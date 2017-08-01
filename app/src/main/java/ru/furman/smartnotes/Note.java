@@ -22,8 +22,8 @@ public class Note implements Parcelable {
     public static final String GREEN_IMPORTANCE = "green";
     public static final String NO_IMPORTANCE = "null";
 
-    public static final double NO_LONGITUDE = 200;
-    public static final double NO_LATITUDE = 200;
+    public static final double NO_LONGITUDE = -160;
+    public static final double NO_LATITUDE = 90;
 
 
     public static final String NO_PHOTO = "noPhoto";

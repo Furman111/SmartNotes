@@ -28,6 +28,11 @@ public class Util {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
+    private static final int REQUEST_LOCATION = 2;
+    private static String[] PERMISSIONS_LOCATION = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION};
+
     public static void setBackgroundWithImportance(Context ctx,View view,Note note){
         switch (note.getImportance()){
             case Note.GREEN_IMPORTANCE:
@@ -53,6 +58,18 @@ public class Util {
                     activity,
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
+
+    public static void verifyLocationPermissions(Activity activity){
+        int permission = ActivityCompat.checkSelfPermission(activity,Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if(permission!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_LOCATION,
+                    REQUEST_LOCATION
             );
         }
     }

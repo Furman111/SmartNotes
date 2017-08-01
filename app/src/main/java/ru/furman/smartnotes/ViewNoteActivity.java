@@ -57,6 +57,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private MapView mapView;
     private GoogleMap map;
     private Marker marker;
+    private LatLng loc;
 
     public static final int EDIT_REQUEST_CODE = 1;
 
@@ -79,7 +80,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         mapView.getMapAsync(this);
         title.setText(note.getTitle());
         body.setText(note.getBody());
-        if(!note.getPhoto().equals(Note.NO_PHOTO)) {
+        if (!note.getPhoto().equals(Note.NO_PHOTO)) {
             ImageLoader loader = new ImageLoader();
             loader.execute(note.getPhoto());
             noteIV.setOnClickListener(new View.OnClickListener() {
@@ -184,25 +185,15 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        LatLng loc;
-        if(note.getLocation().longitude!=Note.NO_LONGITUDE)
-            loc = note.getLocation();
-        else
-            loc = MapActivity.DEFAULT_LOCATION;
-        marker.setPosition(loc);
-        marker.setTitle(note.getTitle());
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(loc,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-        marker.showInfoWindow();
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
                 note = db.getNote(note.getId());
                 title.setText(note.getTitle());
                 body.setText(note.getBody());
-                if(!note.getPhoto().equals(Note.NO_PHOTO)) {
+                if (!note.getPhoto().equals(Note.NO_PHOTO)) {
                     ImageLoader loader = new ImageLoader();
                     loader.execute(note.getPhoto());
-                }
-                else
+                } else
                     noteIV.setImageDrawable(null);
                 Util.setBackgroundWithImportance(this, view, note);
                 Toast.makeText(this, getResources().getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
@@ -213,6 +204,11 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
+        if (note.getLocation().longitude != Note.NO_LONGITUDE)
+            loc = note.getLocation();
+        else
+            loc = null;
+        setLocationMap(loc);
     }
 
     @Override
@@ -234,28 +230,54 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        map.getUiSettings().setMapToolbarEnabled(false);
 
-        final LatLng loc;
-        if(note.getLocation().longitude!=Note.NO_LONGITUDE)
+        if (note.getLocation().longitude != Note.NO_LONGITUDE) {
             loc = note.getLocation();
-        else
-            loc = MapActivity.DEFAULT_LOCATION;
+        }
+        else {
+            loc = null;
+        }
 
-        marker = map.addMarker(new MarkerOptions().position(loc).title(note.getTitle()));
-        marker.showInfoWindow();
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(loc,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        if (loc == null)
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        else {
+            marker = googleMap.addMarker(new MarkerOptions().position(loc)
+                    .title(note.getTitle()));
+            marker.showInfoWindow();
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(), MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        }
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                Intent intent = new Intent(ViewNoteActivity.this,MapActivity.class);
-                intent.putExtra(MapActivity.REQUEST_CODE,MapActivity.SHOW_NOTE_REQUEST_CODE);
-                intent.putExtra(MapActivity.NOTE_TITLE,note.getTitle());
-                intent.putExtra(MapActivity.NOTE_LOCATION,loc);
-                ViewNoteActivity.this.startActivityForResult(intent,MapActivity.SHOW_NOTE_REQUEST_CODE);
+                if (loc != null) {
+                    Intent intent = new Intent(ViewNoteActivity.this, MapActivity.class);
+                    intent.putExtra(MapActivity.REQUEST_CODE, MapActivity.SHOW_NOTE_REQUEST_CODE);
+                    intent.putExtra(MapActivity.NOTE_TITLE, note.getTitle());
+                    intent.putExtra(MapActivity.NOTE_LOCATION, loc);
+                    ViewNoteActivity.this.startActivityForResult(intent, MapActivity.SHOW_NOTE_REQUEST_CODE);
+                } else
+                    Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.no_geodata), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    public void setLocationMap(LatLng location) {
+        if (location == null) {
+            if (marker != null)
+                marker.remove();
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        } else {
+            if (marker != null)
+                marker.remove();
+            marker = map.addMarker(new MarkerOptions().position(location)
+                    .title(note.getTitle()));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            marker.showInfoWindow();
+        }
+    }
+
 
     @Override
     protected void onStart() {
@@ -299,8 +321,8 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         super.onResume();
     }
 
-    private class ImageLoader extends AsyncTask<String,Void,Bitmap> {
-        int reqWidth,reqHeight;
+    private class ImageLoader extends AsyncTask<String, Void, Bitmap> {
+        int reqWidth, reqHeight;
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
@@ -318,7 +340,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path,reqWidth,reqHeight);
+            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
             return bitmap;
         }
     }

@@ -25,4 +25,5 @@
     <string name="photo">Фотография</string>
     <string name="view">Просмотр</string>
     <string name="title_activity_maps">Карта</string>
+    <string name="no_geodata">Геоданные не указаны</string>
 </resources>
