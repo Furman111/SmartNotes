@@ -15,25 +15,30 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
+import ru.furman.smartnotes.database.DB;
+
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLng currentLoc;
+    private DB db;
+    private int editNoteId;
 
     public static final String NOTE_TITLE = "title";
     public static final String NOTE_LOCATION = "location";
     public static final String CHOSEN_LOCATION = "chosenLoc";
     public static final String REQUEST_CODE = "requestCode";
-    public static final String NOTES_ARRAY_LIST_BUNDLE = "array";
 
     public static final float DEFAULT_ZOOM_BIG_MAP = 15;
-    public static final int DEFAULT_ZOOM_LITTLE_MAP = 12;
+    public static final int DEFAULT_ZOOM_LITTLE_MAP = 10;
     public static final int DEFAULT_ZOOM_LARGE_MAP = 8;
 
 
     public static final int SHOW_NOTE_REQUEST_CODE = 1;
     public static final int CHANGE_NOTE_LOCATION_REQUEST_CODE = 2;
     public static final int SHOW_LIST_NOTES_REQUEST_CODE = 3;
+
+    public static final int SHOW_NOTE_REQUST_CODE = 4;
 
     public static final LatLng DEFAULT_LOCATION = new LatLng(53, 50);
 
@@ -46,6 +51,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        db = new DB(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -64,6 +70,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         switch (getIntent().getIntExtra(REQUEST_CODE, 0)) {
             case CHANGE_NOTE_LOCATION_REQUEST_CODE:
@@ -108,29 +115,52 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc1, DEFAULT_ZOOM_BIG_MAP));
                 break;
             case SHOW_LIST_NOTES_REQUEST_CODE:
-                Bundle bundle = getIntent().getBundleExtra(NOTES_ARRAY_LIST_BUNDLE);
-                List<Note> notes = bundle.getParcelableArrayList(NOTES_ARRAY_LIST_BUNDLE);
-
-                LatLng locat = DEFAULT_LOCATION;
-
-                if (!notes.isEmpty()) {
-                    for (Note note : notes)
-                        if (note.getLocation().longitude != Note.NO_LONGITUDE) {
-                            locat = note.getLocation();
-                            mMap.addMarker(new MarkerOptions().position(locat).title(note.getTitle())).setTag(note);
-                        }
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locat, DEFAULT_ZOOM_LARGE_MAP));
-                }
-
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        //написать запуск активити
-                    }
-                });
-                break;
+                placeNotesMarkers();
         }
 
+    }
+
+    public void placeNotesMarkers(){
+        List<Note> notes = db.getNotes();
+
+        LatLng locat = DEFAULT_LOCATION;
+
+        if (!notes.isEmpty()) {
+            for (Note note : notes)
+                if (note.getLocation().longitude != Note.NO_LONGITUDE) {
+                    locat = note.getLocation();
+                    mMap.addMarker(new MarkerOptions().position(locat).title(note.getTitle())).setTag(note);
+                }
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locat, DEFAULT_ZOOM_LARGE_MAP));
+        }
+
+        mMap.setOnInfoWindowClickListener(new InfoWindowOnClickListener());
+
+    }
+
+    private class InfoWindowOnClickListener implements GoogleMap.OnInfoWindowClickListener{
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            Intent intent = new Intent(MapActivity.this,ViewNoteActivity.class);
+            intent.putExtra(ViewNoteActivity.NOTE_TAG,(Note) marker.getTag());
+            editNoteId = ((Note) marker.getTag()).getId();
+            marker.remove();
+            MapActivity.this.startActivityForResult(intent,SHOW_NOTE_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case SHOW_NOTE_REQUEST_CODE:
+                Note note = db.getNote(editNoteId);
+                if(note!=null){
+                    mMap.addMarker(new MarkerOptions().position(note.getLocation()).title(note.getTitle())).setTag(note);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(),DEFAULT_ZOOM_LARGE_MAP));
+                    mMap.setOnInfoWindowClickListener(new InfoWindowOnClickListener());
+                }
+                break;
+        }
     }
 
     @Override
@@ -151,9 +181,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     Intent resIntent = new Intent();
                     resIntent.putExtra(CHOSEN_LOCATION, currentLoc);
                     setResult(RESULT_OK, resIntent);
-                    finish();
-                    return true;
                 }
+                finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

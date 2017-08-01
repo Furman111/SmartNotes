@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,6 +60,8 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     public static final int EDIT_REQUEST_CODE = 1;
 
+    public static final String NOTE_TAG = "note";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.view_note);
@@ -68,7 +71,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         db = new DB(this);
 
         Intent intent = getIntent();
-        note = intent.getParcelableExtra(MainActivity.NOTE_TAG);
+        note = intent.getParcelableExtra(NOTE_TAG);
         body = (TextView) findViewById(R.id.note_body);
         title = (TextView) findViewById(R.id.note_title);
         noteIV = (ImageView) findViewById(R.id.note_image);
@@ -171,7 +174,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 break;
             case R.id.edit_note:
                 Intent intent = new Intent(this, EditNoteActivity.class);
-                intent.putExtra(MainActivity.NOTE_TAG, note);
+                intent.putExtra(EditNoteActivity.NOTE_TAG, note);
                 startActivityForResult(intent, EDIT_REQUEST_CODE);
                 break;
         }

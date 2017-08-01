@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private MyAdapter mAdapter;
     private DB db;
     public static final String NOTE_TAG  = "note";
+
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
     public static final int CREATE_NOTE_REQUEST_CODE = 2;
     public static final int EDIT_NOTE_REQUEST_CODE = 3;
@@ -74,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.show_on_map:
                 Intent intent1 = new Intent(this,MapActivity.class);
                 intent1.putExtra(MapActivity.REQUEST_CODE,MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList(MapActivity.NOTES_ARRAY_LIST_BUNDLE,(ArrayList<Note>)db.getNotes());
-                intent1.putExtra(MapActivity.NOTES_ARRAY_LIST_BUNDLE,bundle);
                 startActivityForResult(intent1,MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
                 return true;
         }

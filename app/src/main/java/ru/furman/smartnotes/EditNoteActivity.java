@@ -68,6 +68,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public static final int SAVED_RESULT_CODE = 1;
     public static final int DELETED_RESULT_CODE = 2;
 
+    public static final String NOTE_TAG = "note";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -131,7 +133,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {          //дописать для локаций
+            public void onClick(View v) {
                 if (note != null) {
                     setDefaultSelection();
                     title.setText(note.getTitle());
