@@ -23,21 +23,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LatLng currentLoc;
     private DB db;
     private int editNoteId;
-    private MenuItem menuItem;
 
     public static final String NOTE_TITLE = "title";
     public static final String NOTE_LOCATION = "location";
     public static final String CHOSEN_LOCATION = "chosenLoc";
-    public static final String REQUEST_CODE = "requestCode";
 
     public static final float DEFAULT_ZOOM_BIG_MAP = 10;
     public static final int DEFAULT_ZOOM_LITTLE_MAP = 11;
     public static final int DEFAULT_ZOOM_LARGE_MAP = 8;
 
 
+    public static final String ACTION_SHOW_NOTE = "showNote";
+    public static final String ACTION_CHANGE_NOTE_LOCATION = "changeNoteLocation";
+    public static final String ACTION_SHOW_NOTES = "showNotes";
+
     public static final int SHOW_NOTE_REQUEST_CODE = 1;
-    public static final int CHANGE_NOTE_LOCATION_REQUEST_CODE = 2;
-    public static final int SHOW_LIST_NOTES_REQUEST_CODE = 3;
 
     public static final LatLng DEFAULT_LOCATION = new LatLng(53.24279758, 50.18600692);
 
@@ -73,8 +73,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
-        switch (getIntent().getIntExtra(REQUEST_CODE, 0)) {
-            case CHANGE_NOTE_LOCATION_REQUEST_CODE:
+        switch (getIntent().getAction()) {
+            case ACTION_CHANGE_NOTE_LOCATION:
                 String title = getIntent().getStringExtra(NOTE_TITLE);
                 LatLng loc = getIntent().getParcelableExtra(NOTE_LOCATION);
 
@@ -109,13 +109,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 });
                 break;
-            case SHOW_NOTE_REQUEST_CODE:
+            case ACTION_SHOW_NOTE:
                 LatLng loc1 = getIntent().getParcelableExtra(NOTE_LOCATION);
                 mMap.addMarker(new MarkerOptions().title(getIntent().getStringExtra(NOTE_TITLE)
                 ).position(loc1)).showInfoWindow();
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc1, DEFAULT_ZOOM_BIG_MAP));
                 break;
-            case SHOW_LIST_NOTES_REQUEST_CODE:
+            case ACTION_SHOW_NOTES:
                 placeNotesMarkers();
         }
 
@@ -146,7 +146,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             intent.putExtra(ViewNoteActivity.NOTE_TAG,(Note) marker.getTag());
             editNoteId = ((Note) marker.getTag()).getId();
             marker.remove();
-            MapActivity.this.startActivityForResult(intent,SHOW_NOTE_REQUEST_CODE);
+            MapActivity.this.startActivityForResult(intent, SHOW_NOTE_REQUEST_CODE);
         }
     }
 
@@ -167,7 +167,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.map_menu, menu);
-        if(getIntent().getIntExtra(REQUEST_CODE,0) == CHANGE_NOTE_LOCATION_REQUEST_CODE)
+        if(getIntent().getAction() == ACTION_CHANGE_NOTE_LOCATION)
             menu.getItem(0).setVisible(true);
         return super.onCreateOptionsMenu(menu);
     }
@@ -180,7 +180,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 finish();
                 return true;
             case R.id.save:
-                if (getIntent().getIntExtra(REQUEST_CODE, 0) == CHANGE_NOTE_LOCATION_REQUEST_CODE) {
+                if (getIntent().getAction() == ACTION_CHANGE_NOTE_LOCATION) {
                     Intent resIntent = new Intent();
                     resIntent.putExtra(CHOSEN_LOCATION, currentLoc);
                     setResult(RESULT_OK, resIntent);

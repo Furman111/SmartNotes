@@ -10,8 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 import ru.furman.smartnotes.database.DB;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
     public static final int CREATE_NOTE_REQUEST_CODE = 2;
     public static final int EDIT_NOTE_REQUEST_CODE = 3;
+    public static final int SHOW_NOTES_REQUEST_CODE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.show_on_map:
                 Intent intent1 = new Intent(this, MapActivity.class);
-                intent1.putExtra(MapActivity.REQUEST_CODE, MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
-                startActivityForResult(intent1, MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
+                intent1.setAction(MapActivity.ACTION_SHOW_NOTES);
+                startActivityForResult(intent1, SHOW_NOTES_REQUEST_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,6 +59,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private LatLng loc;
 
     public static final int EDIT_REQUEST_CODE = 1;
+    public static final int SHOW_NOTE_REQUEST_CODE = 1;
 
     public static final String NOTE_TAG = "note";
 
@@ -255,10 +255,10 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
             public void onMapClick(LatLng latLng) {
                 if (loc != null) {
                     Intent intent = new Intent(ViewNoteActivity.this, MapActivity.class);
-                    intent.putExtra(MapActivity.REQUEST_CODE, MapActivity.SHOW_NOTE_REQUEST_CODE);
+                    intent.setAction(MapActivity.ACTION_SHOW_NOTE);
                     intent.putExtra(MapActivity.NOTE_TITLE, note.getTitle());
                     intent.putExtra(MapActivity.NOTE_LOCATION, loc);
-                    ViewNoteActivity.this.startActivityForResult(intent, MapActivity.SHOW_NOTE_REQUEST_CODE);
+                    ViewNoteActivity.this.startActivityForResult(intent, SHOW_NOTE_REQUEST_CODE);
                 } else
                     Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.no_geodata), Toast.LENGTH_SHORT).show();
             }

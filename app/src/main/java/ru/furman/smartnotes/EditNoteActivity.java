@@ -1,6 +1,5 @@
 package ru.furman.smartnotes;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -72,6 +71,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     public static final int PHOTO_PICK_REQUEST_CODE = 3;
     public static final int CAMERA_REQUSET_CODE = 4;
+    public static final int CHANGE_NOTE_LOCATION_REQUEST_CODE = 5;
 
     public static final int SAVED_RESULT_CODE = 1;
     public static final int DELETED_RESULT_CODE = 2;
@@ -414,7 +414,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     loader.execute(currentPhoto);
                 }
                 return;
-            case MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE:
+            case CHANGE_NOTE_LOCATION_REQUEST_CODE:
                 if (resultCode == MapActivity.RESULT_OK) {
                     newLoc = data.getParcelableExtra(MapActivity.CHOSEN_LOCATION);
                     setMapLocation(newLoc);
@@ -470,8 +470,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     latLng1 = currentLoc;
                 intent.putExtra(MapActivity.NOTE_TITLE, title);
                 intent.putExtra(MapActivity.NOTE_LOCATION, latLng1);
-                intent.putExtra(MapActivity.REQUEST_CODE, MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE);
-                EditNoteActivity.this.startActivityForResult(intent, MapActivity.CHANGE_NOTE_LOCATION_REQUEST_CODE);
+                intent.setAction(MapActivity.ACTION_CHANGE_NOTE_LOCATION);
+                EditNoteActivity.this.startActivityForResult(intent, CHANGE_NOTE_LOCATION_REQUEST_CODE);
             }
         });
     }
