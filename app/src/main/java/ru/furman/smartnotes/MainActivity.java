@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private MyAdapter mAdapter;
     private DB db;
-    public static final String NOTE_TAG  = "note";
+    public static final String NOTE_TAG = "note";
 
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
     public static final int CREATE_NOTE_REQUEST_CODE = 2;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new MyAdapter(this);
         notesRecyclerView.setAdapter(mAdapter);
 
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                Util.deletePhoto(db.getNote(((MyAdapter.ViewHolder) viewHolder).getId()).getPhoto());
                 db.deleteNote(((MyAdapter.ViewHolder) viewHolder).getId());
                 mAdapter.notifyDataSetChanged();
             }
@@ -69,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_note:
-                Intent intent = new Intent(this,EditNoteActivity.class);
-                startActivityForResult(intent,CREATE_NOTE_REQUEST_CODE);
+                Intent intent = new Intent(this, EditNoteActivity.class);
+                startActivityForResult(intent, CREATE_NOTE_REQUEST_CODE);
                 return true;
             case R.id.show_on_map:
-                Intent intent1 = new Intent(this,MapActivity.class);
-                intent1.putExtra(MapActivity.REQUEST_CODE,MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
-                startActivityForResult(intent1,MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
+                Intent intent1 = new Intent(this, MapActivity.class);
+                intent1.putExtra(MapActivity.REQUEST_CODE, MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
+                startActivityForResult(intent1, MapActivity.SHOW_LIST_NOTES_REQUEST_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -84,12 +85,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mAdapter.notifyDataSetChanged();
-        switch (resultCode){
+        switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
-                Toast.makeText(this,R.string.note_is_saved,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.note_is_saved, Toast.LENGTH_SHORT).show();
                 break;
             case EditNoteActivity.DELETED_RESULT_CODE:
-                Toast.makeText(this,R.string.note_is_deleted,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.note_is_deleted, Toast.LENGTH_SHORT).show();
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);

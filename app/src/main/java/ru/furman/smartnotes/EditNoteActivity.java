@@ -1,5 +1,6 @@
 package ru.furman.smartnotes;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -156,7 +157,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     } else
                         photoIV.setImageResource(R.mipmap.nophoto);
                     if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-                        deletePhoto(currentPhoto);
+                        Util.deletePhoto(currentPhoto);
                     currentPhoto = oldPhoto;
                 } else {
                     importanceSpinner.setSelection(3);
@@ -164,7 +165,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     body.setText("");
                     photoIV.setImageResource(R.mipmap.nophoto);
                     if (currentPhoto != null)
-                        deletePhoto(currentPhoto);
+                        Util.deletePhoto(currentPhoto);
                 }
                 setMapLocation(currentLoc);
                 newLoc = null;
@@ -195,11 +196,11 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         }
                         if (currentPhoto == null) {
                             if (oldPhoto != null)
-                                deletePhoto(oldPhoto);
+                                Util.deletePhoto(oldPhoto);
                             currentPhoto = Note.NO_PHOTO;
                         } else {
                             if (oldPhoto != null && !oldPhoto.equals(currentPhoto)) {
-                                deletePhoto(oldPhoto);
+                                Util.deletePhoto(oldPhoto);
                             }
                         }
                         if (newLoc != null)
@@ -286,7 +287,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onBackPressed() {
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-            deletePhoto(currentPhoto);
+            Util.deletePhoto(currentPhoto);
         if(locationManager!=null)
             locationManager.removeUpdates(locationListener);
         super.onBackPressed();
@@ -305,11 +306,13 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 if(locationManager!=null)
                     locationManager.removeUpdates(locationListener);
                 if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-                    deletePhoto(currentPhoto);
+                    Util.deletePhoto(currentPhoto);
                 finish();
                 break;
             case R.id.delete_note_edit_menu:
                 if (note != null) {
+                    if(!note.getPhoto().equals(Note.NO_PHOTO))
+                        Util.deletePhoto(note.getPhoto());
                     db.deleteNote(note.getId());
                     setResult(DELETED_RESULT_CODE);
                     finish();
@@ -380,7 +383,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     ImageLoader loader = new ImageLoader();
                     loader.execute(newPhoto);
                     if (currentPhoto != null && !currentPhoto.equals(oldPhoto)) {
-                        deletePhoto(currentPhoto);
+                        Util.deletePhoto(currentPhoto);
                     }
                     currentPhoto = newPhoto;
                 }
@@ -402,7 +405,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                             Toast.makeText(this, getResources().getString(R.string.error), Toast.LENGTH_SHORT);
                         }
                         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-                            deletePhoto(currentPhoto);
+                            Util.deletePhoto(currentPhoto);
                         currentPhoto = file.getPath();
                     }
                     ImageLoader loader = new ImageLoader();
@@ -429,7 +432,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     public void onDeletePhoto() {
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-            deletePhoto(currentPhoto);
+            Util.deletePhoto(currentPhoto);
         currentPhoto = null;
         photoIV.setImageResource(R.mipmap.nophoto);
     }
@@ -556,11 +559,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
             return builder.create();
         }
-    }
-
-    private void deletePhoto(String path) {
-        File file = new File(path);
-        file.delete();
     }
 
     private void setMapLocation(LatLng location) {
