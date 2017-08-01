@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -166,6 +167,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     photoIV.setImageResource(R.mipmap.nophoto);
                     if (currentPhoto != null)
                         Util.deletePhoto(currentPhoto);
+                    currentPhoto = null;
                 }
                 setMapLocation(currentLoc);
                 newLoc = null;
@@ -609,6 +611,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     public void requestLocation() {
         Util.verifyLocationPermissions(this);
+
         if (Build.VERSION.SDK_INT >= 23 &&
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -627,6 +630,18 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             Log.d("Location", "request location network");
             locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case Util.REQUEST_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    requestLocation();
+                }
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private LocationListener locationListener = new LocationListener() {

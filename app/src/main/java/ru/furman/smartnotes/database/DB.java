@@ -34,9 +34,9 @@ public class DB {
         cv.put(DBHelper.KEY_TITLE, note.getTitle());
         cv.put(DBHelper.KEY_BODY, note.getBody());
         cv.put(DBHelper.KEY_IMPORTANCE, note.getImportance());
-        cv.put(DBHelper.KEY_PHOTO,note.getPhoto());
-        cv.put(DBHelper.KEY_LATTITUDE,note.getLocation().latitude);
-        cv.put(DBHelper.KEY_LONGITUDE,note.getLocation().longitude);
+        cv.put(DBHelper.KEY_PHOTO, note.getPhoto());
+        cv.put(DBHelper.KEY_LATTITUDE, note.getLocation().latitude);
+        cv.put(DBHelper.KEY_LONGITUDE, note.getLocation().longitude);
 
         db.insert(DBHelper.TABLE_NOTES, null, cv);
         dbHelper.close();
@@ -60,8 +60,8 @@ public class DB {
             int longitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LONGITUDE);
             int lattitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LATTITUDE);
             do {
-                list.add(new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex),cursor.getString(photoIndex)
-                        ,new LatLng(cursor.getDouble(lattitudeIndex),cursor.getDouble(longitudeIndex))
+                list.add(new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex), cursor.getString(photoIndex)
+                        , new LatLng(cursor.getDouble(lattitudeIndex), cursor.getDouble(longitudeIndex))
                         , cursor.getInt(idIndex)));
             } while (cursor.moveToNext());
         }
@@ -89,9 +89,9 @@ public class DB {
         cv.put(DBHelper.KEY_TITLE, note.getTitle());
         cv.put(DBHelper.KEY_BODY, note.getBody());
         cv.put(DBHelper.KEY_IMPORTANCE, note.getImportance());
-        cv.put(DBHelper.KEY_PHOTO,note.getPhoto());
-        cv.put(DBHelper.KEY_LONGITUDE,note.getLocation().longitude);
-        cv.put(DBHelper.KEY_LATTITUDE,note.getLocation().latitude);
+        cv.put(DBHelper.KEY_PHOTO, note.getPhoto());
+        cv.put(DBHelper.KEY_LONGITUDE, note.getLocation().longitude);
+        cv.put(DBHelper.KEY_LATTITUDE, note.getLocation().latitude);
 
         db.update(DBHelper.TABLE_NOTES, cv, "_id = " + id, null);
 
@@ -104,7 +104,7 @@ public class DB {
         dbHelper = new DBHelper(ctx);
         db = dbHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(DBHelper.TABLE_NOTES, null, "_id = "+id,null, null, null, null);
+        Cursor cursor = db.query(DBHelper.TABLE_NOTES, null, "_id = " + id, null, null, null, null);
         Note res = null;
         if (cursor.moveToFirst()) {
             int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
@@ -114,8 +114,8 @@ public class DB {
             int photoIndex = cursor.getColumnIndex(DBHelper.KEY_PHOTO);
             int longitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LONGITUDE);
             int lattitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LATTITUDE);
-            res = new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex),cursor.getString(photoIndex)
-                    ,new LatLng(cursor.getDouble(lattitudeIndex),cursor.getDouble(longitudeIndex))
+            res = new Note(cursor.getString(titleIndex), cursor.getString(bodyIndex), cursor.getString(importanceIndex), cursor.getString(photoIndex)
+                    , new LatLng(cursor.getDouble(lattitudeIndex), cursor.getDouble(longitudeIndex))
                     , cursor.getInt(idIndex));
         }
 

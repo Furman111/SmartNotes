@@ -26,4 +26,5 @@
     <string name="view">Просмотр</string>
     <string name="title_activity_maps">Карта</string>
     <string name="no_geodata">Геоданные не указаны</string>
+    <string name="location_is_not_availiable">Геоданные не указаны</string>
 </resources>

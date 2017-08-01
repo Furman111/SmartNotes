@@ -50,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Util.deletePhoto(db.getNote(((MyAdapter.ViewHolder) viewHolder).getId()).getPhoto());
+                String photo = db.getNote(((MyAdapter.ViewHolder) viewHolder).getId()).getPhoto();
+                if (!photo.equals(Note.NO_PHOTO))
+                    Util.deletePhoto(photo);
                 db.deleteNote(((MyAdapter.ViewHolder) viewHolder).getId());
                 mAdapter.notifyDataSetChanged();
             }
