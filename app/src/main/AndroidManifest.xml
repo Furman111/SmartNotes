@@ -50,13 +50,13 @@
         </activity>
         <activity
             android:name=".ViewNoteActivity"
-            android:label="@string/view_note"></activity>
+            android:label="@string/view_note"/>
         <activity
             android:name=".EditNoteActivity"
-            android:label="@string/to_edit"></activity>
+            android:label="@string/to_edit"/>
         <activity
             android:name=".ViewImageActivity"
-            android:label="@string/view"></activity>
+            android:label="@string/view"/>
         <activity android:name=".MapActivity"
             android:label="@string/title_activity_maps">
         </activity>

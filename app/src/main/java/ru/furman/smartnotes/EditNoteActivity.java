@@ -175,6 +175,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 if (!title.getText().toString().isEmpty()) {
+                    if(locationManager!=null)
+                        locationManager.removeUpdates(locationListener);
                     if (note != null) {
                         String importance = null;
                         switch (importanceSpinner.getSelectedItemPosition()) {
@@ -285,6 +287,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public void onBackPressed() {
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
             deletePhoto(currentPhoto);
+        if(locationManager!=null)
+            locationManager.removeUpdates(locationListener);
         super.onBackPressed();
     }
 
@@ -298,6 +302,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                if(locationManager!=null)
+                    locationManager.removeUpdates(locationListener);
                 if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                     deletePhoto(currentPhoto);
                 finish();
@@ -604,8 +610,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void requestLocation() {
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         Util.verifyLocationPermissions(this);
         if (Build.VERSION.SDK_INT >= 23 &&
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -613,6 +617,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             Log.d("Location", "no permissions");
             return;
         }
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         Log.d("Location", "request location");
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
