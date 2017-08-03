@@ -21,7 +21,7 @@ import ru.furman.smartnotes.database.DB;
  * Created by Furman on 27.07.2017.
  */
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder> {
 
     private DB db;
     private Context ctx;
@@ -48,19 +48,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
     }
 
-    public MyAdapter(Context ctx) {
+    public NotesRecyclerViewAdapter(Context ctx) {
         this.db = new DB(ctx);
         this.ctx = ctx;
     }
 
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NotesRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_in_list, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final MyAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final NotesRecyclerViewAdapter.ViewHolder holder, final int position) {
         final List<Note> notes = db.getNotes();
         switch (notes.get(position).getImportance()) {
             case Note.GREEN_IMPORTANCE:

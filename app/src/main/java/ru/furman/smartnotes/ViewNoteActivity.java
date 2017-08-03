@@ -170,7 +170,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 break;
             case R.id.delete_note:
                 if (!note.getPhoto().equals(Note.NO_PHOTO))
-                    Util.deletePhoto(note.getPhoto());
+                    Util.deleteFile(note.getPhoto());
                 db.deleteNote(note.getId());
                 setResult(EditNoteActivity.DELETED_RESULT_CODE);
                 finish();

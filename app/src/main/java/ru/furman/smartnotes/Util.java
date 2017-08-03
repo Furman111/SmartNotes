@@ -99,11 +99,7 @@ public class Util {
         }
     }
 
-    public static void loadPhotoInImageView(ImageView iv,String pathPhoto){
-        iv.setImageURI(Uri.fromFile(new File(pathPhoto)));
-    }
-
-    public static void deletePhoto(String path) {
+    public static void deleteFile(String path) {
         File file = new File(path);
         file.delete();
     }

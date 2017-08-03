@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView notesRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
-    private MyAdapter mAdapter;
+    private NotesRecyclerViewAdapter mAdapter;
     private DB db;
     public static final String NOTE_TAG = "note";
 
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         notesRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new MyAdapter(this);
+        mAdapter = new NotesRecyclerViewAdapter(this);
         notesRecyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                String photo = db.getNote(((MyAdapter.ViewHolder) viewHolder).getId()).getPhoto();
+                String photo = db.getNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId()).getPhoto();
                 if (!photo.equals(Note.NO_PHOTO))
-                    Util.deletePhoto(photo);
-                db.deleteNote(((MyAdapter.ViewHolder) viewHolder).getId());
+                    Util.deleteFile(photo);
+                db.deleteNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId());
                 mAdapter.notifyDataSetChanged();
             }
         };
