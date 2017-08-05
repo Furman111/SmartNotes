@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.LruCache;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
     private DB db;
     private Context ctx;
-
+    private LruCache<String, Bitmap> memoryCache;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -51,6 +52,16 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     public NotesRecyclerViewAdapter(Context ctx) {
         this.db = new DB(ctx);
         this.ctx = ctx;
+
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory());
+        final int cacheSize = maxMemory / 8;
+
+        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
     }
 
     @Override
@@ -86,9 +97,15 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
                 ((MainActivity) ctx).startActivityForResult(intent, MainActivity.EDIT_NOTE_REQUEST_CODE);
             }
         });
+
         if (!notes.get(position).getPhoto().equals(Note.NO_PHOTO)) {
-            ImageLoader loader = new ImageLoader();
-            loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,holder);
+            Bitmap bitmap = memoryCache.get(notes.get(position).getPhoto());
+            if (bitmap != null)
+                holder.noteIV.setImageBitmap(bitmap);
+            else {
+                ImageLoader loader = new ImageLoader();
+                loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
+            }
             holder.noteIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -99,6 +116,8 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             });
         } else
             holder.noteIV.setImageDrawable(null);
+
+
         holder.backgroundCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,10 +141,13 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     private class ImageLoader extends AsyncTask<ViewHolder, Void, ImageLoader.ResultContainer> {
 
         private int reqWidth, reqHeight;
+        private String photoPath;
 
         @Override
         protected void onPostExecute(ResultContainer resultContainer) {
             resultContainer.viewHolder.noteIV.setImageBitmap(resultContainer.bitmap);
+            if (memoryCache.get(photoPath) == null)
+                memoryCache.put(photoPath, resultContainer.bitmap);
             super.onPostExecute(resultContainer);
         }
 
@@ -138,16 +160,17 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         @Override
         protected ResultContainer doInBackground(ViewHolder... params) {
             ViewHolder vh = params[0];
-            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(db.getNote(vh.getId()).getPhoto(),reqWidth,reqHeight);
+            photoPath = db.getNote(vh.getId()).getPhoto();
+            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(photoPath, reqWidth, reqHeight);
             ResultContainer resultContainer = new ResultContainer();
             resultContainer.bitmap = bitmap;
             resultContainer.viewHolder = vh;
             return resultContainer;
         }
 
-        public class ResultContainer {
-            public ViewHolder viewHolder;
-            public Bitmap bitmap;
+        class ResultContainer {
+            private ViewHolder viewHolder;
+            private Bitmap bitmap;
         }
     }
 

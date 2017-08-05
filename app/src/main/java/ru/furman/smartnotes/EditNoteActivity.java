@@ -52,7 +52,7 @@ import ru.furman.smartnotes.database.DB;
  * Created by Furman on 26.07.2017.
  */
 
-public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
 
     private EditText title, body;
     private ImageView photoIV;
@@ -178,7 +178,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 if (!title.getText().toString().isEmpty()) {
-                    if(locationManager!=null)
+                    if (locationManager != null)
                         locationManager.removeUpdates(locationListener);
                     if (note != null) {
                         String importance = null;
@@ -290,7 +290,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public void onBackPressed() {
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
             Util.deleteFile(currentPhoto);
-        if(locationManager!=null)
+        if (locationManager != null)
             locationManager.removeUpdates(locationListener);
         super.onBackPressed();
     }
@@ -305,7 +305,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(locationManager!=null)
+                if (locationManager != null)
                     locationManager.removeUpdates(locationListener);
                 if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                     Util.deleteFile(currentPhoto);
@@ -313,11 +313,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 break;
             case R.id.delete_note_edit_menu:
                 if (note != null) {
-                    if(!note.getPhoto().equals(Note.NO_PHOTO))
-                        Util.deleteFile(note.getPhoto());
-                    db.deleteNote(note.getId());
-                    setResult(DELETED_RESULT_CODE);
-                    finish();
+                    DeleteNoteDialogFragment deleteNoteDialogFragment = new DeleteNoteDialogFragment();
+                    deleteNoteDialogFragment.show(getFragmentManager(), null);
                 }
                 break;
         }
@@ -446,18 +443,22 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         googleMap.getUiSettings().setMapToolbarEnabled(false);
 
         if (currentLoc != null) {
+            String title;
+            if (note != null)
+                title = note.getTitle();
+            else
+                title = getResources().getString(R.string.new_note);
             marker = googleMap.addMarker(new MarkerOptions().position(currentLoc)
-                    .title(note.getTitle()));
+                    .title(title));
             marker.showInfoWindow();
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(), MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-        }
-        else
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION,MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+        } else
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if(locationManager!=null)
+                if (locationManager != null)
                     locationManager.removeUpdates(locationListener);
                 Intent intent = new Intent(EditNoteActivity.this, MapActivity.class);
                 String title = null;
@@ -474,6 +475,20 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 EditNoteActivity.this.startActivityForResult(intent, CHANGE_NOTE_LOCATION_REQUEST_CODE);
             }
         });
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        if (!note.getPhoto().equals(Note.NO_PHOTO))
+            Util.deleteFile(note.getPhoto());
+        db.deleteNote(note.getId());
+        setResult(DELETED_RESULT_CODE);
+        finish();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
     }
 
     public static class PhotoPickerDialogFragment extends DialogFragment {
@@ -563,6 +578,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+
     private void setMapLocation(LatLng location) {
         if (location == null) {
             if (marker != null)
@@ -634,7 +650,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case Util.REQUEST_LOCATION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     requestLocation();
@@ -648,8 +664,9 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         @Override
         public void onLocationChanged(Location location) {
             Log.d("Location", "location got");
-            newLoc = new LatLng(location.getLatitude(), location.getLongitude());
-            setMapLocation(newLoc);
+            currentLoc = new LatLng(location.getLatitude(), location.getLongitude());
+            if (googleMap != null)
+                setMapLocation(currentLoc);
         }
 
         @Override

@@ -1,5 +1,6 @@
 package ru.furman.smartnotes;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
@@ -44,7 +45,7 @@ import ru.furman.smartnotes.database.DB;
  * Created by Furman on 26.07.2017.
  */
 
-public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCallback,DeleteNoteDialogFragment.NoticeDialogListener {
 
     private Note note;
     private DB db;
@@ -169,11 +170,8 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 finish();
                 break;
             case R.id.delete_note:
-                if (!note.getPhoto().equals(Note.NO_PHOTO))
-                    Util.deleteFile(note.getPhoto());
-                db.deleteNote(note.getId());
-                setResult(EditNoteActivity.DELETED_RESULT_CODE);
-                finish();
+                DeleteNoteDialogFragment deleteNoteDialogFragment = new DeleteNoteDialogFragment();
+                deleteNoteDialogFragment.show(getFragmentManager(),null);
                 break;
             case R.id.edit_note:
                 Intent intent = new Intent(this, EditNoteActivity.class);
@@ -323,6 +321,20 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         super.onResume();
     }
 
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        if (!note.getPhoto().equals(Note.NO_PHOTO))
+            Util.deleteFile(note.getPhoto());
+        db.deleteNote(note.getId());
+        setResult(EditNoteActivity.DELETED_RESULT_CODE);
+        finish();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
     private class ImageLoader extends AsyncTask<String, Void, Bitmap> {
         int reqWidth, reqHeight;
 
@@ -346,5 +358,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
             return bitmap;
         }
     }
+
+
 
 }
