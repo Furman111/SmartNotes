@@ -70,7 +70,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private LatLng currentLoc, newLoc;
 
     public static final int PHOTO_PICK_REQUEST_CODE = 3;
-    public static final int CAMERA_REQUSET_CODE = 4;
+    public static final int CAMERA_REQUEST_CODE = 4;
     public static final int CHANGE_NOTE_LOCATION_REQUEST_CODE = 5;
 
     public static final int SAVED_RESULT_CODE = 1;
@@ -377,7 +377,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case CAMERA_REQUSET_CODE:
+            case CAMERA_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     ImageLoader loader = new ImageLoader();
                     loader.execute(newPhoto);
@@ -401,7 +401,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         try {
                             Util.copyFile(new File(newPhoto), file);
                         } catch (IOException e) {
-                            Toast.makeText(this, getResources().getString(R.string.error), Toast.LENGTH_SHORT);
+                            Toast.makeText(this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
                         }
                         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                             Util.deleteFile(currentPhoto);
@@ -462,7 +462,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     locationManager.removeUpdates(locationListener);
                 Intent intent = new Intent(EditNoteActivity.this, MapActivity.class);
                 String title = null;
-                LatLng latLng1 = null;
+                LatLng latLng1;
                 if (note != null)
                     title = note.getTitle();
                 if (newLoc != null)
@@ -521,7 +521,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                                                     "ru.furman.smartnotes.fileprovider",
                                                     photoFile);
                                             photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                                            getActivity().startActivityForResult(photoIntent, CAMERA_REQUSET_CODE);
+                                            getActivity().startActivityForResult(photoIntent, CAMERA_REQUEST_CODE);
                                         }
                                     }
                             }
@@ -620,8 +620,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
-            return bitmap;
+            return ImageSampler.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
         }
     }
 
