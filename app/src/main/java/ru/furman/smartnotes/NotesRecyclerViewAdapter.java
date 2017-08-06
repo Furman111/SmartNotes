@@ -146,8 +146,6 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         @Override
         protected void onPostExecute(ResultContainer resultContainer) {
             resultContainer.viewHolder.noteIV.setImageBitmap(resultContainer.bitmap);
-            if (memoryCache.get(photoPath) == null)
-                memoryCache.put(photoPath, resultContainer.bitmap);
             super.onPostExecute(resultContainer);
         }
 
@@ -162,6 +160,10 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             ViewHolder vh = params[0];
             photoPath = db.getNote(vh.getId()).getPhoto();
             Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(photoPath, reqWidth, reqHeight);
+
+            if (memoryCache.get(photoPath) == null)
+                memoryCache.put(photoPath, bitmap);
+
             ResultContainer resultContainer = new ResultContainer();
             resultContainer.bitmap = bitmap;
             resultContainer.viewHolder = vh;

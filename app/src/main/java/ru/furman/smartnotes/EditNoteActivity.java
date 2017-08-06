@@ -450,8 +450,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 title = getResources().getString(R.string.new_note);
             marker = googleMap.addMarker(new MarkerOptions().position(currentLoc)
                     .title(title));
-            marker.showInfoWindow();
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            marker.showInfoWindow();
         } else
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
 

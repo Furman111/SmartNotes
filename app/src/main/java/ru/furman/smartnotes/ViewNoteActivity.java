@@ -244,8 +244,8 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         else {
             marker = googleMap.addMarker(new MarkerOptions().position(loc)
                     .title(note.getTitle()));
-            marker.showInfoWindow();
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(), MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            marker.showInfoWindow();
         }
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {

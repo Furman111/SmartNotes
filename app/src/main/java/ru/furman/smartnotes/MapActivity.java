@@ -80,10 +80,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 if (title == null) {
                     currentLoc = DEFAULT_LOCATION;
-                    mMap.addMarker(new MarkerOptions().title(getResources().getString(R.string.new_note))
+                    Marker marker = mMap.addMarker(new MarkerOptions().title(getResources().getString(R.string.new_note))
                             .position(DEFAULT_LOCATION)
-                            .draggable(true)).showInfoWindow();
+                            .draggable(true));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM_BIG_MAP));
+                    marker.showInfoWindow();
                 } else {
                     currentLoc = loc;
                     Marker marker;
@@ -111,9 +112,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
             case ACTION_SHOW_NOTE:
                 LatLng loc1 = getIntent().getParcelableExtra(NOTE_LOCATION);
-                mMap.addMarker(new MarkerOptions().title(getIntent().getStringExtra(NOTE_TITLE)
-                ).position(loc1)).showInfoWindow();
+                Marker marker = mMap.addMarker(new MarkerOptions().title(getIntent().getStringExtra(NOTE_TITLE)
+                ).position(loc1));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc1, DEFAULT_ZOOM_BIG_MAP));
+                marker.showInfoWindow();
                 break;
             case ACTION_SHOW_NOTES:
                 placeNotesMarkers();
