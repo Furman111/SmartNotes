@@ -32,5 +32,6 @@
     <string name="to_share">Поделиться</string>
     <string name="note_share">Заметка:</string>
     <string name="published_with_smart_notes">Опубликовано через Smart Notes</string>
-    <string name="note_is_published">Заметка опубликована</string>
+    <string name="note">Заметка</string>
+    <string name="is_published">опубликована</string>
 </resources>

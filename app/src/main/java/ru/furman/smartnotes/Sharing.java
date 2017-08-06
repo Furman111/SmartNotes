@@ -1,10 +1,7 @@
 package ru.furman.smartnotes;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.vk.sdk.VKAccessToken;
@@ -102,7 +99,7 @@ public class Sharing implements ShareDialogFragment.ShareDialogListener {
         post.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
-                Toast.makeText(activity, activity.getResources().getString(R.string.note_is_published), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getResources().getString(R.string.note) +" "+note.getTitle()+" "+ activity.getResources().getString(R.string.is_published), Toast.LENGTH_SHORT).show();
             }
 
             @Override
