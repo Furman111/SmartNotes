@@ -18,4 +18,10 @@
         <item>Удалить</item>
     </array>
 
+    <array name="share_array">
+        <item>ВКонтакте</item>
+        <item>Facebook</item>
+        <item>Twitter</item>
+    </array>
+
 </resources>

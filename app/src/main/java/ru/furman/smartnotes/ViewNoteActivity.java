@@ -1,22 +1,28 @@
 package ru.furman.smartnotes;
 
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +39,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKError;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -45,13 +55,13 @@ import ru.furman.smartnotes.database.DB;
  * Created by Furman on 26.07.2017.
  */
 
-public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCallback,DeleteNoteDialogFragment.NoticeDialogListener {
+public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
 
     private Note note;
     private DB db;
     private TextView body, title;
     private View view;
-    private Button importBtn;
+    private Button importBtn, shareBtn;
     private FilePickerDialog dialog;
     private ImageView noteIV;
     private MapView mapView;
@@ -149,6 +159,16 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
+        shareBtn = (Button) findViewById(R.id.share_btn);
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShareDialogFragment shareDialogFragment = new ShareDialogFragment();
+                shareDialogFragment.setListener(new Sharing(ViewNoteActivity.this, note));
+                shareDialogFragment.show(getFragmentManager(), null);
+            }
+        });
+
         view = findViewById(R.id.importance_background);
         Util.setBackgroundWithImportance(this, view, note);
 
@@ -171,7 +191,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 break;
             case R.id.delete_note:
                 DeleteNoteDialogFragment deleteNoteDialogFragment = new DeleteNoteDialogFragment();
-                deleteNoteDialogFragment.show(getFragmentManager(),null);
+                deleteNoteDialogFragment.show(getFragmentManager(), null);
                 break;
             case R.id.edit_note:
                 Intent intent = new Intent(this, EditNoteActivity.class);
@@ -185,6 +205,22 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                res.saveTokenToSharedPreferences(ViewNoteActivity.this,Sharing.vkTokenKey);
+            }
+
+            @Override
+            public void onError(VKError error) {
+                Toast.makeText(ViewNoteActivity.this,getResources().getString(R.string.error)+" "+error.errorMessage,Toast.LENGTH_LONG);
+            }
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+
+
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
                 note = db.getNote(note.getId());
@@ -234,8 +270,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         if (note.getLocation().longitude != Note.NO_LONGITUDE) {
             loc = note.getLocation();
-        }
-        else {
+        } else {
             loc = null;
         }
 
@@ -358,7 +393,5 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
             return bitmap;
         }
     }
-
-
 
 }

@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.vk.sdk.VKSdk;
+
 import ru.furman.smartnotes.database.DB;
 
 public class MainActivity extends AppCompatActivity {
