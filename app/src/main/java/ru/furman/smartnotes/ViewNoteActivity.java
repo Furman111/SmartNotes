@@ -1,25 +1,17 @@
 package ru.furman.smartnotes;
 
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,10 +31,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKCallback;
-import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKError;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -55,7 +43,7 @@ import ru.furman.smartnotes.database.DB;
  * Created by Furman on 26.07.2017.
  */
 
-public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
+public class ViewNoteActivity extends SharingActivity implements ShareDialogFragment.ShareDialogListener, OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
 
     private Note note;
     private DB db;
@@ -164,7 +152,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 ShareDialogFragment shareDialogFragment = new ShareDialogFragment();
-                shareDialogFragment.setListener(new Sharing(ViewNoteActivity.this, note));
+                shareDialogFragment.setListener(ViewNoteActivity.this);
                 shareDialogFragment.show(getFragmentManager(), null);
             }
         });
@@ -173,6 +161,7 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         Util.setBackgroundWithImportance(this, view, note);
 
         mapView.onCreate(savedInstanceState);
+
         super.onCreate(savedInstanceState);
     }
 
@@ -205,22 +194,6 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
-            @Override
-            public void onResult(VKAccessToken res) {
-                res.saveTokenToSharedPreferences(ViewNoteActivity.this,Sharing.vkTokenKey);
-            }
-
-            @Override
-            public void onError(VKError error) {
-                Toast.makeText(ViewNoteActivity.this,getResources().getString(R.string.error)+" "+error.errorMessage,Toast.LENGTH_LONG);
-            }
-        })) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-
-
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
                 note = db.getNote(note.getId());
@@ -245,6 +218,8 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
         else
             loc = null;
         setLocationMap(loc);
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -368,6 +343,21 @@ public class ViewNoteActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
 
+    }
+
+    @Override
+    public void shareVK() {
+        shareVK(note);
+    }
+
+    @Override
+    public void shareFB() {
+        shareFB(note);
+    }
+
+    @Override
+    public void shareTwitter() {
+        shareTwitter(note);
     }
 
     private class ImageLoader extends AsyncTask<String, Void, Bitmap> {
