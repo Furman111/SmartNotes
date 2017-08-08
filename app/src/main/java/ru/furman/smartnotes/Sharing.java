@@ -1,9 +1,22 @@
 package ru.furman.smartnotes;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
@@ -20,17 +33,18 @@ import com.vk.sdk.api.model.VKWallPostResult;
 import com.vk.sdk.api.photo.VKImageParameters;
 import com.vk.sdk.api.photo.VKUploadImage;
 
+import java.util.Arrays;
 
 /**
  * Created by Furman on 06.08.2017.
  */
 
-public class Sharing implements ShareDialogFragment.ShareDialogListener {
+public class Sharing extends AppCompatActivity implements ShareDialogFragment.ShareDialogListener {
 
     private Activity activity;
     private Note note;
 
-    public Sharing(Activity activity, Note note) {
+    public Sharing(final Activity activity, Note note) {
         this.activity = activity;
         this.note = note;
     }
@@ -41,35 +55,38 @@ public class Sharing implements ShareDialogFragment.ShareDialogListener {
 
     @Override
     public void shareVK() {
-        final VKAccessToken token = VKAccessToken.tokenFromSharedPreferences(activity, vkTokenKey);
-        if ((token == null) || token.isExpired()) {
-            VKSdk.login(activity, vkScope);
-            shareVK();
-        } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (!note.getPhoto().equals(Note.NO_PHOTO)) {
-                        VKRequest request = VKApi.uploadWallPhotoRequest(new VKUploadImage(BitmapFactory.decodeFile(note.getPhoto()),
-                                VKImageParameters.jpgImage(0.9f)), Integer.parseInt(token.userId), 0);
-                        request.executeWithListener(new VKRequest.VKRequestListener() {
-                            @Override
-                            public void onComplete(VKResponse response) {
-                                VKApiPhoto photo = ((VKPhotoArray) response.parsedModel).get(0);
-                                VKAttachments att = new VKAttachments(photo);
-                                makePost(att);
-                            }
+        if (isConnected()) {
+            final VKAccessToken token = VKAccessToken.tokenFromSharedPreferences(activity, vkTokenKey);
+            if ((token == null) || token.isExpired()) {
+                VKSdk.login(activity, vkScope);
+                shareVK();
+            } else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!note.getPhoto().equals(Note.NO_PHOTO)) {
+                            VKRequest request = VKApi.uploadWallPhotoRequest(new VKUploadImage(BitmapFactory.decodeFile(note.getPhoto()),
+                                    VKImageParameters.jpgImage(0.9f)), Integer.parseInt(token.userId), 0);
+                            request.executeWithListener(new VKRequest.VKRequestListener() {
+                                @Override
+                                public void onComplete(VKResponse response) {
+                                    VKApiPhoto photo = ((VKPhotoArray) response.parsedModel).get(0);
+                                    VKAttachments att = new VKAttachments(photo);
+                                    makePost(att);
+                                }
 
-                            @Override
-                            public void onError(VKError error) {
-                                Toast.makeText(activity, activity.getResources().getString(R.string.error) + " " + error.errorMessage, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    } else
-                        makePost(null);
-                }
-            }).start();
-        }
+                                @Override
+                                public void onError(VKError error) {
+                                    Toast.makeText(activity, activity.getResources().getString(R.string.error) + " " + error.errorMessage, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        } else
+                            makePost(null);
+                    }
+                }).start();
+            }
+        } else
+            Toast.makeText(activity, R.string.no_internet_connection, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -99,7 +116,7 @@ public class Sharing implements ShareDialogFragment.ShareDialogListener {
         post.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
-                Toast.makeText(activity, activity.getResources().getString(R.string.note) +" "+note.getTitle()+" "+ activity.getResources().getString(R.string.is_published), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getResources().getString(R.string.note) + " " + note.getTitle() + " " + activity.getResources().getString(R.string.is_published), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -108,6 +125,7 @@ public class Sharing implements ShareDialogFragment.ShareDialogListener {
             }
         });
     }
+
 
     @Override
     public void shareFB() {
@@ -118,4 +136,13 @@ public class Sharing implements ShareDialogFragment.ShareDialogListener {
     public void shareTwitter() {
 
     }
+
+    public boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting())
+            return true;
+        return false;
+    }
+
 }

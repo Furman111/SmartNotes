@@ -24,6 +24,13 @@
         android:theme="@style/AppTheme">
 
 
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
+        <provider android:authorities="com.facebook.app.FacebookContentProvider162705600963380"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true" />
+
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBX0gi9MPFlQVqUBvQmUCj6c0wSQMuZeg8" />

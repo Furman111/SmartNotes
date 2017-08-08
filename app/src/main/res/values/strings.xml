@@ -34,4 +34,6 @@
     <string name="published_with_smart_notes">Опубликовано через Smart Notes</string>
     <string name="note">Заметка</string>
     <string name="is_published">опубликована</string>
+    <string name="no_internet_connection">Нет подключения к интернету</string>
+    <string name="facebook_app_id">162705600963380</string>
 </resources>
