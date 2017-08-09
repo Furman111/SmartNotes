@@ -10,14 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.vk.sdk.VKSdk;
-
 import ru.furman.smartnotes.database.DB;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView notesRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
     private NotesRecyclerViewAdapter mAdapter;
     private DB db;
     public static final String NOTE_TAG = "note";
@@ -25,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
     public static final int CREATE_NOTE_REQUEST_CODE = 2;
     public static final int EDIT_NOTE_REQUEST_CODE = 3;
-    public static final int SHOW_NOTES_REQUEST_CODE = 4;
+    public static final int SHOW_NOTES_ON_MAP_REQUEST_CODE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
 
         db = new DB(this);
 
-        notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
+        RecyclerView notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
         notesRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         notesRecyclerView.setLayoutManager(mLayoutManager);
 
         mAdapter = new NotesRecyclerViewAdapter(this);
@@ -79,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.show_on_map:
                 Intent intent1 = new Intent(this, MapActivity.class);
                 intent1.setAction(MapActivity.ACTION_SHOW_NOTES);
-                startActivityForResult(intent1, SHOW_NOTES_REQUEST_CODE);
+                startActivityForResult(intent1, SHOW_NOTES_ON_MAP_REQUEST_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);

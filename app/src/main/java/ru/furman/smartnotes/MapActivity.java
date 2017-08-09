@@ -170,7 +170,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.map_menu, menu);
-        if(getIntent().getAction() == ACTION_CHANGE_NOTE_LOCATION)
+        if(getIntent().getAction().equals(ACTION_CHANGE_NOTE_LOCATION))
             menu.getItem(0).setVisible(true);
         return super.onCreateOptionsMenu(menu);
     }
@@ -183,7 +183,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 finish();
                 return true;
             case R.id.save:
-                if (getIntent().getAction() == ACTION_CHANGE_NOTE_LOCATION) {
+                if (getIntent().getAction().equals(ACTION_CHANGE_NOTE_LOCATION)) {
                     Intent resIntent = new Intent();
                     resIntent.putExtra(CHOSEN_LOCATION, currentLoc);
                     setResult(RESULT_OK, resIntent);
