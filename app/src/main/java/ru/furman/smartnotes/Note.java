@@ -5,10 +5,6 @@ import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 
-/**
- * Created by Furman on 26.07.2017.
- */
-
 public class Note implements Parcelable {
     private String title;
     private String body;

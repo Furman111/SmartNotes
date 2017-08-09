@@ -3,10 +3,6 @@ package ru.furman.smartnotes;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-/**
- * Created by Furman on 31.07.2017.
- */
-
 public class ImageSampler {
 
     public static int calculateInSampleSize(

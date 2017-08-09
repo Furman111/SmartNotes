@@ -18,10 +18,6 @@ import java.util.List;
 
 import ru.furman.smartnotes.database.DB;
 
-/**
- * Created by Furman on 27.07.2017.
- */
-
 public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder> {
 
     private DB db;

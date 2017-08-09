@@ -10,10 +10,6 @@ import android.view.MenuItem;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
-/**
- * Created by Furman on 30.07.2017.
- */
-
 public class ViewImageActivity extends AppCompatActivity {
 
     ImageViewTouch imageViewTouch;

@@ -19,10 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-/**
- * Created by Furman on 27.07.2017.
- */
-
 public class Util {
 
     public static final int REQUEST_EXTERNAL_STORAGE = 1;

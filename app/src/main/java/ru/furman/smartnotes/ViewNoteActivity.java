@@ -39,10 +39,6 @@ import java.io.IOException;
 
 import ru.furman.smartnotes.database.DB;
 
-/**
- * Created by Furman on 26.07.2017.
- */
-
 public class ViewNoteActivity extends SharingActivity implements ShareDialogFragment.ShareDialogListener, OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
 
     private Note note;

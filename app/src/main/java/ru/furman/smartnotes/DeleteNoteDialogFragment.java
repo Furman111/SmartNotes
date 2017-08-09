@@ -7,10 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-/**
- * Created by Furman on 05.08.2017.
- */
-
 public class DeleteNoteDialogFragment extends DialogFragment {
 
     public interface NoticeDialogListener{

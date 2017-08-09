@@ -40,6 +40,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.vk:androidsdk:1.6.5'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.twitter.sdk.android:twitter-core:3.1.0'
 
 
     testCompile 'junit:junit:4.12'

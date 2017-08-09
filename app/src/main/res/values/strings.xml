@@ -35,6 +35,10 @@
     <string name="note">Заметка</string>
     <string name="is_published">опубликована</string>
     <string name="no_internet_connection">Нет подключения к интернету</string>
-    <string name="facebook_app_id">162705600963380</string>
     <string name="autorization_is_required">Требуется авторизация</string>
+
+
+    <string name="facebook_app_id">162705600963380</string>
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">itVK08E3ssK5RpN6xn8S9pMOO</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">S0yo8INBWHeVhsnq0RsmjZRyfgAKyuUeNM2HkyxIbpjX2kVHTW</string>
 </resources>

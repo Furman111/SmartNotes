@@ -2,11 +2,8 @@ package ru.furman.smartnotes;
 
 import android.app.Application;
 
+import com.twitter.sdk.android.core.Twitter;
 import com.vk.sdk.VKSdk;
-
-/**
- * Created by Furman on 06.08.2017.
- */
 
 public class SmartNotesApplication extends Application {
 
@@ -14,6 +11,7 @@ public class SmartNotesApplication extends Application {
     public void onCreate() {
         super.onCreate();
         VKSdk.initialize(this);
+        Twitter.initialize(this);
     }
 
 }

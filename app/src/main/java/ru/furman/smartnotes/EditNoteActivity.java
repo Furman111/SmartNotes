@@ -48,10 +48,6 @@ import java.util.Date;
 
 import ru.furman.smartnotes.database.DB;
 
-/**
- * Created by Furman on 26.07.2017.
- */
-
 public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
 
     private EditText title, body;
@@ -358,6 +354,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onLowMemory() {
+        if(currentPhoto!=null)
+            deleteFile(currentPhoto);
+        if(newPhoto!=null)
+            deleteFile(newPhoto);
         mapView.onLowMemory();
         super.onLowMemory();
     }

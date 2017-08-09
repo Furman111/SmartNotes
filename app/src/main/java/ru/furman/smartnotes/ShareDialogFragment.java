@@ -6,10 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
-/**
- * Created by Furman on 06.08.2017.
- */
-
 public class ShareDialogFragment extends DialogFragment {
 
     public interface ShareDialogListener{
@@ -39,7 +35,7 @@ public class ShareDialogFragment extends DialogFragment {
                     case 1:
                         listener.shareFB();
                         break;
-                    case 3:
+                    case 2:
                         listener.shareTwitter();
                         break;
                 }

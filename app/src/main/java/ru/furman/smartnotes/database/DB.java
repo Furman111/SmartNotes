@@ -13,10 +13,6 @@ import java.util.List;
 
 import ru.furman.smartnotes.Note;
 
-/**
- * Created by Furman on 26.07.2017.
- */
-
 public class DB {
     private DBHelper dbHelper;
     private SQLiteDatabase db;
