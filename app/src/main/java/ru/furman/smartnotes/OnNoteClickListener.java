@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import ru.furman.smartnotes.database.DB;
+import ru.furman.smartnotes.viewingnote.ViewNoteActivity;
 
 public class OnNoteClickListener implements AdapterView.OnItemClickListener {
 

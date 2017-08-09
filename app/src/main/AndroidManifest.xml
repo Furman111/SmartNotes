@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ViewNoteActivity"
+            android:name=".viewingnote.ViewNoteActivity"
             android:label="@string/view_note" />
         <activity
             android:name=".EditNoteActivity"

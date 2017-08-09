@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.viewingnote;
 
 import android.content.Context;
 import android.content.Intent;
@@ -60,6 +60,8 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.BufferedSink;
 import retrofit2.Call;
+import ru.furman.smartnotes.Note;
+import ru.furman.smartnotes.R;
 
 public abstract class SharingActivity extends AppCompatActivity {
 

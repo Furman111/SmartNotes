@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.viewingnote;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -6,9 +6,11 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
+import ru.furman.smartnotes.R;
+
 public class ShareDialogFragment extends DialogFragment {
 
-    public interface ShareDialogListener{
+    interface ShareDialogListener{
         void shareVK();
         void shareFB();
         void shareTwitter();

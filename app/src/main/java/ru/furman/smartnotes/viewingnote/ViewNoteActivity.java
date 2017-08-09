@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.viewingnote;
 
 import android.app.DialogFragment;
 import android.content.Intent;
@@ -37,6 +37,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import ru.furman.smartnotes.DeleteNoteDialogFragment;
+import ru.furman.smartnotes.EditNoteActivity;
+import ru.furman.smartnotes.ImageSampler;
+import ru.furman.smartnotes.MapActivity;
+import ru.furman.smartnotes.Note;
+import ru.furman.smartnotes.R;
+import ru.furman.smartnotes.Util;
+import ru.furman.smartnotes.ViewImageActivity;
 import ru.furman.smartnotes.database.DB;
 
 public class ViewNoteActivity extends SharingActivity implements ShareDialogFragment.ShareDialogListener, OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
@@ -45,7 +53,6 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
     private DB db;
     private TextView body, title;
     private View view;
-    private Button importBtn, shareBtn;
     private FilePickerDialog dialog;
     private ImageView noteIV;
     private MapView mapView;
@@ -68,13 +75,14 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
 
         Intent intent = getIntent();
         note = intent.getParcelableExtra(NOTE_TAG);
-        body = (TextView) findViewById(R.id.note_body);
+
         title = (TextView) findViewById(R.id.note_title);
-        noteIV = (ImageView) findViewById(R.id.note_image);
-        mapView = (MapView) findViewById(R.id.map_view);
-        mapView.getMapAsync(this);
         title.setText(note.getTitle());
+
+        body = (TextView) findViewById(R.id.note_body);
         body.setText(note.getBody());
+
+        noteIV = (ImageView) findViewById(R.id.note_image);
         if (!note.getPhoto().equals(Note.NO_PHOTO)) {
             ImageLoader loader = new ImageLoader();
             loader.execute(note.getPhoto());
@@ -88,6 +96,27 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
             });
         }
 
+        onCreateDialogFilePicker();
+
+        Button importBtn = (Button) findViewById(R.id.export_to_TXT_btn);
+        importBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+            }
+        });
+
+        view = findViewById(R.id.importance_background);
+        Util.setBackgroundWithImportance(this, view, note);
+
+        mapView = (MapView) findViewById(R.id.map_view);
+        mapView.getMapAsync(this);
+        mapView.onCreate(savedInstanceState);
+
+        super.onCreate(savedInstanceState);
+    }
+
+    private void onCreateDialogFilePicker(){
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
         properties.selection_type = DialogConfigs.DIR_SELECT;
@@ -97,9 +126,9 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
         properties.extensions = null;
 
         dialog = new FilePickerDialog(this, properties);
-        dialog.setTitle(getResources().getString(R.string.to_choose_directory));
-        dialog.setPositiveBtnName(getResources().getString(R.string.to_choose));
-        dialog.setNegativeBtnName(getResources().getString(R.string.cancel));
+        dialog.setTitle(getString(R.string.to_choose_directory));
+        dialog.setPositiveBtnName(getString(R.string.to_choose));
+        dialog.setNegativeBtnName(getString(R.string.cancel));
 
         dialog.setDialogSelectionListener(new DialogSelectionListener() {
             @Override
@@ -108,57 +137,32 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
                     if (files[0].contains(Environment.getExternalStorageDirectory().getAbsolutePath())) {
                         if (!Environment.getExternalStorageState().equals(
                                 Environment.MEDIA_MOUNTED)) {
-                            Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ViewNoteActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
                         } else {
                             try {
                                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(files[0] + "/" + note.getTitle() + ".txt")));
-                                bufferedWriter.write(getResources().getString(R.string.note_tile) + "\n" + note.getTitle() + "\n" + getResources().getString(R.string.note_body) + "\n" + note.getBody());
+                                bufferedWriter.write(getString(R.string.note_tile) + "\n" + note.getTitle() + "\n" + getString(R.string.note_body) + "\n" + note.getBody());
                                 bufferedWriter.close();
-                                Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.note_is_exported), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ViewNoteActivity.this, getString(R.string.note_is_exported), Toast.LENGTH_SHORT).show();
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ViewNoteActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
                             }
                         }
                     } else {
                         try {
                             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(files[0] + "/" + note.getTitle() + ".txt")));
-                            bufferedWriter.write(getResources().getString(R.string.note_tile) + "\n" + note.getTitle() + "\n" + getResources().getString(R.string.note_body) + "\n" + note.getBody());
+                            bufferedWriter.write(getString(R.string.note_tile) + "\n" + note.getTitle() + "\n" + getString(R.string.note_body) + "\n" + note.getBody());
                             bufferedWriter.close();
-                            Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.note_is_exported), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ViewNoteActivity.this, getString(R.string.note_is_exported), Toast.LENGTH_SHORT).show();
                         } catch (IOException e) {
                             e.printStackTrace();
-                            Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ViewNoteActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
             }
         });
-
-        importBtn = (Button) findViewById(R.id.export_to_TXT_btn);
-        importBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show();
-            }
-        });
-
-        shareBtn = (Button) findViewById(R.id.share_btn);
-        shareBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShareDialogFragment shareDialogFragment = new ShareDialogFragment();
-                shareDialogFragment.setListener(ViewNoteActivity.this);
-                shareDialogFragment.show(getFragmentManager(), null);
-            }
-        });
-
-        view = findViewById(R.id.importance_background);
-        Util.setBackgroundWithImportance(this, view, note);
-
-        mapView.onCreate(savedInstanceState);
-
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -183,6 +187,11 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
                 intent.putExtra(EditNoteActivity.NOTE_TAG, note);
                 startActivityForResult(intent, EDIT_REQUEST_CODE);
                 break;
+            case R.id.share_note:
+                ShareDialogFragment shareDialogFragment = new ShareDialogFragment();
+                shareDialogFragment.setListener(ViewNoteActivity.this);
+                shareDialogFragment.show(getFragmentManager(), null);
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -201,7 +210,7 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
                 } else
                     noteIV.setImageDrawable(null);
                 Util.setBackgroundWithImportance(this, view, note);
-                Toast.makeText(this, getResources().getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;
             case EditNoteActivity.DELETED_RESULT_CODE:
                 setResult(EditNoteActivity.DELETED_RESULT_CODE);
@@ -209,6 +218,7 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
+
         if (note.getLocation().longitude != Note.NO_LONGITUDE)
             loc = note.getLocation();
         else
@@ -227,7 +237,7 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
                         dialog.show();
                     }
                 } else {
-                    Toast.makeText(this, getResources().getString(R.string.permissions_are_not_granted), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.permissions_are_not_granted), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -264,7 +274,7 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
                     intent.putExtra(MapActivity.NOTE_LOCATION, loc);
                     ViewNoteActivity.this.startActivityForResult(intent, SHOW_NOTE_REQUEST_CODE);
                 } else
-                    Toast.makeText(ViewNoteActivity.this, getResources().getString(R.string.no_geodata), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewNoteActivity.this, getString(R.string.no_geodata), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -375,8 +385,7 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
         @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
-            return bitmap;
+            return ImageSampler.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
         }
     }
 

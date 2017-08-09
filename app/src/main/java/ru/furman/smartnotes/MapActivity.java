@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import ru.furman.smartnotes.database.DB;
+import ru.furman.smartnotes.viewingnote.ViewNoteActivity;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 

@@ -4,14 +4,23 @@
 
     <item
         android:icon="@android:drawable/ic_menu_edit"
-        android:title="edit"
+        android:title="@string/to_edit"
         android:id="@+id/edit_note"
+        android:orderInCategory="1"
         app:showAsAction="always"/>
 
     <item
-        android:title="delete"
+        android:title="@string/to_share"
+        android:icon="@android:drawable/ic_menu_share"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="2"
+        android:id="@+id/share_note"/>
+
+    <item
+        android:title="@string/to_delete"
         android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="3"
         android:id="@+id/delete_note"/>
 
 
