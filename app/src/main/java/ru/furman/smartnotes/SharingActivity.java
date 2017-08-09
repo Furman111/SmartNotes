@@ -95,8 +95,8 @@ public abstract class SharingActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public static String vkTokenKey = "VK_ACCESS_TOKEN";
-    private static String[] vkScope = new String[]{VKScope.WALL, VKScope.PHOTOS};
+    public static final String vkTokenKey = "VK_ACCESS_TOKEN";
+    public static final String[] vkScope = new String[]{VKScope.WALL, VKScope.PHOTOS};
 
 
     public void shareVK(final Note note) {
@@ -137,7 +137,7 @@ public abstract class SharingActivity extends AppCompatActivity {
     }
 
 
-    protected void makePost(VKAttachments att, Note note) {
+    private void makePost(VKAttachments att, Note note) {
         VKAccessToken token = VKAccessToken.tokenFromSharedPreferences(this, vkTokenKey);
         VKParameters parameters = new VKParameters();
 
@@ -148,8 +148,7 @@ public abstract class SharingActivity extends AppCompatActivity {
 
         parameters.put(VKApiConst.MESSAGE, this.getResources().getString(R.string.note_share) + " " +
                 note.getTitle() + "\n\n" +
-                note.getBody()
-                + "\n\n");
+                note.getBody());
 
         if (note.getLocation().latitude != Note.NO_LATITUDE) {
             parameters.put(VKApiConst.LAT, note.getLocation().latitude);
@@ -172,7 +171,7 @@ public abstract class SharingActivity extends AppCompatActivity {
         });
     }
 
-    CallbackManager callbackManagerFB;
+    private CallbackManager callbackManagerFB;
     public static final String FB_LOG_TAG = "fb_log_tag";
 
     public void shareFB(final Note note) {
@@ -242,7 +241,7 @@ public abstract class SharingActivity extends AppCompatActivity {
 
     }
 
-    public boolean isConnected() {
+    private boolean isConnected() {
         ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnectedOrConnecting())
@@ -250,7 +249,7 @@ public abstract class SharingActivity extends AppCompatActivity {
         return false;
     }
 
-    public void noInternetConnectionToast() {
+    private void noInternetConnectionToast() {
         Toast.makeText(this, R.string.no_internet_connection, Toast.LENGTH_SHORT).show();
     }
 
