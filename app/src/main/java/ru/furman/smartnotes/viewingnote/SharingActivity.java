@@ -56,6 +56,7 @@ import com.vk.sdk.api.photo.VKUploadImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.BufferedSink;
@@ -146,7 +147,7 @@ public abstract class SharingActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onError(VKError error) {
-                                    Log.d(VK_LOG_TAG,error.errorMessage);
+                                    Log.d(VK_LOG_TAG, error.errorMessage);
                                     makePost(null, note);
                                 }
                             });
@@ -189,7 +190,7 @@ public abstract class SharingActivity extends AppCompatActivity {
 
             @Override
             public void onError(VKError error) {
-                Log.d(VK_LOG_TAG,error.errorMessage);
+                Log.d(VK_LOG_TAG, error.errorMessage);
                 showErrorInformationToast(error.errorMessage);
             }
         });
@@ -289,8 +290,6 @@ public abstract class SharingActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(TwitterCore.getInstance().getSessionManager().getActiveSession());
-                        final StatusesService statusesService = twitterApiClient.getStatusesService();
                         final StringBuilder sb = new StringBuilder(note.getTitle());
                         sb.append("\n");
                         sb.append(note.getBody());
@@ -308,6 +307,7 @@ public abstract class SharingActivity extends AppCompatActivity {
                         }
                         if (!note.getPhoto().equals(Note.NO_PHOTO)) {
                             Call<Media> call;
+                            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(TwitterCore.getInstance().getSessionManager().getActiveSession());
                             MediaService mediaService = twitterApiClient.getMediaService();
                             call = mediaService.upload(new RequestBody() {
                                                            @Override
@@ -328,90 +328,52 @@ public abstract class SharingActivity extends AppCompatActivity {
                             call.enqueue(new Callback<Media>() {
                                 @Override
                                 public void success(Result<Media> result) {
-                                    String id = result.data.mediaIdString;
-                                    Call<Tweet> call = statusesService.update(
-                                            sb.toString(),
-                                            null,
-                                            null,
-                                            lattitude,
-                                            longitude,
-                                            null,
-                                            true,
-                                            null,
-                                            id
-                                    );
-                                    call.enqueue(new Callback<Tweet>() {
-                                        @Override
-                                        public void success(Result<Tweet> result) {
-                                            showNoteIsPublishedToast(note.getTitle());
-                                        }
-
-                                        @Override
-                                        public void failure(TwitterException exception) {
-                                            Log.d(TWITTER_LOG_TAG, exception.getMessage());
-                                            showErrorInformationToast(exception.getMessage());
-                                        }
-                                    });
+                                    tweet(sb.toString(), lattitude, longitude, result.data.mediaIdString, note);
                                 }
 
                                 @Override
                                 public void failure(TwitterException exception) {
                                     Log.d(TWITTER_LOG_TAG, exception.getMessage());
-                                    Call<Tweet> call = statusesService.update(
-                                            sb.toString(),
-                                            null,
-                                            null,
-                                            lattitude,
-                                            longitude,
-                                            null,
-                                            true,
-                                            null,
-                                            null
-                                    );
-                                    call.enqueue(new Callback<Tweet>() {
-                                        @Override
-                                        public void success(Result<Tweet> result) {
-                                            showNoteIsPublishedToast(note.getTitle());
-                                        }
-
-                                        @Override
-                                        public void failure(TwitterException exception) {
-                                            Log.d(TWITTER_LOG_TAG, exception.getMessage());
-                                            showErrorInformationToast(exception.getMessage());
-                                        }
-                                    });
+                                    tweet(sb.toString(), lattitude, longitude, null, note);
                                 }
                             });
                         } else {
-                            Call<Tweet> call = statusesService.update(
-                                    sb.toString(),
-                                    null,
-                                    null,
-                                    lattitude,
-                                    longitude,
-                                    null,
-                                    true,
-                                    null,
-                                    null
-                            );
-                            call.enqueue(new Callback<Tweet>() {
-                                @Override
-                                public void success(Result<Tweet> result) {
-                                    showNoteIsPublishedToast(note.getTitle());
-                                }
-
-                                @Override
-                                public void failure(TwitterException exception) {
-                                    Log.d(TWITTER_LOG_TAG, exception.getMessage());
-                                    showErrorInformationToast(exception.getMessage());
-                                }
-                            });
+                            tweet(sb.toString(), lattitude, longitude, null, note);
                         }
                     }
                 }).start();
             }
         } else
             showNoInternetConnectionToast();
+    }
+
+    private void tweet(String message, Double lattitude, Double longitude, String mediaIds, final Note note) {
+        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(TwitterCore.getInstance().getSessionManager().getActiveSession());
+        final StatusesService statusesService = twitterApiClient.getStatusesService();
+
+        Call<Tweet> call = statusesService.update(
+                message,
+                null,
+                null,
+                lattitude,
+                longitude,
+                null,
+                true,
+                null,
+                mediaIds
+        );
+        call.enqueue(new Callback<Tweet>() {
+            @Override
+            public void success(Result<Tweet> result) {
+                showNoteIsPublishedToast(note.getTitle());
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.d(TWITTER_LOG_TAG, exception.getMessage());
+                showErrorInformationToast(exception.getMessage());
+            }
+        });
     }
 
     private boolean isConnected() {

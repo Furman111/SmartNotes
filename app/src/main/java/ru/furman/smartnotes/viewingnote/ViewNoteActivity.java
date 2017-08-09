@@ -208,7 +208,7 @@ public class ViewNoteActivity extends SharingActivity implements ShareDialogFrag
                     ImageLoader loader = new ImageLoader();
                     loader.execute(note.getPhoto());
                 } else
-                    noteIV.setImageDrawable(null);
+                    noteIV.setImageResource(R.mipmap.nophoto);
                 Util.setBackgroundWithImportance(this, view, note);
                 Toast.makeText(this, getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;
