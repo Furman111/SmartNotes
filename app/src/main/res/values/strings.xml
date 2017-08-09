@@ -36,4 +36,5 @@
     <string name="is_published">опубликована</string>
     <string name="no_internet_connection">Нет подключения к интернету</string>
     <string name="facebook_app_id">162705600963380</string>
+    <string name="autorization_is_required">Требуется авторизация</string>
 </resources>

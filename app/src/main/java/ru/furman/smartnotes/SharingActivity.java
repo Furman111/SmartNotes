@@ -2,19 +2,27 @@ package ru.furman.smartnotes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+
 import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
+
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.DefaultAudience;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.vk.sdk.VKAccessToken;
@@ -33,7 +41,7 @@ import com.vk.sdk.api.model.VKPhotoArray;
 import com.vk.sdk.api.model.VKWallPostResult;
 import com.vk.sdk.api.photo.VKImageParameters;
 import com.vk.sdk.api.photo.VKUploadImage;
-
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 /**
@@ -95,11 +103,11 @@ public abstract class SharingActivity extends AppCompatActivity {
         if (isConnected()) {
             VKAccessToken token = VKAccessToken.tokenFromSharedPreferences(this, vkTokenKey);
             if ((token == null) || token.isExpired()) {
+                Toast.makeText(SharingActivity.this, SharingActivity.this.getString(R.string.autorization_is_required), Toast.LENGTH_SHORT).show();
                 VKSdk.login(this, vkScope);
-            }
-            token = VKAccessToken.tokenFromSharedPreferences(this, vkTokenKey);
-            if (token != null && !token.isExpired()) {
-                final VKAccessToken vkToken = token;
+                shareVK(note);
+            } else {
+                final VKAccessToken vkToken = VKAccessToken.tokenFromSharedPreferences(this, vkTokenKey);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -141,8 +149,7 @@ public abstract class SharingActivity extends AppCompatActivity {
         parameters.put(VKApiConst.MESSAGE, this.getResources().getString(R.string.note_share) + " " +
                 note.getTitle() + "\n\n" +
                 note.getBody()
-                + "\n\n" +
-                this.getResources().getString(R.string.published_with_smart_notes));
+                + "\n\n");
 
         if (note.getLocation().latitude != Note.NO_LATITUDE) {
             parameters.put(VKApiConst.LAT, note.getLocation().latitude);
@@ -166,17 +173,66 @@ public abstract class SharingActivity extends AppCompatActivity {
     }
 
     CallbackManager callbackManagerFB;
+    public static final String FB_LOG_TAG = "fb_log_tag";
 
-    public void shareFB(Note note) {
+    public void shareFB(final Note note) {
         if (isConnected()) {
             AccessToken accessToken = AccessToken.getCurrentAccessToken();
             if (accessToken == null || accessToken.isExpired()) {
+                Toast.makeText(SharingActivity.this, SharingActivity.this.getString(R.string.autorization_is_required), Toast.LENGTH_SHORT).show();
+                LoginManager.getInstance().setDefaultAudience(DefaultAudience.EVERYONE);
                 LoginManager.getInstance().logInWithPublishPermissions(this, Arrays.asList("publish_actions"));
-            }
-            if (accessToken != null && !accessToken.isExpired()) {
-                Log.d("DSDS", "Loged");
-                //posting
+            } else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!note.getPhoto().equals(Note.NO_PHOTO)) {
+                            Bundle bundle = new Bundle();
+                            Bitmap bitmap = BitmapFactory.decodeFile(note.getPhoto());
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStream);
+                            bundle.putByteArray("picture", byteArrayOutputStream.toByteArray());
+                            bundle.putString("caption", note.getTitle() + "\n\n" + note.getBody());
+                            new GraphRequest(
+                                    AccessToken.getCurrentAccessToken(),
+                                    "me/photos",
+                                    bundle,
+                                    HttpMethod.POST,
+                                    new GraphRequest.Callback() {
+                                        @Override
+                                        public void onCompleted(GraphResponse response) {
+                                            if (response.getError() != null)
+                                                Log.d(FB_LOG_TAG, response.getError().getErrorMessage());
+                                            else
+                                                Toast.makeText(SharingActivity.this, SharingActivity.this.getString(R.string.note) + " " + note.getTitle() + " " + SharingActivity.this.getString(R.string.is_published), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                            ).executeAsync();
+                        } else {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("message",note.getTitle()+"\n\n"+note.getBody());
+                            GraphRequest request = new GraphRequest(
+                                    AccessToken.getCurrentAccessToken(),
+                                    "me/feed",
+                                    bundle,
+                                    HttpMethod.POST,
+                                    new GraphRequest.Callback() {
+                                        @Override
+                                        public void onCompleted(GraphResponse response) {
+                                            if (response.getError() == null)
+                                                Toast.makeText(SharingActivity.this, SharingActivity.this.getString(R.string.note) + " " + note.getTitle() + " " + SharingActivity.this.getString(R.string.is_published), Toast.LENGTH_SHORT).show();
+                                            else {
+                                                Log.d(FB_LOG_TAG, response.getError().getErrorMessage());
+                                                Toast.makeText(SharingActivity.this, SharingActivity.this.getString(R.string.error) + " " + response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    }
+                            );
+                            request.executeAsync();
+                        }
 
+                    }
+                }).start();
             }
         } else
             noInternetConnectionToast();
