@@ -380,8 +380,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
         @Override
         protected void onPreExecute() {
-            reqHeight = getResources().getDimensionPixelSize(R.dimen.view_note_iv_height);
-            reqWidth = getResources().getDisplayMetrics().widthPixels / 2;
+            reqHeight = getResources().getDimensionPixelSize(R.dimen.view_note_cardview_height);
+            reqWidth = getResources().getDimensionPixelSize(R.dimen.view_note_iv_max_width);
             super.onPreExecute();
         }
 
