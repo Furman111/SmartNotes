@@ -45,6 +45,8 @@
     <string name="red_importance">Срочная</string>
     <string name="yellow_importance">Важная</string>
     <string name="green_importance">Обычная</string>
+    <string name="name_text_view">Имя заметки:</string>
+    <string name="body_text_view">Описание:</string>
 
 
     <string name="facebook_app_id">162705600963380</string>

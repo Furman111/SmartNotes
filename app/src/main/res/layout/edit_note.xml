@@ -16,16 +16,19 @@
         android:layout_weight="6"
         app:cardElevation="@dimen/cardview_default_elevation">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="5dp"
                 android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:textSize="18sp"
+                    android:text="@string/name_text_view"/>
 
                 <EditText
                     android:id="@+id/note_title_edit"
@@ -38,6 +41,13 @@
                     android:inputType="text"
                     android:padding="3dp"
                     android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:textSize="18sp"
+                    android:text="@string/body_text_view"/>
 
 
                 <EditText
@@ -52,8 +62,6 @@
                     android:textSize="20sp" />
 
             </LinearLayout>
-
-        </ScrollView>
 
     </android.support.v7.widget.CardView>
 
