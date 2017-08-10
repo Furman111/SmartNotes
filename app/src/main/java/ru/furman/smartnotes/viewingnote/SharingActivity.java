@@ -269,7 +269,10 @@ public abstract class SharingActivity extends AppCompatActivity {
     public void shareTwitter(final Note note) {
         noteToShare = note;
         if (isConnected()) {
-            TwitterAuthToken token = TwitterCore.getInstance().getSessionManager().getActiveSession().getAuthToken();
+            TwitterAuthToken token = null;
+            TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+            if (session != null)
+                token = session.getAuthToken();
             if (token == null || token.isExpired()) {
                 showAutorizationIsRequiredToast();
                 twitterAuthClient.authorize(this, new Callback<TwitterSession>() {

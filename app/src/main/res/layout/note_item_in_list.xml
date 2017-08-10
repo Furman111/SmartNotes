@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
     android:padding="5dp"
-    app:cardElevation="@dimen/cardview_default_elevation"
-    app:cardCornerRadius="8dp">
+    app:cardElevation="@dimen/card_view_elevation"
+    app:cardCornerRadius="@dimen/card_view_radius">
 
     <ImageView
         android:layout_width="match_parent"
