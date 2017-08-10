@@ -156,7 +156,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         protected ResultContainer doInBackground(ViewHolder... params) {
             ViewHolder vh = params[0];
             photoPath = db.getNote(vh.getId()).getPhoto();
-            Bitmap bitmap = ImageSampler.decodeSampledBitmapFromFile(photoPath, reqWidth, reqHeight);
+            Bitmap bitmap = ImageFiles.decodeSampledBitmapFromFile(photoPath, reqWidth, reqHeight);
 
             if (memoryCache.get(photoPath) == null)
                 memoryCache.put(photoPath, bitmap);

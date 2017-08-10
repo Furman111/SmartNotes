@@ -93,7 +93,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         db = new DB(this);
 
         importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.spinner_array));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.imprortance_array));
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         importanceSpinner.setAdapter(adapter);
 
@@ -620,7 +620,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            return ImageSampler.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
+            return ImageFiles.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
         }
     }
 

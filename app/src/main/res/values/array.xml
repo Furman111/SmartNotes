@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <array name="spinner_array">
+    <array name="imprortance_array">
         <item>Срочная</item>
         <item>Важная</item>
         <item>Обычная</item>

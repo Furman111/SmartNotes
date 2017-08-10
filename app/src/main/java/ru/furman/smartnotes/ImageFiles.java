@@ -3,7 +3,7 @@ package ru.furman.smartnotes;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class ImageSampler {
+public class ImageFiles {
 
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
