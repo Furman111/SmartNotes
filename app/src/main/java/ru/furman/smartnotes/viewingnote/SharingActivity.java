@@ -3,7 +3,6 @@ package ru.furman.smartnotes.viewingnote;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -61,6 +60,7 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.BufferedSink;
 import retrofit2.Call;
+import ru.furman.smartnotes.ImageFiles;
 import ru.furman.smartnotes.Note;
 import ru.furman.smartnotes.R;
 
@@ -135,7 +135,7 @@ public abstract class SharingActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (!note.getPhoto().equals(Note.NO_PHOTO)) {
-                            VKRequest request = VKApi.uploadWallPhotoRequest(new VKUploadImage(BitmapFactory.decodeFile(note.getPhoto()), //потоконебезопасно
+                            VKRequest request = VKApi.uploadWallPhotoRequest(new VKUploadImage(ImageFiles.decodeFile(note.getPhoto()),
                                     VKImageParameters.jpgImage(0.9f)), Integer.parseInt(vkToken.userId), 0);
                             request.executeWithListener(new VKRequest.VKRequestListener() {
                                 @Override
@@ -213,7 +213,7 @@ public abstract class SharingActivity extends AppCompatActivity {
                     public void run() {
                         if (!note.getPhoto().equals(Note.NO_PHOTO)) {
                             Bundle bundle = new Bundle();
-                            Bitmap bitmap = BitmapFactory.decodeFile(note.getPhoto());
+                            Bitmap bitmap = ImageFiles.decodeFile(note.getPhoto());
                             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStream);
                             bundle.putByteArray("picture", byteArrayOutputStream.toByteArray());
@@ -317,7 +317,7 @@ public abstract class SharingActivity extends AppCompatActivity {
 
                                                            @Override
                                                            public void writeTo(BufferedSink sink) throws IOException {
-                                                               Bitmap bitmap = BitmapFactory.decodeFile(note.getPhoto());
+                                                               Bitmap bitmap = ImageFiles.decodeFile(note.getPhoto());
                                                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                                                bitmap.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStream);
                                                                sink.write(byteArrayOutputStream.toByteArray());

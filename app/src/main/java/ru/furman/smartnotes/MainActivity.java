@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 String photo = db.getNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId()).getPhoto();
                 if (!photo.equals(Note.NO_PHOTO))
-                    Util.deleteFile(photo);
+                    ImageFiles.deleteFile(photo);
                 db.deleteNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId());
                 mAdapter.notifyDataSetChanged();
             }

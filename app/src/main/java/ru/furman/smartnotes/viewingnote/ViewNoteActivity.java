@@ -358,7 +358,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         if (!note.getPhoto().equals(Note.NO_PHOTO))
-            Util.deleteFile(note.getPhoto());
+            ImageFiles.deleteFile(note.getPhoto());
         db.deleteNote(note.getId());
         setResult(EditNoteActivity.DELETED_RESULT_CODE);
         finish();

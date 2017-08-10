@@ -72,32 +72,4 @@ public class Util {
         }
     }
 
-    public static void copyFile(File from, File to) throws IOException {
-        FileChannel source = null;
-        FileChannel destination = null;
-
-        if (!to.exists())
-            to.createNewFile();
-
-        try {
-            source = new FileInputStream(from).getChannel();
-            destination = new FileOutputStream(to).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
-        }
-    }
-
-    public static void deleteFile(String path) {
-        File file = new File(path);
-        file.delete();
-    }
-
 }

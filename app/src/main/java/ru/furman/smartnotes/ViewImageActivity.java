@@ -1,7 +1,6 @@
 package ru.furman.smartnotes;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -49,7 +48,7 @@ public class ViewImageActivity extends AppCompatActivity {
         @Override
         protected Bitmap doInBackground(String... params) {
             String path = params[0];
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            Bitmap bitmap = ImageFiles.decodeFile(path);
             return bitmap;
         }
     }
