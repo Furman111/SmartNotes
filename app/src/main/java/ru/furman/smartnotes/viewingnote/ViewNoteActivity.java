@@ -106,7 +106,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
             }
         });
 
-        backgroundView = findViewById(R.id.importance_background);
+        backgroundView = findViewById(R.id.background_layout);
         Util.setBackgroundWithImportance(this, backgroundView, note);
 
         mapView = (MapView) findViewById(R.id.map_view);
@@ -380,8 +380,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
         @Override
         protected void onPreExecute() {
-            reqHeight = getResources().getDimensionPixelSize(R.dimen.view_note_cardview_height);
-            reqWidth = getResources().getDimensionPixelSize(R.dimen.view_note_iv_max_width);
+            reqHeight = getResources().getDimensionPixelSize(R.dimen.view_note_photo_height);
+            reqWidth = getResources().getDimensionPixelSize(R.dimen.view_note_max_photo_width);
             super.onPreExecute();
         }
 

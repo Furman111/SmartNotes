@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -25,12 +26,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -52,7 +51,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     private EditText title, body;
     private ImageView photoIV;
-    private Spinner importanceSpinner;
+    private RadioGroup importanceRadioGroup;
     private View background;
     private Note note;
     private DB db;
@@ -86,16 +85,32 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         body = (EditText) findViewById(R.id.note_body_edit);
         Button saveBtn = (Button) findViewById(R.id.save_btn);
         Button cancelBtn = (Button) findViewById(R.id.cancel_btn);
-        background = findViewById(R.id.importance_background);
+        background = findViewById(R.id.background_layout);
         photoIV = (ImageView) findViewById(R.id.note_imageIV);
         mapView = (MapView) findViewById(R.id.map);
 
         db = new DB(this);
 
-        importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.imprortance_array));
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        importanceSpinner.setAdapter(adapter);
+        importanceRadioGroup = (RadioGroup) findViewById(R.id.importance_radio_group);
+        importanceRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId){
+                    case R.id.red_importance_radio_btn:
+                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.red_background_gradient));
+                        break;
+                    case R.id.green_importance_radio_btn:
+                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.green_background_gradient));
+                        break;
+                    case R.id.yellow_importance_radio_btn:
+                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.yellow_background_gradient));
+                        break;
+                    case -1:
+                        background.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this,R.color.zeroImportance));
+                        break;
+                }
+            }
+        });
 
         currentLoc = null;
         if (note != null) {
@@ -105,37 +120,11 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             else
                 currentLoc = null;
         } else {
-            importanceSpinner.setSelection(3);
+            importanceRadioGroup.clearCheck();
             currentLoc = null;
             requestLocation();
         }
         newLoc = null;
-
-        importanceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.red_background_gradient));
-                        break;
-                    case 1:
-                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.yellow_background_gradient));
-                        break;
-                    case 2:
-                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.green_background_gradient));
-                        break;
-                    case 3:
-                        background.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.zeroImportance));
-                        break;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,7 +142,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         ImageFiles.deleteFile(currentPhoto);
                     currentPhoto = oldPhoto;
                 } else {
-                    importanceSpinner.setSelection(3);
+                    importanceRadioGroup.clearCheck();
                     title.setText("");
                     body.setText("");
                     photoIV.setImageResource(R.mipmap.nophoto);
@@ -173,21 +162,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     if (locationManager != null)
                         locationManager.removeUpdates(locationListener);
                     if (note != null) {
-                        String importance = null;
-                        switch (importanceSpinner.getSelectedItemPosition()) {
-                            case 0:
-                                importance = Note.RED_IMPORTANCE;
-                                break;
-                            case 1:
-                                importance = Note.YELLOW_IMPORTANCE;
-                                break;
-                            case 2:
-                                importance = Note.GREEN_IMPORTANCE;
-                                break;
-                            case 3:
-                                importance = Note.NO_IMPORTANCE;
-                                break;
-                        }
                         if (currentPhoto == null) {
                             if (oldPhoto != null)
                                 ImageFiles.deleteFile(oldPhoto);
@@ -202,30 +176,15 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         else if (currentLoc == null) {
                             currentLoc = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
                         }
-                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, currentLoc, -1));
+                        db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), getImportance(), currentPhoto, currentLoc, -1));
                     } else {
-                        String importance = null;
-                        switch (importanceSpinner.getSelectedItemPosition()) {
-                            case 0:
-                                importance = Note.RED_IMPORTANCE;
-                                break;
-                            case 1:
-                                importance = Note.YELLOW_IMPORTANCE;
-                                break;
-                            case 2:
-                                importance = Note.GREEN_IMPORTANCE;
-                                break;
-                            case 3:
-                                importance = Note.NO_IMPORTANCE;
-                                break;
-                        }
                         if (currentPhoto == null) currentPhoto = Note.NO_PHOTO;
                         if (newLoc != null)
                             currentLoc = newLoc;
                         else if (currentLoc == null) {
                             currentLoc = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
                         }
-                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), importance, currentPhoto, currentLoc, -1));
+                        db.addNote(new Note(title.getText().toString(), body.getText().toString(), getImportance(), currentPhoto, currentLoc, -1));
                     }
                     setResult(SAVED_RESULT_CODE);
                     finish();
@@ -269,6 +228,25 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         mapView.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
+    }
+
+    private String getImportance(){
+        String importance = null;
+        switch (importanceRadioGroup.getCheckedRadioButtonId()) {
+            case R.id.red_importance_radio_btn:
+                importance = Note.RED_IMPORTANCE;
+                break;
+            case R.id.yellow_importance_radio_btn:
+                importance = Note.YELLOW_IMPORTANCE;
+                break;
+            case R.id.green_importance_radio_btn:
+                importance = Note.GREEN_IMPORTANCE;
+                break;
+            case -1:
+                importance = Note.NO_IMPORTANCE;
+                break;
+        }
+        return importance;
     }
 
     @Override
@@ -315,16 +293,16 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public void setDefaultSelection() {
         switch (note.getImportance()) {
             case Note.GREEN_IMPORTANCE:
-                importanceSpinner.setSelection(2);
+                importanceRadioGroup.check(R.id.green_importance_radio_btn);
                 break;
             case Note.YELLOW_IMPORTANCE:
-                importanceSpinner.setSelection(1);
+                importanceRadioGroup.check(R.id.yellow_importance_radio_btn);
                 break;
             case Note.RED_IMPORTANCE:
-                importanceSpinner.setSelection(0);
+                importanceRadioGroup.check(R.id.red_importance_radio_btn);
                 break;
             case Note.NO_IMPORTANCE:
-                importanceSpinner.setSelection(3);
+                importanceRadioGroup.clearCheck();
                 break;
         }
     }
@@ -601,7 +579,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         @Override
         protected void onPreExecute() {
-            reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_cardview_height);
+            reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_max_width);
             reqWidth = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_max_width);
             super.onPreExecute();
         }

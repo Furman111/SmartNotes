@@ -42,6 +42,9 @@
     <string name="location">Местоположение</string>
     <string name="longitude">Долгота</string>
     <string name="lattitude">Широта</string>
+    <string name="red_importance">Срочная</string>
+    <string name="yellow_importance">Важная</string>
+    <string name="green_importance">Обычная</string>
 
 
     <string name="facebook_app_id">162705600963380</string>

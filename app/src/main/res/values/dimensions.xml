@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="image_view_tumbnail">54dp</dimen>
-    <dimen name="view_note_cardview_height">190dp</dimen>
-    <dimen name="edit_note_cardview_height">190dp</dimen>
+    <dimen name="view_note_photo_height">250dp</dimen>
+    <dimen name="view_note_max_photo_width">170dp</dimen>
+
     <dimen name="edit_note_iv_max_width">170dp</dimen>
-    <dimen name="view_note_iv_max_width">170dp</dimen>
+
+    <dimen name="radio_group_height">30dp</dimen>
+    <dimen name="radio_group_text_size">20sp</dimen>
+    <dimen name="edit_note_body_edit_text_max_height">170dp</dimen>
+
 </resources>
