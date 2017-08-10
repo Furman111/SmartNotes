@@ -57,7 +57,7 @@
                 android:hint="@string/enter_note_body"
                 android:inputType="textMultiLine"
                 android:maxHeight="@dimen/edit_note_body_edit_text_max_height"
-                android:padding="5dp"
+                android:padding="3dp"
                 android:textSize="20sp" />
 
         </LinearLayout>
