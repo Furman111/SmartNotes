@@ -2,6 +2,7 @@
 <resources>
     <dimen name="image_view_tumbnail">54dp</dimen>
     <dimen name="view_note_cardview_height">190dp</dimen>
-    <dimen name="edit_note_iv_height">170dp</dimen>
+    <dimen name="edit_note_cardview_height">190dp</dimen>
+    <dimen name="edit_note_iv_max_width">170dp</dimen>
     <dimen name="view_note_iv_max_width">170dp</dimen>
 </resources>

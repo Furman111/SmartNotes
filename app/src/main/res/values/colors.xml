@@ -10,4 +10,10 @@
     <color name="black">#000000</color>
     <color name="textColorButton">#FFFFFF</color>
     <color name="ColorBtnBackground">#004650</color>
+
+    <color name="endRedGradient">#64ff0011</color>
+    <color name="endGreenGradient">#6400ff40</color>
+    <color name="endYellowGradient">#64e6ff00</color>
+    <color name="startGradient">#ffffff</color>
+
 </resources>

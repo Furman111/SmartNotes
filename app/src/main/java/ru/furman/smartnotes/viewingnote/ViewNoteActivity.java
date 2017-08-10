@@ -52,7 +52,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     private Note note;
     private DB db;
     private TextView body, title;
-    private View view;
+    private View backgroundView;
     private FilePickerDialog dialog;
     private ImageView noteIV;
     private MapView mapView;
@@ -106,8 +106,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
             }
         });
 
-        view = findViewById(R.id.importance_background);
-        Util.setBackgroundWithImportance(this, view, note);
+        backgroundView = findViewById(R.id.importance_background);
+        Util.setBackgroundWithImportance(this, backgroundView, note);
 
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.getMapAsync(this);
@@ -150,7 +150,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     private void writeNoteToFile(String filePath) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(filePath + "/" + note.getTitle() + ".txt")));
-            bufferedWriter.write(getString(R.string.note_tile) + "\n\n" + note.getTitle() + "\n" + getString(R.string.note_body) + "\n\n" + note.getBody());
+            bufferedWriter.write(getString(R.string.note_tile) + "\n" + note.getTitle() + "\n\n" + getString(R.string.note_body) + "\n" + note.getBody());
             if(!note.getImportance().equals(Note.NO_IMPORTANCE)) {
                 String importance = null;
                 switch (note.getImportance()){
@@ -226,8 +226,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                     ImageLoader loader = new ImageLoader();
                     loader.execute(note.getPhoto());
                 } else
-                    noteIV.setImageResource(R.mipmap.nophoto);
-                Util.setBackgroundWithImportance(this, view, note);
+                    noteIV.setImageDrawable(null);
+                Util.setBackgroundWithImportance(this, backgroundView, note);
                 Toast.makeText(this, getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;
             case EditNoteActivity.DELETED_RESULT_CODE:

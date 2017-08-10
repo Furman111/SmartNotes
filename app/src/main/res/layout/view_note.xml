@@ -3,6 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/importance_background"
     android:orientation="vertical">
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -10,7 +11,6 @@
         android:layout_height="250dp">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/importance_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
@@ -85,10 +85,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/nophoto"
-                android:layout_marginRight="3dp"
-                android:layout_marginEnd="3dp"/>
+                android:scaleType="centerCrop" />
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/map_view"
@@ -97,9 +94,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_toEndOf="@id/note_image"
-                android:layout_toRightOf="@id/note_image"
-                android:layout_marginLeft="3dp"
-                android:layout_marginStart="3dp" />
+                android:layout_toRightOf="@id/note_image" />
 
         </RelativeLayout>
 
@@ -123,9 +118,6 @@
             android:padding="10dp"
             android:text="@string/export_to_txt"
             android:textColor="@color/textColorButton" />
-
-
     </LinearLayout>
-
 
 </LinearLayout>

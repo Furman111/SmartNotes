@@ -34,13 +34,13 @@ public class Util {
     public static void setBackgroundWithImportance(Context ctx,View view,Note note){
         switch (note.getImportance()){
             case Note.GREEN_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.greenImportance));
+                view.setBackground(ContextCompat.getDrawable(ctx,R.drawable.green_background_gradient));
                 break;
             case Note.RED_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.redImportance));
+                view.setBackground(ContextCompat.getDrawable(ctx,R.drawable.red_background_gradient));
                 break;
             case Note.YELLOW_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.yellowImportance));
+                view.setBackground(ContextCompat.getDrawable(ctx,R.drawable.yellow_background_gradient));
                 break;
             case Note.NO_IMPORTANCE:
                 view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.zeroImportance));

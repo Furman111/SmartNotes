@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LruCache;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +26,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public CardView backgroundCV;
+        public View background;
         public TextView titleTV;
         public ImageView editIV;
         public ImageView noteIV;
@@ -39,7 +38,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
         public ViewHolder(View view) {
             super(view);
-            this.backgroundCV = (CardView) view.findViewById(R.id.background);
+            this.background = view.findViewById(R.id.background);
             this.titleTV = (TextView) view.findViewById(R.id.note_title);
             this.editIV = (ImageView) view.findViewById(R.id.edit_btn);
             this.noteIV = (ImageView) view.findViewById(R.id.note_image);
@@ -68,20 +67,20 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     }
 
     @Override
-    public void onBindViewHolder(final NotesRecyclerViewAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final NotesRecyclerViewAdapter.ViewHolder holder,int position) {
         final List<Note> notes = db.getNotes();
         switch (notes.get(position).getImportance()) {
             case Note.GREEN_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.greenImportance));
+                holder.background.setBackground(ContextCompat.getDrawable(ctx, R.drawable.green_list_item_gradient));
                 break;
             case Note.RED_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.redImportance));
+                holder.background.setBackground(ContextCompat.getDrawable(ctx, R.drawable.red_list_item_gradient));
                 break;
             case Note.YELLOW_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.yellowImportance));
+                holder.background.setBackground(ContextCompat.getDrawable(ctx, R.drawable.yellow_list_item_gradient));
                 break;
             case Note.NO_IMPORTANCE:
-                holder.backgroundCV.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.zeroImportance));
+                holder.background.setBackgroundColor(ContextCompat.getColor(ctx, R.color.zeroImportance));
                 break;
         }
         holder.id = notes.get(position).getId();
@@ -107,7 +106,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
                 @Override
                 public void onClick(View v) {
                     Intent photoView = new Intent(ctx, ViewImageActivity.class);
-                    photoView.putExtra(ViewImageActivity.IMAGE_SRC, notes.get(position).getPhoto());
+                    photoView.putExtra(ViewImageActivity.IMAGE_SRC, notes.get(holder.getAdapterPosition()).getPhoto());
                     ctx.startActivity(photoView);
                 }
             });
@@ -115,7 +114,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             holder.noteIV.setImageDrawable(null);
 
 
-        holder.backgroundCV.setOnClickListener(new View.OnClickListener() {
+        holder.background.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, ViewNoteActivity.class);

@@ -87,13 +87,13 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         Button saveBtn = (Button) findViewById(R.id.save_btn);
         Button cancelBtn = (Button) findViewById(R.id.cancel_btn);
         background = findViewById(R.id.importance_background);
-        photoIV = (ImageView) findViewById(R.id.note_mageIV);
+        photoIV = (ImageView) findViewById(R.id.note_imageIV);
         mapView = (MapView) findViewById(R.id.map);
 
         db = new DB(this);
 
         importanceSpinner = (Spinner) findViewById(R.id.importance_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.imprortance_array));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.imprortance_array));
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         importanceSpinner.setAdapter(adapter);
 
@@ -116,20 +116,16 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        background.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.redImportance));
-                        view.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.redImportance));
+                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.red_background_gradient));
                         break;
                     case 1:
-                        background.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.yellowImportance));
-                        view.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.yellowImportance));
+                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.yellow_background_gradient));
                         break;
                     case 2:
-                        background.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.greenImportance));
-                        view.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.greenImportance));
+                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.green_background_gradient));
                         break;
                     case 3:
                         background.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.zeroImportance));
-                        view.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.zeroImportance));
                         break;
                 }
             }
@@ -238,7 +234,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        Intent intent = getIntent();
         if (note != null) {
             title.setText(note.getTitle());
             body.setText(note.getBody());
@@ -606,8 +601,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         @Override
         protected void onPreExecute() {
-            reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_height);
-            reqWidth = getResources().getDisplayMetrics().widthPixels;
+            reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_cardview_height);
+            reqWidth = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_max_width);
             super.onPreExecute();
         }
 
