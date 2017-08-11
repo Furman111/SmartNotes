@@ -264,8 +264,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setAllGesturesEnabled(false);
 
         if (note.getLocation().longitude != Note.NO_LONGITUDE) {
             location = note.getLocation();
