@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.utils;
 
 import android.Manifest;
 import android.app.Activity;

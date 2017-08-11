@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.ui;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import ru.furman.smartnotes.R;
+import ru.furman.smartnotes.utils.ImageFiles;
 
 public class ViewImageActivity extends AppCompatActivity {
 

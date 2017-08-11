@@ -1,8 +1,11 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.utils;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+
+import ru.furman.smartnotes.note.Note;
+import ru.furman.smartnotes.R;
 
 /**
  * Created by Furman on 11.08.2017.

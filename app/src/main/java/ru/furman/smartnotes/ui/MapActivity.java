@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.ui;
 
 
 import android.content.Intent;
@@ -15,8 +15,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
-import ru.furman.smartnotes.database.DB;
-import ru.furman.smartnotes.viewingnote.ViewNoteActivity;
+import ru.furman.smartnotes.note.Note;
+import ru.furman.smartnotes.R;
+import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.ui.viewingnote.ViewNoteActivity;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 

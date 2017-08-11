@@ -1,4 +1,4 @@
-package ru.furman.smartnotes.database;
+package ru.furman.smartnotes.note.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

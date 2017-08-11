@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,7 +13,7 @@ import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ImageFiles {
+public abstract class ImageFiles {
 
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {

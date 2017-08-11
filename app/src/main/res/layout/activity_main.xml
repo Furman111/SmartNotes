@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.furman.smartnotes.MainActivity">
+    tools:context=".ui.notes.NotesActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/notes_recycler_view"

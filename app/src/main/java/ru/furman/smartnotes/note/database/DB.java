@@ -1,4 +1,4 @@
-package ru.furman.smartnotes.database;
+package ru.furman.smartnotes.note.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.furman.smartnotes.Note;
+import ru.furman.smartnotes.note.Note;
 
 public class DB {
     private DBHelper dbHelper;

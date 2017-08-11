@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -6,6 +6,8 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import ru.furman.smartnotes.R;
 
 public class DeleteNoteDialogFragment extends DialogFragment {
 

@@ -1,4 +1,4 @@
-package ru.furman.smartnotes.viewingnote;
+package ru.furman.smartnotes.ui.viewingnote;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,16 +36,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import ru.furman.smartnotes.BackgroundUtil;
-import ru.furman.smartnotes.DeleteNoteDialogFragment;
-import ru.furman.smartnotes.PermissionsUtil;
-import ru.furman.smartnotes.editnote.EditNoteActivity;
-import ru.furman.smartnotes.ImageFiles;
-import ru.furman.smartnotes.MapActivity;
-import ru.furman.smartnotes.Note;
+import ru.furman.smartnotes.ui.ViewImageActivity;
+import ru.furman.smartnotes.utils.BackgroundUtil;
+import ru.furman.smartnotes.ui.dialog.DeleteNoteDialogFragment;
+import ru.furman.smartnotes.utils.PermissionsUtil;
+import ru.furman.smartnotes.ui.editingnote.EditNoteActivity;
+import ru.furman.smartnotes.utils.ImageFiles;
+import ru.furman.smartnotes.ui.MapActivity;
+import ru.furman.smartnotes.note.Note;
 import ru.furman.smartnotes.R;
-import ru.furman.smartnotes.ViewImageActivity;
-import ru.furman.smartnotes.database.DB;
+import ru.furman.smartnotes.note.database.DB;
 
 public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.DeleteNoteDialogFragmentListener {
 

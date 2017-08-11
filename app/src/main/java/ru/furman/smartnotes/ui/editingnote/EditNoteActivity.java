@@ -1,4 +1,4 @@
-package ru.furman.smartnotes.editnote;
+package ru.furman.smartnotes.ui.editingnote;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,16 +38,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.File;
 import java.io.IOException;
 
-import ru.furman.smartnotes.BackgroundUtil;
-import ru.furman.smartnotes.DeleteNoteDialogFragment;
-import ru.furman.smartnotes.ImageFiles;
-import ru.furman.smartnotes.MainActivity;
-import ru.furman.smartnotes.MapActivity;
-import ru.furman.smartnotes.Note;
-import ru.furman.smartnotes.PermissionsUtil;
+import ru.furman.smartnotes.ui.dialog.PhotoChangeDialogFragment;
+import ru.furman.smartnotes.ui.dialog.PhotoPickerDialogFragment;
+import ru.furman.smartnotes.utils.BackgroundUtil;
+import ru.furman.smartnotes.ui.dialog.DeleteNoteDialogFragment;
+import ru.furman.smartnotes.utils.ImageFiles;
+import ru.furman.smartnotes.ui.notes.NotesActivity;
+import ru.furman.smartnotes.ui.MapActivity;
+import ru.furman.smartnotes.note.Note;
+import ru.furman.smartnotes.utils.PermissionsUtil;
 import ru.furman.smartnotes.R;
-import ru.furman.smartnotes.ViewImageActivity;
-import ru.furman.smartnotes.database.DB;
+import ru.furman.smartnotes.ui.ViewImageActivity;
+import ru.furman.smartnotes.note.database.DB;
 
 public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback,
         DeleteNoteDialogFragment.DeleteNoteDialogFragmentListener,
@@ -81,7 +83,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         setContentView(R.layout.edit_note);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        note = getIntent().getParcelableExtra(MainActivity.NOTE_TAG);
+        note = getIntent().getParcelableExtra(NotesActivity.NOTE_TAG);
         title = (EditText) findViewById(R.id.note_title_edit);
         body = (EditText) findViewById(R.id.note_body_edit);
         Button saveBtn = (Button) findViewById(R.id.save_btn);

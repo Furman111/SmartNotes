@@ -1,4 +1,4 @@
-package ru.furman.smartnotes.editnote;
+package ru.furman.smartnotes.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

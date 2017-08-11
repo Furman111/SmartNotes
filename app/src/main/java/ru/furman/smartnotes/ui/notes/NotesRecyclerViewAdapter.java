@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.ui.notes;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,9 +15,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ru.furman.smartnotes.database.DB;
-import ru.furman.smartnotes.editnote.EditNoteActivity;
-import ru.furman.smartnotes.viewingnote.ViewNoteActivity;
+import ru.furman.smartnotes.utils.ImageFiles;
+import ru.furman.smartnotes.note.Note;
+import ru.furman.smartnotes.R;
+import ru.furman.smartnotes.ui.ViewImageActivity;
+import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.ui.editingnote.EditNoteActivity;
+import ru.furman.smartnotes.ui.viewingnote.ViewNoteActivity;
 
 public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder> {
 
@@ -90,8 +94,8 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, EditNoteActivity.class);
-                intent.putExtra(MainActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
-                ((MainActivity) ctx).startActivityForResult(intent, MainActivity.EDIT_NOTE_REQUEST_CODE);
+                intent.putExtra(NotesActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
+                ((NotesActivity) ctx).startActivityForResult(intent, NotesActivity.EDIT_NOTE_REQUEST_CODE);
             }
         });
 
@@ -119,8 +123,8 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, ViewNoteActivity.class);
-                intent.putExtra(MainActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
-                ((MainActivity) ctx).startActivityForResult(intent, MainActivity.VIEW_NOTE_REQUEST_CODE);
+                intent.putExtra(NotesActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
+                ((NotesActivity) ctx).startActivityForResult(intent, NotesActivity.VIEW_NOTE_REQUEST_CODE);
             }
         });
     }

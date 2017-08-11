@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.ui.notes;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +10,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import ru.furman.smartnotes.database.DB;
-import ru.furman.smartnotes.editnote.EditNoteActivity;
+import ru.furman.smartnotes.utils.ImageFiles;
+import ru.furman.smartnotes.ui.MapActivity;
+import ru.furman.smartnotes.note.Note;
+import ru.furman.smartnotes.R;
+import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.ui.editingnote.EditNoteActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class NotesActivity extends AppCompatActivity {
 
     private NotesRecyclerViewAdapter mAdapter;
     private DB db;

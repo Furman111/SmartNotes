@@ -1,4 +1,4 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.note;
 
 import android.os.Parcel;
 import android.os.Parcelable;
