@@ -7,21 +7,15 @@
         <item>Без важности</item>
     </array>
 
-    <array name="photo_picker_array">
+    <array name="photo_picker_items_array">
         <item>Сделать фотографию</item>
         <item>Загрузить из галереи</item>
     </array>
 
-    <array name="photo_array">
+    <array name="photo_change_items_array">
         <item>Просмотр</item>
         <item>Изменить</item>
         <item>Удалить</item>
-    </array>
-
-    <array name="share_array">
-        <item>ВКонтакте</item>
-        <item>Facebook</item>
-        <item>Twitter</item>
     </array>
 
 </resources>

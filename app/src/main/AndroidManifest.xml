@@ -23,7 +23,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -32,7 +31,6 @@
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider162705600963380"
             android:exported="true" />
-
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -52,7 +50,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-
         <activity android:name=".ui.notes.NotesActivity"
             android:label="@string/app_name">
             <intent-filter>
@@ -63,7 +60,7 @@
         </activity>
         <activity
             android:name=".ui.viewingnote.ViewNoteActivity"
-            android:label="@string/view_note" />
+            android:label="@string/view" />
         <activity
             android:name=".ui.editingnote.EditNoteActivity"
             android:label="@string/to_edit"

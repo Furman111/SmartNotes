@@ -152,7 +152,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
         @Override
         protected void onPreExecute() {
-            reqHeight = ctx.getResources().getDimensionPixelSize(R.dimen.image_view_tumbnail);
+            reqHeight = ctx.getResources().getDimensionPixelSize(R.dimen.list_item_iv_tumbnail_size);
             reqWidth = reqHeight;
         }
 

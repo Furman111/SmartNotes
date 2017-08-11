@@ -139,7 +139,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                     if (files[0].contains(Environment.getExternalStorageDirectory().getAbsolutePath())) {
                         if (!Environment.getExternalStorageState().equals(
                                 Environment.MEDIA_MOUNTED)) {
-                            Toast.makeText(ViewNoteActivity.this, getString(R.string.external_storage_is_invalid), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ViewNoteActivity.this, getString(R.string.external_storage_is_not_available), Toast.LENGTH_SHORT).show();
                         } else
                             writeNoteToFile(files[0]);
                     } else
@@ -152,7 +152,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     private void writeNoteToFile(String filePath) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(filePath + "/" + note.getTitle() + ".txt")));
-            bufferedWriter.write(getString(R.string.note_tile) + "\n" + note.getTitle() + "\n\n" + getString(R.string.note_body) + "\n" + note.getBody());
+            bufferedWriter.write(getString(R.string.note_title) + "\n" + note.getTitle() + "\n\n" + getString(R.string.note_body) + "\n" + note.getBody());
             if(!note.getImportance().equals(Note.NO_IMPORTANCE)) {
                 String importance = null;
                 switch (note.getImportance()){
@@ -291,7 +291,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                     intent.putExtra(MapActivity.NOTE_LOCATION, loc);
                     ViewNoteActivity.this.startActivityForResult(intent, SHOW_NOTE_REQUEST_CODE);
                 } else
-                    Toast.makeText(ViewNoteActivity.this, getString(R.string.no_geodata), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewNoteActivity.this, getString(R.string.location_is_not_availiable), Toast.LENGTH_SHORT).show();
             }
         });
     }

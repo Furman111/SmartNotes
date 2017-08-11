@@ -31,8 +31,8 @@
             android:layout_marginEnd="3dp"
             android:layout_marginBottom="3dp"
             android:layout_marginTop="3dp"
-            android:maxHeight="@dimen/image_view_tumbnail"
-            android:maxWidth="@dimen/image_view_tumbnail"
+            android:maxHeight="@dimen/list_item_iv_tumbnail_size"
+            android:maxWidth="@dimen/list_item_iv_tumbnail_size"
             android:scaleType="centerCrop" />
 
         <TextView

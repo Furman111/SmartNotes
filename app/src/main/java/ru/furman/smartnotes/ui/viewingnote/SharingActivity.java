@@ -170,8 +170,8 @@ public abstract class SharingActivity extends AppCompatActivity {
         if (att != null)
             parameters.put(VKApiConst.ATTACHMENTS, att);
 
-        parameters.put(VKApiConst.MESSAGE, this.getResources().getString(R.string.note_share) + " " +
-                note.getTitle() + "\n\n" +
+        parameters.put(VKApiConst.MESSAGE, note.getTitle() +
+                "\n\n" +
                 note.getBody());
 
         if (note.getLocation().latitude != Note.NO_LATITUDE) {

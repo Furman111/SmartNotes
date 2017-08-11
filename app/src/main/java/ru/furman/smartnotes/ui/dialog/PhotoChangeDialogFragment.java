@@ -35,7 +35,7 @@ public class PhotoChangeDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.photo))
-                .setItems(R.array.photo_array, new DialogInterface.OnClickListener() {
+                .setItems(R.array.photo_change_items_array, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {

@@ -33,8 +33,8 @@ public class PhotoPickerDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getResources().getString(R.string.add_photo))
-                .setItems(R.array.photo_picker_array, new DialogInterface.OnClickListener() {
+        builder.setTitle(getResources().getString(R.string.to_add_photo))
+                .setItems(R.array.photo_picker_items_array, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {

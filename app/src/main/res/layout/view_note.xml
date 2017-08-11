@@ -28,7 +28,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="3dp"
-                    android:text="@string/name_text_view"
+                    android:text="@string/note_title"
                     android:textSize="18sp" />
 
                 <TextView
@@ -47,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:padding="3dp"
                     android:textSize="18sp"
-                    android:text="@string/body_text_view"/>
+                    android:text="@string/note_body"/>
 
                 <TextView
                     android:id="@+id/note_body"
@@ -116,7 +116,7 @@
             android:layout_margin="5dp"
             android:background="@color/positiveBtnBackground"
             android:padding="10dp"
-            android:text="@string/export_to_txt"
+            android:text="@string/to_export_to_txt"
             android:textColor="@color/textColorButton" />
 
     </LinearLayout>
