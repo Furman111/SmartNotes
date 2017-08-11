@@ -1,5 +1,6 @@
 package ru.furman.smartnotes;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -9,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ImageFiles {
 
@@ -79,6 +82,18 @@ public class ImageFiles {
                 destination.close();
             }
         }
+    }
+
+    public static File createImageFile(Context ctx) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = ctx.getFilesDir();
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        return image;
     }
 
 }

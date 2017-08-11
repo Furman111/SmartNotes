@@ -18,7 +18,8 @@
     <string name="export_to_txt">Экспортировать в .txt</string>
     <string name="to_choose_directory">Выбрать директорию</string>
     <string name="to_choose">Выбрать</string>
-    <string name="permissions_are_not_granted">Права не были предоставлены</string>
+    <string name="storage_permissions_are_not_granted">Права для операций с фото не были предоставлены</string>
+    <string name="location_permissions_are_not_granted">Права для определения местоположения не были предоставлены</string>
     <string name="note_is_exported">Заметка экспортирована</string>
     <string name="error">Ошибка</string>
     <string name="add_photo">Добавить фотографию</string>
@@ -47,6 +48,7 @@
     <string name="green_importance">Обычная</string>
     <string name="name_text_view">Имя заметки:</string>
     <string name="body_text_view">Описание:</string>
+    <string name="camera_is_not_available">Камера не доступна</string>
 
 
     <string name="facebook_app_id">162705600963380</string>

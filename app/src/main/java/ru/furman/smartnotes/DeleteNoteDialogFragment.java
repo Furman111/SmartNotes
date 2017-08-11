@@ -9,23 +9,22 @@ import android.os.Bundle;
 
 public class DeleteNoteDialogFragment extends DialogFragment {
 
-    public interface NoticeDialogListener{
-        void onDialogPositiveClick(DialogFragment dialog);
-        void onDialogNegativeClick(DialogFragment dialog);
+    public interface DeleteNoteDialogFragmentListener {
+        void deleteNote();
     }
 
-    private NoticeDialogListener listener;
+    private DeleteNoteDialogFragmentListener listener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof NoticeDialogListener){
-            listener = (NoticeDialogListener) context;
+        if (context instanceof DeleteNoteDialogFragmentListener){
+            listener = (DeleteNoteDialogFragmentListener) context;
         }
         else
             throw new ClassCastException(context.toString()
-                    + " must implement NoticeDialogListener");
+                    + " must implement DeleteNoteDialogFragmentListener");
     }
 
     @Override
@@ -36,13 +35,13 @@ public class DeleteNoteDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.to_delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.onDialogPositiveClick(DeleteNoteDialogFragment.this);
+                        listener.deleteNote();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.onDialogNegativeClick(DeleteNoteDialogFragment.this);
+
                     }
                 });
 

@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import ru.furman.smartnotes.database.DB;
+import ru.furman.smartnotes.editnote.EditNoteActivity;
 
 public class MainActivity extends AppCompatActivity {
 

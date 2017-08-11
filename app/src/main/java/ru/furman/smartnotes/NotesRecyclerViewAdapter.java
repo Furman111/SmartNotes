@@ -16,6 +16,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.furman.smartnotes.database.DB;
+import ru.furman.smartnotes.editnote.EditNoteActivity;
 import ru.furman.smartnotes.viewingnote.ViewNoteActivity;
 
 public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder> {

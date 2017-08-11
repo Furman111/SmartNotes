@@ -1,6 +1,5 @@
 package ru.furman.smartnotes.viewingnote;
 
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
@@ -37,23 +36,24 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import ru.furman.smartnotes.BackgroundUtil;
 import ru.furman.smartnotes.DeleteNoteDialogFragment;
-import ru.furman.smartnotes.EditNoteActivity;
+import ru.furman.smartnotes.PermissionsUtil;
+import ru.furman.smartnotes.editnote.EditNoteActivity;
 import ru.furman.smartnotes.ImageFiles;
 import ru.furman.smartnotes.MapActivity;
 import ru.furman.smartnotes.Note;
 import ru.furman.smartnotes.R;
-import ru.furman.smartnotes.Util;
 import ru.furman.smartnotes.ViewImageActivity;
 import ru.furman.smartnotes.database.DB;
 
-public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
+public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.DeleteNoteDialogFragmentListener {
 
     private Note note;
     private DB db;
     private TextView body, title;
     private View backgroundView;
-    private FilePickerDialog dialog;
+    private FilePickerDialog filePickerDialog;
     private ImageView noteIV;
     private MapView mapView;
     private GoogleMap map;
@@ -68,7 +68,6 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.view_note);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         db = new DB(this);
@@ -102,12 +101,15 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         importBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.show();
+                if(PermissionsUtil.isStoragePermissionsGranted(ViewNoteActivity.this))
+                    filePickerDialog.show();
+                else
+                    PermissionsUtil.verifyStoragePermissions(ViewNoteActivity.this);
             }
         });
 
         backgroundView = findViewById(R.id.background_layout);
-        Util.setBackgroundWithImportance(this, backgroundView, note);
+        BackgroundUtil.setBackgroundWithImportance(this, backgroundView, note);
 
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.getMapAsync(this);
@@ -125,12 +127,12 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         properties.offset = new File(DialogConfigs.DEFAULT_DIR);
         properties.extensions = null;
 
-        dialog = new FilePickerDialog(this, properties);
-        dialog.setTitle(getString(R.string.to_choose_directory));
-        dialog.setPositiveBtnName(getString(R.string.to_choose));
-        dialog.setNegativeBtnName(getString(R.string.cancel));
+        filePickerDialog = new FilePickerDialog(this, properties);
+        filePickerDialog.setTitle(getString(R.string.to_choose_directory));
+        filePickerDialog.setPositiveBtnName(getString(R.string.to_choose));
+        filePickerDialog.setNegativeBtnName(getString(R.string.cancel));
 
-        dialog.setDialogSelectionListener(new DialogSelectionListener() {
+        filePickerDialog.setDialogSelectionListener(new DialogSelectionListener() {
             @Override
             public void onSelectedFilePaths(String[] files) {
                 if (files != null) {
@@ -227,7 +229,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                     loader.execute(note.getPhoto());
                 } else
                     noteIV.setImageDrawable(null);
-                Util.setBackgroundWithImportance(this, backgroundView, note);
+                BackgroundUtil.setBackgroundWithImportance(this, backgroundView, note);
                 Toast.makeText(this, getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;
             case EditNoteActivity.DELETED_RESULT_CODE:
@@ -249,17 +251,14 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case FilePickerDialog.EXTERNAL_READ_PERMISSION_GRANT: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (dialog != null) {
-                        dialog.show();
-                    }
-                } else {
-                    Toast.makeText(this, getString(R.string.permissions_are_not_granted), Toast.LENGTH_SHORT).show();
-                }
+            case PermissionsUtil.REQUEST_EXTERNAL_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    filePickerDialog.show();
+                } else
+                    Toast.makeText(this, R.string.storage_permissions_are_not_granted, Toast.LENGTH_LONG).show();
+                break;
             }
         }
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -356,17 +355,12 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void deleteNote() {
         if (!note.getPhoto().equals(Note.NO_PHOTO))
             ImageFiles.deleteFile(note.getPhoto());
         db.deleteNote(note.getId());
         setResult(EditNoteActivity.DELETED_RESULT_CODE);
         finish();
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
     }
 
     private class ImageLoader extends AsyncTask<String, Void, Bitmap> {

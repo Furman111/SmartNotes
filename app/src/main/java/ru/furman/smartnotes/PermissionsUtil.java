@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-public class Util {
+public abstract class PermissionsUtil {
 
     public static final int REQUEST_EXTERNAL_STORAGE = 1;
     public static String[] PERMISSIONS_STORAGE = {
@@ -30,23 +30,6 @@ public class Util {
     public static String[] PERMISSIONS_LOCATION = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
-
-    public static void setBackgroundWithImportance(Context ctx,View view,Note note){
-        switch (note.getImportance()){
-            case Note.GREEN_IMPORTANCE:
-                view.setBackground(ContextCompat.getDrawable(ctx,R.drawable.green_background_gradient));
-                break;
-            case Note.RED_IMPORTANCE:
-                view.setBackground(ContextCompat.getDrawable(ctx,R.drawable.red_background_gradient));
-                break;
-            case Note.YELLOW_IMPORTANCE:
-                view.setBackground(ContextCompat.getDrawable(ctx,R.drawable.yellow_background_gradient));
-                break;
-            case Note.NO_IMPORTANCE:
-                view.setBackgroundColor(ContextCompat.getColor(ctx,R.color.zeroImportance));
-                break;
-        }
-    }
 
     public static void verifyStoragePermissions(Activity activity) {
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -60,6 +43,14 @@ public class Util {
         }
     }
 
+    public static boolean isStoragePermissionsGranted(Activity activity){
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if(permission==PackageManager.PERMISSION_GRANTED)
+            return true;
+        return false;
+    }
+
     public static void verifyLocationPermissions(Activity activity){
         int permission = ActivityCompat.checkSelfPermission(activity,Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -70,6 +61,14 @@ public class Util {
                     REQUEST_LOCATION
             );
         }
+    }
+
+    public static boolean isLocationPermissionsGranted(Activity activity){
+        int permission = ActivityCompat.checkSelfPermission(activity,Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if(permission==PackageManager.PERMISSION_GRANTED)
+            return true;
+        return false;
     }
 
 }

@@ -1,10 +1,5 @@
-package ru.furman.smartnotes;
+package ru.furman.smartnotes.editnote;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -42,34 +37,41 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
+import ru.furman.smartnotes.BackgroundUtil;
+import ru.furman.smartnotes.DeleteNoteDialogFragment;
+import ru.furman.smartnotes.ImageFiles;
+import ru.furman.smartnotes.MainActivity;
+import ru.furman.smartnotes.MapActivity;
+import ru.furman.smartnotes.Note;
+import ru.furman.smartnotes.PermissionsUtil;
+import ru.furman.smartnotes.R;
+import ru.furman.smartnotes.ViewImageActivity;
 import ru.furman.smartnotes.database.DB;
 
-public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.NoticeDialogListener {
+public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback,
+        DeleteNoteDialogFragment.DeleteNoteDialogFragmentListener,
+        PhotoPickerDialogFragment.PhotoPickerDialogListener,
+        PhotoChangeDialogFragment.PhotoChangeDialogFragmentListener {
 
     private EditText title, body;
     private ImageView photoIV;
     private RadioGroup importanceRadioGroup;
-    private View background;
+    private View backgroundView;
     private Note note;
     private DB db;
     private MapView mapView;
     private GoogleMap googleMap;
     private Marker marker;
     private LocationManager locationManager;
-
-    private String oldPhoto, currentPhoto, newPhoto;
-
+    private String oldPhoto, currentPhoto;
     private LatLng currentLoc, newLoc;
 
-    public static final int PHOTO_PICK_REQUEST_CODE = 3;
-    public static final int CAMERA_REQUEST_CODE = 4;
-    public static final int CHANGE_NOTE_LOCATION_REQUEST_CODE = 5;
-
-    public static final int SAVED_RESULT_CODE = 1;
-    public static final int DELETED_RESULT_CODE = 2;
+    public static final int PHOTO_PICK_REQUEST_CODE = 1;
+    public static final int CAMERA_REQUEST_CODE = 2;
+    public static final int CHANGE_NOTE_LOCATION_REQUEST_CODE = 3;
+    public static final int SAVED_RESULT_CODE = 4;
+    public static final int DELETED_RESULT_CODE = 5;
 
     public static final String NOTE_TAG = "note";
 
@@ -77,7 +79,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.edit_note);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         note = getIntent().getParcelableExtra(MainActivity.NOTE_TAG);
@@ -85,7 +86,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         body = (EditText) findViewById(R.id.note_body_edit);
         Button saveBtn = (Button) findViewById(R.id.save_btn);
         Button cancelBtn = (Button) findViewById(R.id.cancel_btn);
-        background = findViewById(R.id.background_layout);
+        backgroundView = findViewById(R.id.background_layout);
         photoIV = (ImageView) findViewById(R.id.note_imageIV);
         mapView = (MapView) findViewById(R.id.map);
 
@@ -95,18 +96,18 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         importanceRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                switch (checkedId){
+                switch (checkedId) {
                     case R.id.red_importance_radio_btn:
-                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.red_background_gradient));
+                        backgroundView.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.red_background_gradient));
                         break;
                     case R.id.green_importance_radio_btn:
-                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.green_background_gradient));
+                        backgroundView.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.green_background_gradient));
                         break;
                     case R.id.yellow_importance_radio_btn:
-                        background.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.yellow_background_gradient));
+                        backgroundView.setBackground(ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.yellow_background_gradient));
                         break;
                     case -1:
-                        background.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this,R.color.zeroImportance));
+                        backgroundView.setBackgroundColor(ContextCompat.getColor(EditNoteActivity.this, R.color.zeroImportance));
                         break;
                 }
             }
@@ -114,7 +115,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         currentLoc = null;
         if (note != null) {
-            setDefaultSelection();
+            setRadioGroupSelectionWithNote();
             if (note.getLocation().longitude != Note.NO_LONGITUDE)
                 currentLoc = note.getLocation();
             else
@@ -125,12 +126,45 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             requestLocation();
         }
         newLoc = null;
+        mapView.getMapAsync(this);
+        mapView.onCreate(savedInstanceState);
+
+        if (note != null) {
+            title.setText(note.getTitle());
+            body.setText(note.getBody());
+            BackgroundUtil.setBackgroundWithImportance(this, backgroundView, note);
+        } else {
+            getSupportActionBar().setTitle(getResources().getString(R.string.new_note));
+        }
+
+        if (note != null && !note.getPhoto().equals(Note.NO_PHOTO)) {
+            oldPhoto = note.getPhoto();
+            ImageLoader loader = new ImageLoader();
+            loader.execute(oldPhoto);
+            currentPhoto = oldPhoto;
+        } else {
+            currentPhoto = null;
+            oldPhoto = null;
+        }
+
+        photoIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentPhoto == null) {
+                    PhotoPickerDialogFragment dialog = new PhotoPickerDialogFragment();
+                    dialog.show(getFragmentManager(), null);
+                } else {
+                    PhotoChangeDialogFragment chDialog = new PhotoChangeDialogFragment();
+                    chDialog.show(getFragmentManager(), null);
+                }
+            }
+        });
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (note != null) {
-                    setDefaultSelection();
+                    setRadioGroupSelectionWithNote();
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
                     if (oldPhoto != null) {
@@ -173,9 +207,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         }
                         if (newLoc != null)
                             currentLoc = newLoc;
-                        else if (currentLoc == null) {
+                        else if (currentLoc == null)
                             currentLoc = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
-                        }
                         db.editNote(note.getId(), new Note(title.getText().toString(), body.getText().toString(), getImportance(), currentPhoto, currentLoc, -1));
                     } else {
                         if (currentPhoto == null) currentPhoto = Note.NO_PHOTO;
@@ -193,44 +226,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        if (note != null) {
-            title.setText(note.getTitle());
-            body.setText(note.getBody());
-            Util.setBackgroundWithImportance(this, background, note);
-        } else {
-            getSupportActionBar().setTitle(getResources().getString(R.string.new_note));
-        }
-
-        if (note != null && !note.getPhoto().equals(Note.NO_PHOTO)) {
-            oldPhoto = note.getPhoto();
-            ImageLoader loader = new ImageLoader();
-            loader.execute(oldPhoto);
-            currentPhoto = note.getPhoto();
-        } else {
-            currentPhoto = null;
-            oldPhoto = null;
-        }
-
-        photoIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentPhoto == null) {
-                    PhotoPickerDialogFragment dialog = new PhotoPickerDialogFragment();
-                    dialog.show(getFragmentManager(), null);
-                } else {
-                    PhotoChangeDialogFragment chDialog = new PhotoChangeDialogFragment();
-                    chDialog.show(getFragmentManager(), null);
-                }
-            }
-        });
-
-        mapView.getMapAsync(this);
-
-        mapView.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
     }
 
-    private String getImportance(){
+    private String getImportance() {
         String importance = null;
         switch (importanceRadioGroup.getCheckedRadioButtonId()) {
             case R.id.red_importance_radio_btn:
@@ -290,7 +289,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         return super.onOptionsItemSelected(item);
     }
 
-    public void setDefaultSelection() {
+    public void setRadioGroupSelectionWithNote() {
         switch (note.getImportance()) {
             case Note.GREEN_IMPORTANCE:
                 importanceRadioGroup.check(R.id.green_importance_radio_btn);
@@ -327,10 +326,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onLowMemory() {
-        if(currentPhoto!=null)
-            deleteFile(currentPhoto);
-        if(newPhoto!=null)
-            deleteFile(newPhoto);
+        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
+            ImageFiles.deleteFile(currentPhoto);
+        if(locationManager!=null)
+            locationManager.removeUpdates(locationListener);
         mapView.onLowMemory();
         super.onLowMemory();
     }
@@ -358,6 +357,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         ImageFiles.deleteFile(currentPhoto);
                     }
                     currentPhoto = newPhoto;
+                    newPhoto = null;
                 }
                 return;
             case PHOTO_PICK_REQUEST_CODE:
@@ -365,7 +365,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     Uri selectedPhoto = data.getData();
                     File file = null;
                     try {
-                        file = PhotoPickerDialogFragment.createImageFile(this);
+                        file = ImageFiles.createImageFile(this);
+                        newPhoto = file.getAbsolutePath();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -379,6 +380,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                             ImageFiles.deleteFile(currentPhoto);
                         currentPhoto = file.getPath();
+                        newPhoto = null;
                     }
                     ImageLoader loader = new ImageLoader();
                     loader.execute(currentPhoto);
@@ -402,11 +404,97 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void onDeletePhoto() {
+    @Override
+    public void deleteNote() {
+        if (!note.getPhoto().equals(Note.NO_PHOTO))
+            ImageFiles.deleteFile(note.getPhoto());
+        db.deleteNote(note.getId());
+        setResult(DELETED_RESULT_CODE);
+        finish();
+    }
+
+    private String newPhoto;
+
+    @Override
+    public void deletePhoto() {
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
             ImageFiles.deleteFile(currentPhoto);
         currentPhoto = null;
         photoIV.setImageResource(R.mipmap.nophoto);
+    }
+
+    @Override
+    public void showPhoto() {
+        Intent photoView = new Intent(this, ViewImageActivity.class);
+        photoView.putExtra(ViewImageActivity.IMAGE_SRC, this.currentPhoto);
+        startActivity(photoView);
+    }
+
+    @Override
+    public void changePhoto() {
+        PhotoPickerDialogFragment photoPickerDialogFragment = new PhotoPickerDialogFragment();
+        photoPickerDialogFragment.show(this.getFragmentManager(), null);
+    }
+
+    @Override
+    public void pickPhotoFromGallery() {
+        if (PermissionsUtil.isStoragePermissionsGranted(this))
+            startGallery();
+        else
+            PermissionsUtil.verifyStoragePermissions(this);
+    }
+
+    private void startGallery() {
+        Intent photoPickerItent = new Intent(Intent.ACTION_PICK);
+        photoPickerItent.setType("image/*");
+        this.startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
+    }
+
+    @Override
+    public void pickPhotoWithCamera() {
+        Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (photoIntent.resolveActivity(this.getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = ImageFiles.createImageFile(this);
+                newPhoto = photoFile.getAbsolutePath();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "ru.furman.smartnotes.fileprovider",
+                        photoFile);
+                photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                this.startActivityForResult(photoIntent, CAMERA_REQUEST_CODE);
+            }
+        } else {
+            Toast.makeText(this, R.string.camera_is_not_available, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class ImageLoader extends AsyncTask<String, Void, Bitmap> {
+
+        private int reqHeight, reqWidth;
+
+        @Override
+        protected void onPreExecute() {
+            reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_height);
+            reqWidth = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_max_width);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            photoIV.setImageBitmap(bitmap);
+            super.onPostExecute(bitmap);
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            String path = params[0];
+            return ImageFiles.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
+        }
     }
 
     @Override
@@ -450,108 +538,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         });
     }
 
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        if (!note.getPhoto().equals(Note.NO_PHOTO))
-            ImageFiles.deleteFile(note.getPhoto());
-        db.deleteNote(note.getId());
-        setResult(DELETED_RESULT_CODE);
-        finish();
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
-    }
-
-    public static class PhotoPickerDialogFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(getResources().getString(R.string.add_photo))
-                    .setItems(R.array.photo_picker_array, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case 1:
-                                    Util.verifyStoragePermissions(getActivity());
-                                    Intent photoPickerItent = new Intent(Intent.ACTION_PICK);
-                                    photoPickerItent.setType("image/*");
-                                    getActivity().startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
-                                    return;
-                                case 0:
-                                    Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    if (photoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                                        File photoFile = null;
-                                        try {
-                                            photoFile = createImageFile(getActivity());
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                        if (photoFile != null) {
-                                            Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                                                    "ru.furman.smartnotes.fileprovider",
-                                                    photoFile);
-                                            photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                                            getActivity().startActivityForResult(photoIntent, CAMERA_REQUEST_CODE);
-                                        }
-                                    }
-                            }
-                        }
-                    });
-
-            return builder.create();
-        }
-
-
-        public static File createImageFile(Context ctx) throws IOException {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String imageFileName = "JPEG_" + timeStamp + "_";
-            File storageDir = ctx.getFilesDir();
-            File image = File.createTempFile(
-                    imageFileName,
-                    ".jpg",
-                    storageDir
-            );
-            ((EditNoteActivity) ctx).newPhoto = image.getAbsolutePath();
-            return image;
-        }
-    }
-
-
-    public static class PhotoChangeDialogFragment extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(getResources().getString(R.string.photo))
-                    .setItems(R.array.photo_array, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case 0:
-                                    Intent photoView = new Intent(getActivity(), ViewImageActivity.class);
-                                    photoView.putExtra(ViewImageActivity.IMAGE_SRC, ((EditNoteActivity) getActivity()).currentPhoto);
-                                    startActivity(photoView);
-                                    return;
-                                case 1:
-                                    PhotoPickerDialogFragment mdialog = new PhotoPickerDialogFragment();
-                                    mdialog.show(getActivity().getFragmentManager(), null);
-                                    return;
-                                case 2:
-                                    ((EditNoteActivity) getActivity()).onDeletePhoto();
-                                    ((EditNoteActivity) getActivity()).photoIV.setImageResource(R.mipmap.nophoto);
-                            }
-                        }
-                    });
-
-            return builder.create();
-        }
-    }
-
-
     private void setMapLocation(LatLng location) {
         if (location == null) {
             if (marker != null)
@@ -573,72 +559,44 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-    private class ImageLoader extends AsyncTask<String, Void, Bitmap> {
+    public static final String LOCATION_LOG_TAG = "location_logs";
 
-        private int reqHeight, reqWidth;
-
-        @Override
-        protected void onPreExecute() {
-            reqHeight = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_max_width);
-            reqWidth = getResources().getDimensionPixelSize(R.dimen.edit_note_iv_max_width);
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            photoIV.setImageBitmap(bitmap);
-            super.onPostExecute(bitmap);
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            String path = params[0];
-            return ImageFiles.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
-        }
+    private void requestLocation() {
+        if (!PermissionsUtil.isLocationPermissionsGranted(this))
+            PermissionsUtil.verifyLocationPermissions(this);
+        else
+            requestLocationWithLocationManager();
     }
 
-    public void requestLocation() {
-        Util.verifyLocationPermissions(this);
-
+    private void requestLocationWithLocationManager() {
         if (Build.VERSION.SDK_INT >= 23 &&
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("Location", "no permissions");
+            Log.d(LOCATION_LOG_TAG, "no permissions");
             return;
         }
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        Log.d("Location", "request location");
+        Log.d(LOCATION_LOG_TAG, "request location");
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Log.d("Location", "request location gps");
+            Log.d(LOCATION_LOG_TAG, "request location gps");
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
         }
         if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            Log.d("Location", "request location network");
+            Log.d(LOCATION_LOG_TAG, "request location network");
             locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case Util.REQUEST_LOCATION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    requestLocation();
-                }
-                break;
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            Log.d("Location", "location got");
+            Log.d(LOCATION_LOG_TAG, "location got");
             currentLoc = new LatLng(location.getLatitude(), location.getLongitude());
             if (googleMap != null)
                 setMapLocation(currentLoc);
+            locationManager.removeUpdates(this);
         }
 
         @Override
@@ -656,5 +614,24 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
         }
     };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PermissionsUtil.REQUEST_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    requestLocationWithLocationManager();
+                } else
+                    Toast.makeText(this, R.string.location_permissions_are_not_granted, Toast.LENGTH_LONG).show();
+                break;
+            case PermissionsUtil.REQUEST_EXTERNAL_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    startGallery();
+                } else
+                    Toast.makeText(this, R.string.storage_permissions_are_not_granted, Toast.LENGTH_LONG).show();
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 
 }

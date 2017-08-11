@@ -64,7 +64,7 @@
             android:name=".viewingnote.ViewNoteActivity"
             android:label="@string/view_note" />
         <activity
-            android:name=".EditNoteActivity"
+            android:name=".editnote.EditNoteActivity"
             android:label="@string/to_edit"
             android:windowSoftInputMode="adjustPan" />
         <activity
