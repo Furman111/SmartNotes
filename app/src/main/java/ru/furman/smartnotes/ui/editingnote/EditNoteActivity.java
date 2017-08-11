@@ -524,7 +524,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         EditNoteActivity.this.map = map;
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.getUiSettings().setMapToolbarEnabled(false);
-        map.getUiSettings().setZoomControlsEnabled(true);
+        map.getUiSettings().setAllGesturesEnabled(false);
 
         if (currentLocation != null) {
             String title;
