@@ -44,9 +44,9 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         public ViewHolder(View view) {
             super(view);
             this.background = view.findViewById(R.id.background);
-            this.titleTV = (TextView) view.findViewById(R.id.note_title);
-            this.editIV = (ImageView) view.findViewById(R.id.edit_btn);
-            this.noteIV = (ImageView) view.findViewById(R.id.note_image);
+            this.titleTV = (TextView) view.findViewById(R.id.note_title_tv);
+            this.editIV = (ImageView) view.findViewById(R.id.edit_btn_iv);
+            this.noteIV = (ImageView) view.findViewById(R.id.note_photo_iv);
         }
     }
 

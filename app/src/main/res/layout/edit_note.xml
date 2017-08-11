@@ -30,7 +30,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/note_title_edit"
+                android:id="@+id/note_title_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -50,7 +50,7 @@
 
 
             <EditText
-                android:id="@+id/note_body_edit"
+                android:id="@+id/note_body_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:drawable/editbox_background_normal"
@@ -79,7 +79,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/note_imageIV"
+                android:id="@+id/note_photo_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
@@ -90,13 +90,13 @@
                 android:src="@mipmap/nophoto" />
 
             <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/map"
+                android:id="@+id/map_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_toEndOf="@id/note_imageIV"
-                android:layout_toRightOf="@id/note_imageIV" />
+                android:layout_toEndOf="@id/note_photo_iv"
+                android:layout_toRightOf="@id/note_photo_iv" />
 
         </RelativeLayout>
 

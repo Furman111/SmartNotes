@@ -6,6 +6,6 @@
         android:title="@string/to_delete"
         android:icon="@android:drawable/ic_menu_delete"
         app:showAsAction="always"
-        android:id="@+id/delete_note_edit_menu"/>
+        android:id="@+id/delete_note_menu_item"/>
 
 </menu>

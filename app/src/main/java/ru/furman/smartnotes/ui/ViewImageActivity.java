@@ -22,7 +22,7 @@ public class ViewImageActivity extends AppCompatActivity {
 
         setContentView(R.layout.view_image);
 
-        imageViewTouch = (ImageViewTouch) findViewById(R.id.iv);
+        imageViewTouch = (ImageViewTouch) findViewById(R.id.image_view_touch);
         ImageLoader loader = new ImageLoader();
         loader.execute(getIntent().getStringExtra(IMAGE_SRC));
 

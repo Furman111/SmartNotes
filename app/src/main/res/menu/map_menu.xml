@@ -6,7 +6,7 @@
         android:icon="@android:drawable/ic_menu_save"
         android:title="@string/to_save"
         android:visible="false"
-        android:id="@+id/save"
+        android:id="@+id/save_menu_item"
         app:showAsAction="always"/>
 
 </menu>

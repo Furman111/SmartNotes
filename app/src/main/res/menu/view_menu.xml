@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/edit_note"
+        android:id="@+id/edit_note_menu_item"
         android:icon="@android:drawable/ic_menu_edit"
         android:orderInCategory="1"
         android:title="@string/to_edit"
@@ -42,7 +42,7 @@
 
 
     <item
-        android:id="@+id/delete_note"
+        android:id="@+id/delete_note_menu_item"
         android:icon="@android:drawable/ic_menu_delete"
         android:orderInCategory="3"
         android:title="@string/to_delete"

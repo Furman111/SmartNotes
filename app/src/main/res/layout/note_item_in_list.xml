@@ -21,7 +21,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/note_image"
+            android:id="@+id/note_photo_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
@@ -36,7 +36,7 @@
             android:scaleType="centerCrop" />
 
         <TextView
-            android:id="@+id/note_title"
+            android:id="@+id/note_title_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="10"
@@ -50,7 +50,7 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/edit_btn"
+            android:id="@+id/edit_btn_iv"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginLeft="5dp"

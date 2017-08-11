@@ -73,11 +73,11 @@ public class NotesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add_note:
+            case R.id.add_note_menu_item:
                 Intent intent = new Intent(this, EditNoteActivity.class);
                 startActivityForResult(intent, CREATE_NOTE_REQUEST_CODE);
                 return true;
-            case R.id.show_on_map:
+            case R.id.show_on_map_menu_item:
                 Intent intent1 = new Intent(this, MapActivity.class);
                 intent1.setAction(MapActivity.ACTION_SHOW_NOTES);
                 startActivityForResult(intent1, SHOW_NOTES_ON_MAP_REQUEST_CODE);

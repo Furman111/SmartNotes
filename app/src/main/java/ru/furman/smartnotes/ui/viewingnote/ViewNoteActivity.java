@@ -51,14 +51,14 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
     private Note note;
     private DB db;
-    private TextView body, title;
+    private TextView bodyTV, titleTV;
     private View backgroundView;
     private FilePickerDialog filePickerDialog;
     private ImageView noteIV;
     private MapView mapView;
     private GoogleMap map;
     private Marker marker;
-    private LatLng loc;
+    private LatLng location;
 
     public static final int EDIT_REQUEST_CODE = 1;
     public static final int SHOW_NOTE_REQUEST_CODE = 1;
@@ -75,13 +75,13 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         Intent intent = getIntent();
         note = intent.getParcelableExtra(NOTE_TAG);
 
-        title = (TextView) findViewById(R.id.note_title);
-        title.setText(note.getTitle());
+        titleTV = (TextView) findViewById(R.id.note_title_tv);
+        titleTV.setText(note.getTitle());
 
-        body = (TextView) findViewById(R.id.note_body);
-        body.setText(note.getBody());
+        bodyTV = (TextView) findViewById(R.id.note_body_tv);
+        bodyTV.setText(note.getBody());
 
-        noteIV = (ImageView) findViewById(R.id.note_image);
+        noteIV = (ImageView) findViewById(R.id.note_photo_iv);
         if (!note.getPhoto().equals(Note.NO_PHOTO)) {
             ImageLoader loader = new ImageLoader();
             loader.execute(note.getPhoto());
@@ -97,7 +97,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
         onCreateDialogFilePicker();
 
-        Button importBtn = (Button) findViewById(R.id.export_to_TXT_btn);
+        Button importBtn = (Button) findViewById(R.id.export_to_txt_btn);
         importBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,11 +194,11 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
             case android.R.id.home:
                 finish();
                 break;
-            case R.id.delete_note:
+            case R.id.delete_note_menu_item:
                 DeleteNoteDialogFragment deleteNoteDialogFragment = new DeleteNoteDialogFragment();
                 deleteNoteDialogFragment.show(getSupportFragmentManager(), null);
                 break;
-            case R.id.edit_note:
+            case R.id.edit_note_menu_item:
                 Intent intent = new Intent(this, EditNoteActivity.class);
                 intent.putExtra(EditNoteActivity.NOTE_TAG, note);
                 startActivityForResult(intent, EDIT_REQUEST_CODE);
@@ -222,8 +222,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
                 note = db.getNote(note.getId());
-                title.setText(note.getTitle());
-                body.setText(note.getBody());
+                titleTV.setText(note.getTitle());
+                bodyTV.setText(note.getBody());
                 if (!note.getPhoto().equals(Note.NO_PHOTO)) {
                     ImageLoader loader = new ImageLoader();
                     loader.execute(note.getPhoto());
@@ -240,10 +240,10 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         }
 
         if (note.getLocation().longitude != Note.NO_LONGITUDE)
-            loc = note.getLocation();
+            location = note.getLocation();
         else
-            loc = null;
-        setLocationMap(loc);
+            location = null;
+        setLocationMap(location);
 
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -264,18 +264,19 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setMapToolbarEnabled(false);
 
         if (note.getLocation().longitude != Note.NO_LONGITUDE) {
-            loc = note.getLocation();
+            location = note.getLocation();
         } else {
-            loc = null;
+            location = null;
         }
 
-        if (loc == null)
+        if (location == null)
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
         else {
-            marker = googleMap.addMarker(new MarkerOptions().position(loc)
+            marker = googleMap.addMarker(new MarkerOptions().position(location)
                     .title(note.getTitle()));
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(), MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
             marker.showInfoWindow();
@@ -284,11 +285,11 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if (loc != null) {
+                if (location != null) {
                     Intent intent = new Intent(ViewNoteActivity.this, MapActivity.class);
                     intent.setAction(MapActivity.ACTION_SHOW_NOTE);
                     intent.putExtra(MapActivity.NOTE_TITLE, note.getTitle());
-                    intent.putExtra(MapActivity.NOTE_LOCATION, loc);
+                    intent.putExtra(MapActivity.NOTE_LOCATION, location);
                     ViewNoteActivity.this.startActivityForResult(intent, SHOW_NOTE_REQUEST_CODE);
                 } else
                     Toast.makeText(ViewNoteActivity.this, getString(R.string.location_is_not_availiable), Toast.LENGTH_SHORT).show();
