@@ -77,4 +77,5 @@
             android:theme="@style/VK.Transparent" />
     </application>
 
+
 </manifest>
