@@ -228,7 +228,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                     ImageLoader loader = new ImageLoader();
                     loader.execute(note.getPhoto());
                 } else
-                    noteIV.setImageDrawable(null);
+                    noteIV.setImageResource(R.mipmap.nophoto);
                 BackgroundUtil.setBackgroundWithImportance(this, backgroundView, note);
                 Toast.makeText(this, getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;
