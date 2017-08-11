@@ -196,7 +196,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                 break;
             case R.id.delete_note:
                 DeleteNoteDialogFragment deleteNoteDialogFragment = new DeleteNoteDialogFragment();
-                deleteNoteDialogFragment.show(getFragmentManager(), null);
+                deleteNoteDialogFragment.show(getSupportFragmentManager(), null);
                 break;
             case R.id.edit_note:
                 Intent intent = new Intent(this, EditNoteActivity.class);
@@ -297,17 +297,19 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     }
 
     public void setLocationMap(LatLng location) {
-        if (location == null) {
-            if (marker != null)
-                marker.remove();
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-        } else {
-            if (marker != null)
-                marker.remove();
-            marker = map.addMarker(new MarkerOptions().position(location)
-                    .title(note.getTitle()));
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-            marker.showInfoWindow();
+        if(map!=null) {
+            if (location == null) {
+                if (marker != null)
+                    marker.remove();
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            } else {
+                if (marker != null)
+                    marker.remove();
+                marker = map.addMarker(new MarkerOptions().position(location)
+                        .title(note.getTitle()));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+                marker.showInfoWindow();
+            }
         }
     }
 

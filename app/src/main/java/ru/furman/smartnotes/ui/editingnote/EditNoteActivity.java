@@ -2,6 +2,8 @@ package ru.furman.smartnotes.ui.editingnote;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
@@ -37,6 +39,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import ru.furman.smartnotes.ui.dialog.PhotoChangeDialogFragment;
 import ru.furman.smartnotes.ui.dialog.PhotoPickerDialogFragment;
@@ -154,10 +157,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             public void onClick(View v) {
                 if (currentPhoto == null) {
                     PhotoPickerDialogFragment dialog = new PhotoPickerDialogFragment();
-                    dialog.show(getFragmentManager(), null);
+                    dialog.show(getSupportFragmentManager(), null);
                 } else {
                     PhotoChangeDialogFragment chDialog = new PhotoChangeDialogFragment();
-                    chDialog.show(getFragmentManager(), null);
+                    chDialog.show(getSupportFragmentManager(), null);
                 }
             }
         });
@@ -284,7 +287,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             case R.id.delete_note_edit_menu:
                 if (note != null) {
                     DeleteNoteDialogFragment deleteNoteDialogFragment = new DeleteNoteDialogFragment();
-                    deleteNoteDialogFragment.show(getFragmentManager(), null);
+                    deleteNoteDialogFragment.show(getSupportFragmentManager(), null);
                 }
                 break;
         }
@@ -330,7 +333,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public void onLowMemory() {
         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
             ImageFiles.deleteFile(currentPhoto);
-        if(locationManager!=null)
+        if (locationManager != null)
             locationManager.removeUpdates(locationListener);
         mapView.onLowMemory();
         super.onLowMemory();
@@ -365,19 +368,27 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             case PHOTO_PICK_REQUEST_CODE:
                 if (data != null) {
                     Uri selectedPhoto = data.getData();
+                    String[] filePath = { MediaStore.Images.Media.DATA };
+                    Cursor cursor = getContentResolver().query(selectedPhoto, filePath, null, null, null);
+                    newPhoto=null;
+                    if(cursor!=null) {
+                        cursor.moveToFirst();
+                        newPhoto = cursor.getString(cursor.getColumnIndex(filePath[0]));
+                        cursor.close();
+                    }
+                    if(newPhoto==null)
+                        newPhoto = selectedPhoto.getPath();
                     File file = null;
                     try {
                         file = ImageFiles.createImageFile(this);
-                        newPhoto = file.getAbsolutePath();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     if (file != null) {
-                        newPhoto = selectedPhoto.getPath();
                         try {
                             ImageFiles.copyFile(new File(newPhoto), file);
                         } catch (IOException e) {
-                            Toast.makeText(this, getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getResources().getString(R.string.error)+" "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
                             ImageFiles.deleteFile(currentPhoto);
@@ -435,7 +446,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void changePhoto() {
         PhotoPickerDialogFragment photoPickerDialogFragment = new PhotoPickerDialogFragment();
-        photoPickerDialogFragment.show(this.getFragmentManager(), null);
+        photoPickerDialogFragment.show(this.getSupportFragmentManager(), null);
     }
 
     @Override
@@ -449,7 +460,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private void startGallery() {
         Intent photoPickerItent = new Intent(Intent.ACTION_PICK);
         photoPickerItent.setType("image/*");
-        this.startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
+        if (photoPickerItent.resolveActivity(getPackageManager()) != null)
+            this.startActivityForResult(photoPickerItent, PHOTO_PICK_REQUEST_CODE);
+        else
+            Toast.makeText(this, R.string.gallery_is_not_available, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -468,6 +482,12 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         "ru.furman.smartnotes.fileprovider",
                         photoFile);
                 photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
+                List<ResolveInfo> resInfoList = this.getPackageManager().queryIntentActivities(photoIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    this.grantUriPermission(packageName, photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
                 this.startActivityForResult(photoIntent, CAMERA_REQUEST_CODE);
             }
         } else {
@@ -541,23 +561,25 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void setMapLocation(LatLng location) {
-        if (location == null) {
-            if (marker != null)
-                marker.remove();
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-        } else {
-            String title;
-            if (marker != null) {
-                title = marker.getTitle();
-                marker.remove();
-            } else if (note != null)
-                title = note.getTitle();
-            else
-                title = getResources().getString(R.string.new_note);
-            marker = googleMap.addMarker(new MarkerOptions().position(location)
-                    .title(title));
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
-            marker.showInfoWindow();
+        if (googleMap != null) {
+            if (location == null) {
+                if (marker != null)
+                    marker.remove();
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(MapActivity.DEFAULT_LOCATION, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+            } else {
+                String title;
+                if (marker != null) {
+                    title = marker.getTitle();
+                    marker.remove();
+                } else if (note != null)
+                    title = note.getTitle();
+                else
+                    title = getResources().getString(R.string.new_note);
+                marker = googleMap.addMarker(new MarkerOptions().position(location)
+                        .title(title));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, MapActivity.DEFAULT_ZOOM_LITTLE_MAP));
+                marker.showInfoWindow();
+            }
         }
     }
 

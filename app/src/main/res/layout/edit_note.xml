@@ -104,7 +104,7 @@
 
     <RadioGroup
         android:id="@+id/importance_radio_group"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/radio_group_height"
         android:layout_gravity="center_horizontal|center_vertical"
         android:layout_margin="@dimen/edit_note_margin"
@@ -116,8 +116,6 @@
             android:id="@+id/red_importance_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
             android:text="@string/red_importance"
             android:textSize="@dimen/radio_group_text_size" />
 
@@ -125,8 +123,6 @@
             android:id="@+id/yellow_importance_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
             android:text="@string/yellow_importance"
             android:textSize="@dimen/radio_group_text_size" />
 
@@ -134,8 +130,6 @@
             android:id="@+id/green_importance_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
             android:text="@string/green_importance"
             android:textSize="@dimen/radio_group_text_size" />
     </RadioGroup>

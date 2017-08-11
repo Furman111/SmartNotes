@@ -49,6 +49,7 @@
     <string name="name_text_view">Имя заметки:</string>
     <string name="body_text_view">Описание:</string>
     <string name="camera_is_not_available">Камера не доступна</string>
+    <string name="gallery_is_not_available">Галлерея не доступна</string>
 
 
     <string name="facebook_app_id">162705600963380</string>

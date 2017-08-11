@@ -13,7 +13,7 @@
         android:icon="@android:drawable/ic_menu_share"
         android:orderInCategory="2"
         android:title="@string/to_share"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
 
         <menu>
 
@@ -22,19 +22,19 @@
                 android:icon="@mipmap/vk_icon"
                 android:orderInCategory="2"
                 android:title="@string/vk_name"
-                app:showAsAction="ifRoom|withText" />
+                app:showAsAction="always|withText" />
             <item
                 android:id="@+id/share_fb_menu_item"
                 android:icon="@drawable/com_facebook_button_icon_blue"
                 android:orderInCategory="2"
                 android:title="@string/facebook"
-                app:showAsAction="ifRoom|withText" />
+                app:showAsAction="always|withText" />
             <item
                 android:id="@+id/share_twitter_menu_item"
                 android:icon="@mipmap/twitter_icon"
                 android:orderInCategory="2"
                 android:title="@string/twitter"
-                app:showAsAction="ifRoom|withText" />
+                app:showAsAction="always|withText" />
 
         </menu>
 

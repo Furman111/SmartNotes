@@ -9,7 +9,7 @@
     <dimen name="edit_note_iv_height">250dp</dimen>
 
     <dimen name="radio_group_height">30dp</dimen>
-    <dimen name="radio_group_text_size">20sp</dimen>
+    <dimen name="radio_group_text_size">18sp</dimen>
     <dimen name="edit_note_body_edit_text_max_height">170dp</dimen>
 
     <dimen name="card_view_radius">8dp</dimen>
