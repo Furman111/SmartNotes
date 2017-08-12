@@ -58,23 +58,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.viewingnote.ViewNoteActivity"
             android:label="@string/view" />
+
         <activity
             android:name=".ui.editingnote.EditNoteActivity"
             android:label="@string/to_edit"
             android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".ui.ViewImageActivity"
             android:label="@string/view" />
+
         <activity
             android:name=".ui.MapActivity"
             android:label="@string/title_activity_maps" />
+
         <activity
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
+
     </application>
 
 
