@@ -2,22 +2,9 @@ package ru.furman.smartnotes.utils;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 public abstract class PermissionsUtil {
 

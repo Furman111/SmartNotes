@@ -69,7 +69,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private GoogleMap map;
     private Marker marker;
     private LocationManager locationManager;
-    private String oldPhoto, currentPhoto;
+    private String oldPhotoPath, currentPhotoPath;
     private LatLng currentLocation, newLocation;
 
     public static final int PHOTO_PICK_REQUEST_CODE = 1;
@@ -143,19 +143,19 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         if (note != null && !note.getPhoto().equals(Note.NO_PHOTO)) {
-            oldPhoto = note.getPhoto();
+            oldPhotoPath = note.getPhoto();
             ImageLoader loader = new ImageLoader();
-            loader.execute(oldPhoto);
-            currentPhoto = oldPhoto;
+            loader.execute(oldPhotoPath);
+            currentPhotoPath = oldPhotoPath;
         } else {
-            currentPhoto = null;
-            oldPhoto = null;
+            currentPhotoPath = null;
+            oldPhotoPath = null;
         }
 
         photoIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentPhoto == null) {
+                if (currentPhotoPath == null) {
                     PhotoPickerDialogFragment dialog = new PhotoPickerDialogFragment();
                     dialog.show(getSupportFragmentManager(), null);
                 } else {
@@ -172,22 +172,22 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     setRadioGroupSelectionWithNote();
                     titleET.setText(note.getTitle());
                     bodyET.setText(note.getBody());
-                    if (oldPhoto != null) {
+                    if (oldPhotoPath != null) {
                         ImageLoader loader = new ImageLoader();
-                        loader.execute(oldPhoto);
+                        loader.execute(oldPhotoPath);
                     } else
                         photoIV.setImageResource(R.mipmap.nophoto);
-                    if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-                        ImageFiles.deleteFile(currentPhoto);
-                    currentPhoto = oldPhoto;
+                    if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
+                        ImageFiles.deleteFile(currentPhotoPath);
+                    currentPhotoPath = oldPhotoPath;
                 } else {
                     importanceRadioGroup.clearCheck();
                     titleET.setText("");
                     bodyET.setText("");
                     photoIV.setImageResource(R.mipmap.nophoto);
-                    if (currentPhoto != null)
-                        ImageFiles.deleteFile(currentPhoto);
-                    currentPhoto = null;
+                    if (currentPhotoPath != null)
+                        ImageFiles.deleteFile(currentPhotoPath);
+                    currentPhotoPath = null;
                 }
                 setMapLocation(currentLocation);
                 newLocation = null;
@@ -201,28 +201,28 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     if (locationManager != null)
                         locationManager.removeUpdates(locationListener);
                     if (note != null) {
-                        if (currentPhoto == null) {
-                            if (oldPhoto != null)
-                                ImageFiles.deleteFile(oldPhoto);
-                            currentPhoto = Note.NO_PHOTO;
+                        if (currentPhotoPath == null) {
+                            if (oldPhotoPath != null)
+                                ImageFiles.deleteFile(oldPhotoPath);
+                            currentPhotoPath = Note.NO_PHOTO;
                         } else {
-                            if (oldPhoto != null && !oldPhoto.equals(currentPhoto)) {
-                                ImageFiles.deleteFile(oldPhoto);
+                            if (oldPhotoPath != null && !oldPhotoPath.equals(currentPhotoPath)) {
+                                ImageFiles.deleteFile(oldPhotoPath);
                             }
                         }
                         if (newLocation != null)
                             currentLocation = newLocation;
                         else if (currentLocation == null)
                             currentLocation = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
-                        db.editNote(note.getId(), new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhoto, currentLocation, -1));
+                        db.editNote(note.getId(), new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhotoPath, currentLocation, -1));
                     } else {
-                        if (currentPhoto == null) currentPhoto = Note.NO_PHOTO;
+                        if (currentPhotoPath == null) currentPhotoPath = Note.NO_PHOTO;
                         if (newLocation != null)
                             currentLocation = newLocation;
                         else if (currentLocation == null) {
                             currentLocation = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
                         }
-                        db.addNote(new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhoto, currentLocation, -1));
+                        db.addNote(new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhotoPath, currentLocation, -1));
                     }
                     setResult(SAVED_RESULT_CODE);
                     finish();
@@ -261,8 +261,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onBackPressed() {
-        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-            ImageFiles.deleteFile(currentPhoto);
+        if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
+            ImageFiles.deleteFile(currentPhotoPath);
         if (locationManager != null)
             locationManager.removeUpdates(locationListener);
         super.onBackPressed();
@@ -280,8 +280,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             case android.R.id.home:
                 if (locationManager != null)
                     locationManager.removeUpdates(locationListener);
-                if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-                    ImageFiles.deleteFile(currentPhoto);
+                if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
+                    ImageFiles.deleteFile(currentPhotoPath);
                 finish();
                 break;
             case R.id.delete_note_menu_item:
@@ -331,8 +331,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onLowMemory() {
-        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-            ImageFiles.deleteFile(currentPhoto);
+        if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
+            ImageFiles.deleteFile(currentPhotoPath);
         if (locationManager != null)
             locationManager.removeUpdates(locationListener);
         mapView.onLowMemory();
@@ -358,10 +358,10 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                 if (resultCode == RESULT_OK) {
                     ImageLoader loader = new ImageLoader();
                     loader.execute(newPhoto);
-                    if (currentPhoto != null && !currentPhoto.equals(oldPhoto)) {
-                        ImageFiles.deleteFile(currentPhoto);
+                    if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath)) {
+                        ImageFiles.deleteFile(currentPhotoPath);
                     }
-                    currentPhoto = newPhoto;
+                    currentPhotoPath = newPhoto;
                     newPhoto = null;
                 }
                 return;
@@ -390,13 +390,13 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         } catch (IOException e) {
                             Toast.makeText(this, getResources().getString(R.string.error)+" "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-                            ImageFiles.deleteFile(currentPhoto);
-                        currentPhoto = file.getPath();
+                        if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
+                            ImageFiles.deleteFile(currentPhotoPath);
+                        currentPhotoPath = file.getPath();
                         newPhoto = null;
                     }
                     ImageLoader loader = new ImageLoader();
-                    loader.execute(currentPhoto);
+                    loader.execute(currentPhotoPath);
                 }
                 return;
             case CHANGE_NOTE_LOCATION_REQUEST_CODE:
@@ -430,16 +430,16 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void deletePhoto() {
-        if (currentPhoto != null && !currentPhoto.equals(oldPhoto))
-            ImageFiles.deleteFile(currentPhoto);
-        currentPhoto = null;
+        if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
+            ImageFiles.deleteFile(currentPhotoPath);
+        currentPhotoPath = null;
         photoIV.setImageResource(R.mipmap.nophoto);
     }
 
     @Override
     public void showPhoto() {
         Intent photoView = new Intent(this, ViewImageActivity.class);
-        photoView.putExtra(ViewImageActivity.IMAGE_SRC, this.currentPhoto);
+        photoView.putExtra(ViewImageActivity.IMAGE_SRC, this.currentPhotoPath);
         startActivity(photoView);
     }
 

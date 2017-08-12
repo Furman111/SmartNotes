@@ -5,12 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
-
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import ru.furman.smartnotes.note.Note;
 
 public class DB {
