@@ -36,7 +36,6 @@ public class NotesActivity extends AppCompatActivity {
         notesDb = new NotesDB(this);
 
         RecyclerView notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
-        notesRecyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         notesRecyclerView.setLayoutManager(mLayoutManager);
