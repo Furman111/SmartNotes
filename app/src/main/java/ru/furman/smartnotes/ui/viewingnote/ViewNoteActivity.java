@@ -67,7 +67,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setContentView(R.layout.view_note);
+        setContentView(R.layout.view_note_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         notesDb = new NotesDB(this);
@@ -183,7 +183,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.view_menu, menu);
+        getMenuInflater().inflate(R.menu.view_note_activity_menu, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
