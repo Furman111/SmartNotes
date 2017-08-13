@@ -2,9 +2,9 @@ package ru.furman.smartnotes.note.database;
 
 import android.provider.BaseColumns;
 
-public final class NotesContract {
+public final class NotesDBContract {
 
-    public NotesContract(){}
+    public NotesDBContract(){}
 
     public static abstract class NotesTable implements BaseColumns{
         public static final String TABLE_NAME = "notesTable";

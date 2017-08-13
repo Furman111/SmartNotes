@@ -3,7 +3,7 @@ package ru.furman.smartnotes.note.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import ru.furman.smartnotes.note.database.NotesContract.NotesTable;
+import ru.furman.smartnotes.note.database.NotesDBContract.NotesTable;
 
 class NotesDBHelper extends SQLiteOpenHelper {
 
