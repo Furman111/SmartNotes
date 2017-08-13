@@ -61,7 +61,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     private LatLng location;
 
     public static final int EDIT_REQUEST_CODE = 1;
-    public static final int SHOW_NOTE_REQUEST_CODE = 1;
+    public static final int SHOW_NOTE_ON_MAP_REQUEST_CODE = 2;
 
     public static final String NOTE_TAG = "note";
 
@@ -109,7 +109,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         });
 
         backgroundView = findViewById(R.id.background_layout);
-        BackgroundUtil.setBackgroundWithImportance(this, backgroundView, note);
+        BackgroundUtil.setBackgroundWithNoteImportance(this, backgroundView, note);
 
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.getMapAsync(this);
@@ -229,7 +229,12 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                     loader.execute(note.getPhoto());
                 } else
                     noteIV.setImageResource(R.mipmap.nophoto);
-                BackgroundUtil.setBackgroundWithImportance(this, backgroundView, note);
+                if (note.getLocation().longitude != Note.NO_LONGITUDE)
+                    location = note.getLocation();
+                else
+                    location = null;
+                setLocationMap(location);
+                BackgroundUtil.setBackgroundWithNoteImportance(this, backgroundView, note);
                 Toast.makeText(this, getString(R.string.note_is_edited), Toast.LENGTH_SHORT).show();
                 break;
             case EditNoteActivity.DELETED_RESULT_CODE:
@@ -238,13 +243,6 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
-        if (note.getLocation().longitude != Note.NO_LONGITUDE)
-            location = note.getLocation();
-        else
-            location = null;
-        setLocationMap(location);
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -290,7 +288,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                     intent.setAction(MapActivity.ACTION_SHOW_NOTE);
                     intent.putExtra(MapActivity.NOTE_TITLE, note.getTitle());
                     intent.putExtra(MapActivity.NOTE_LOCATION, location);
-                    ViewNoteActivity.this.startActivityForResult(intent, SHOW_NOTE_REQUEST_CODE);
+                    ViewNoteActivity.this.startActivityForResult(intent, SHOW_NOTE_ON_MAP_REQUEST_CODE);
                 } else
                     Toast.makeText(ViewNoteActivity.this, getString(R.string.location_is_not_availiable), Toast.LENGTH_SHORT).show();
             }

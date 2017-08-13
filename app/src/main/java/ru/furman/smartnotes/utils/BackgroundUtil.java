@@ -7,13 +7,11 @@ import android.view.View;
 import ru.furman.smartnotes.note.Note;
 import ru.furman.smartnotes.R;
 
-/**
- * Created by Furman on 11.08.2017.
- */
+public final class BackgroundUtil {
 
-public abstract class BackgroundUtil {
+    private BackgroundUtil(){}
 
-    public static void setBackgroundWithImportance(Context ctx, View backgroundView, Note note) {
+    public static void setBackgroundWithNoteImportance(Context ctx, View backgroundView, Note note) {
         switch (note.getImportance()) {
             case Note.GREEN_IMPORTANCE:
                 backgroundView.setBackground(ContextCompat.getDrawable(ctx, R.drawable.green_background_gradient));

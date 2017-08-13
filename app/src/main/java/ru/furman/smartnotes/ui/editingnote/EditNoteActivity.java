@@ -137,7 +137,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         if (note != null) {
             titleET.setText(note.getTitle());
             bodyET.setText(note.getBody());
-            BackgroundUtil.setBackgroundWithImportance(this, backgroundView, note);
+            BackgroundUtil.setBackgroundWithNoteImportance(this, backgroundView, note);
         } else {
             getSupportActionBar().setTitle(getResources().getString(R.string.new_note));
         }
@@ -357,12 +357,12 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             case CAMERA_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     ImageLoader loader = new ImageLoader();
-                    loader.execute(newPhoto);
+                    loader.execute(tempPhotoPath);
                     if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath)) {
                         ImageFiles.deleteFile(currentPhotoPath);
                     }
-                    currentPhotoPath = newPhoto;
-                    newPhoto = null;
+                    currentPhotoPath = tempPhotoPath;
+                    tempPhotoPath = null;
                 }
                 return;
             case PHOTO_PICK_REQUEST_CODE:
@@ -370,14 +370,14 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     Uri selectedPhoto = data.getData();
                     String[] filePath = { MediaStore.Images.Media.DATA };
                     Cursor cursor = getContentResolver().query(selectedPhoto, filePath, null, null, null);
-                    newPhoto=null;
+                    tempPhotoPath =null;
                     if(cursor!=null) {
                         cursor.moveToFirst();
-                        newPhoto = cursor.getString(cursor.getColumnIndex(filePath[0]));
+                        tempPhotoPath = cursor.getString(cursor.getColumnIndex(filePath[0]));
                         cursor.close();
                     }
-                    if(newPhoto==null)
-                        newPhoto = selectedPhoto.getPath();
+                    if(tempPhotoPath ==null)
+                        tempPhotoPath = selectedPhoto.getPath();
                     File file = null;
                     try {
                         file = ImageFiles.createImageFile(this);
@@ -386,14 +386,14 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     }
                     if (file != null) {
                         try {
-                            ImageFiles.copyFile(new File(newPhoto), file);
+                            ImageFiles.copyFile(new File(tempPhotoPath), file);
                         } catch (IOException e) {
                             Toast.makeText(this, getResources().getString(R.string.error)+" "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
                             ImageFiles.deleteFile(currentPhotoPath);
                         currentPhotoPath = file.getPath();
-                        newPhoto = null;
+                        tempPhotoPath = null;
                     }
                     ImageLoader loader = new ImageLoader();
                     loader.execute(currentPhotoPath);
@@ -426,7 +426,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         finish();
     }
 
-    private String newPhoto;
+    private String tempPhotoPath;
 
     @Override
     public void deletePhoto() {
@@ -473,7 +473,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             File photoFile = null;
             try {
                 photoFile = ImageFiles.createImageFile(this);
-                newPhoto = photoFile.getAbsolutePath();
+                tempPhotoPath = photoFile.getAbsolutePath();
             } catch (IOException e) {
                 e.printStackTrace();
             }
