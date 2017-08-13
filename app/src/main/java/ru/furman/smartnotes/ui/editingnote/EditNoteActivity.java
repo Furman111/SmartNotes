@@ -52,7 +52,7 @@ import ru.furman.smartnotes.note.Note;
 import ru.furman.smartnotes.utils.PermissionsUtil;
 import ru.furman.smartnotes.R;
 import ru.furman.smartnotes.ui.ViewImageActivity;
-import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.note.database.NotesDB;
 
 public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCallback,
         DeleteNoteDialogFragment.DeleteNoteDialogFragmentListener,
@@ -64,7 +64,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     private RadioGroup importanceRadioGroup;
     private View backgroundView;
     private Note note;
-    private DB db;
+    private NotesDB notesDb;
     private MapView mapView;
     private GoogleMap map;
     private Marker marker;
@@ -95,7 +95,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
         photoIV = (ImageView) findViewById(R.id.note_photo_iv);
         mapView = (MapView) findViewById(R.id.map_view);
 
-        db = new DB(this);
+        notesDb = new NotesDB(this);
 
         importanceRadioGroup = (RadioGroup) findViewById(R.id.importance_radio_group);
         importanceRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -214,7 +214,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                             currentLocation = newLocation;
                         else if (currentLocation == null)
                             currentLocation = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
-                        db.editNote(note.getId(), new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhotoPath, currentLocation, -1));
+                        notesDb.editNote(note.getId(), new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhotoPath, currentLocation, -1));
                     } else {
                         if (currentPhotoPath == null) currentPhotoPath = Note.NO_PHOTO;
                         if (newLocation != null)
@@ -222,7 +222,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         else if (currentLocation == null) {
                             currentLocation = new LatLng(Note.NO_LATITUDE, Note.NO_LONGITUDE);
                         }
-                        db.addNote(new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhotoPath, currentLocation, -1));
+                        notesDb.addNote(new Note(titleET.getText().toString(), bodyET.getText().toString(), getImportance(), currentPhotoPath, currentLocation, -1));
                     }
                     setResult(SAVED_RESULT_CODE);
                     finish();
@@ -421,7 +421,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     public void deleteNote() {
         if (!note.getPhoto().equals(Note.NO_PHOTO))
             ImageFiles.deleteFile(note.getPhoto());
-        db.deleteNote(note.getId());
+        notesDb.deleteNote(note.getId());
         setResult(DELETED_RESULT_CODE);
         finish();
     }

@@ -17,14 +17,14 @@ import java.util.List;
 
 import ru.furman.smartnotes.note.Note;
 import ru.furman.smartnotes.R;
-import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.note.database.NotesDB;
 import ru.furman.smartnotes.ui.viewingnote.ViewNoteActivity;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap map;
     private LatLng currentLoc;
-    private DB db;
+    private NotesDB notesDb;
     private int editNoteId;
 
     public static final String NOTE_TITLE = "title";
@@ -53,7 +53,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_view);
         mapFragment.getMapAsync(this);
-        db = new DB(this);
+        notesDb = new NotesDB(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -127,7 +127,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void placeNotesMarkers(){
-        List<Note> notes = db.getNotes();
+        List<Note> notes = notesDb.getNotes();
 
         LatLng locat = DEFAULT_LOCATION;
 
@@ -159,7 +159,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
             case SHOW_NOTE_REQUEST_CODE:
-                Note note = db.getNote(editNoteId);
+                Note note = notesDb.getNote(editNoteId);
                 if(note!=null){
                     map.addMarker(new MarkerOptions().position(note.getLocation()).title(note.getTitle())).setTag(note);
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(),DEFAULT_ZOOM_LARGE_MAP));

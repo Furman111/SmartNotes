@@ -45,12 +45,12 @@ import ru.furman.smartnotes.utils.ImageFiles;
 import ru.furman.smartnotes.ui.MapActivity;
 import ru.furman.smartnotes.note.Note;
 import ru.furman.smartnotes.R;
-import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.note.database.NotesDB;
 
 public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallback, DeleteNoteDialogFragment.DeleteNoteDialogFragmentListener {
 
     private Note note;
-    private DB db;
+    private NotesDB notesDb;
     private TextView bodyTV, titleTV;
     private View backgroundView;
     private FilePickerDialog filePickerDialog;
@@ -70,7 +70,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         setContentView(R.layout.view_note);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        db = new DB(this);
+        notesDb = new NotesDB(this);
 
         Intent intent = getIntent();
         note = intent.getParcelableExtra(NOTE_TAG);
@@ -221,7 +221,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
-                note = db.getNote(note.getId());
+                note = notesDb.getNote(note.getId());
                 titleTV.setText(note.getTitle());
                 bodyTV.setText(note.getBody());
                 if (!note.getPhoto().equals(Note.NO_PHOTO)) {
@@ -361,7 +361,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     public void deleteNote() {
         if (!note.getPhoto().equals(Note.NO_PHOTO))
             ImageFiles.deleteFile(note.getPhoto());
-        db.deleteNote(note.getId());
+        notesDb.deleteNote(note.getId());
         setResult(EditNoteActivity.DELETED_RESULT_CODE);
         finish();
     }
