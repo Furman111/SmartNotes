@@ -20,7 +20,7 @@ public class ViewImageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        setContentView(R.layout.view_image);
+        setContentView(R.layout.view_image_activity);
 
         imageViewTouch = (ImageViewTouch) findViewById(R.id.image_view_touch);
         ImageLoader loader = new ImageLoader();

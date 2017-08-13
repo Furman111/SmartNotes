@@ -83,7 +83,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setContentView(R.layout.edit_note);
+        setContentView(R.layout.edit_note_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         note = getIntent().getParcelableExtra(NotesActivity.NOTE_TAG);
@@ -255,7 +255,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.edit_menu, menu);
+        getMenuInflater().inflate(R.menu.edit_activity_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
