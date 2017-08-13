@@ -84,7 +84,7 @@ public class Note implements Parcelable {
         }
     };
 
-    public Note(Parcel in){
+    private Note(Parcel in){
         title = in.readString();
         body = in.readString();
         importance = in.readString();
@@ -94,4 +94,5 @@ public class Note implements Parcelable {
         location = new LatLng(latitude,longitude);
         id = in.readInt();
     }
+
 }
