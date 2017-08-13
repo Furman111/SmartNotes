@@ -6,7 +6,9 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 
 
-public abstract class PermissionsUtil {
+public final class PermissionsUtil {
+
+    private PermissionsUtil(){}
 
     public static final int REQUEST_EXTERNAL_STORAGE = 1;
     public static String[] PERMISSIONS_STORAGE = {

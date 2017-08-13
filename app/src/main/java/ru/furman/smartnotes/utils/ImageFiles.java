@@ -13,7 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class ImageFiles {
+public final class ImageFiles {
+
+    private ImageFiles(){}
 
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {

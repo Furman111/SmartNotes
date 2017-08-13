@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.List;
 
 import ru.furman.smartnotes.note.Note;
@@ -49,7 +51,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.maps_activity);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_view);
         mapFragment.getMapAsync(this);
@@ -126,7 +127,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    public void placeNotesMarkers(){
+    public void placeNotesMarkers() {
         List<Note> notes = notesDb.getNotes();
 
         LatLng locat = DEFAULT_LOCATION;
@@ -144,11 +145,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    private class InfoWindowOnClickListener implements GoogleMap.OnInfoWindowClickListener{
+    private class InfoWindowOnClickListener implements GoogleMap.OnInfoWindowClickListener {
         @Override
         public void onInfoWindowClick(Marker marker) {
-            Intent intent = new Intent(MapActivity.this,ViewNoteActivity.class);
-            intent.putExtra(ViewNoteActivity.NOTE_TAG,(Note) marker.getTag());
+            Intent intent = new Intent(MapActivity.this, ViewNoteActivity.class);
+            intent.putExtra(ViewNoteActivity.NOTE_TAG, (Note) marker.getTag());
             editNoteId = ((Note) marker.getTag()).getId();
             marker.remove();
             MapActivity.this.startActivityForResult(intent, SHOW_NOTE_REQUEST_CODE);
@@ -157,12 +158,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case SHOW_NOTE_REQUEST_CODE:
                 Note note = notesDb.getNote(editNoteId);
-                if(note!=null){
+                if (note != null) {
                     map.addMarker(new MarkerOptions().position(note.getLocation()).title(note.getTitle())).setTag(note);
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(),DEFAULT_ZOOM_LARGE_MAP));
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(note.getLocation(), DEFAULT_ZOOM_LARGE_MAP));
                     map.setOnInfoWindowClickListener(new InfoWindowOnClickListener());
                 }
                 break;
@@ -172,7 +173,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.map_activity_menu, menu);
-        if(getIntent().getAction().equals(ACTION_CHANGE_NOTE_LOCATION))
+        if (getIntent().getAction().equals(ACTION_CHANGE_NOTE_LOCATION))
             menu.getItem(0).setVisible(true);
         return super.onCreateOptionsMenu(menu);
     }
@@ -185,11 +186,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 finish();
                 return true;
             case R.id.save_menu_item:
-                if (getIntent().getAction().equals(ACTION_CHANGE_NOTE_LOCATION)) {
-                    Intent resIntent = new Intent();
-                    resIntent.putExtra(CHOSEN_LOCATION, currentLoc);
-                    setResult(RESULT_OK, resIntent);
-                }
+                Intent resIntent = new Intent();
+                resIntent.putExtra(CHOSEN_LOCATION, currentLoc);
+                setResult(RESULT_OK, resIntent);
                 finish();
                 return true;
         }
