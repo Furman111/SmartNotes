@@ -226,8 +226,10 @@ public abstract class SharingActivity extends AppCompatActivity {
                                     new GraphRequest.Callback() {
                                         @Override
                                         public void onCompleted(GraphResponse response) {
-                                            if (response.getError() != null)
+                                            if (response.getError() != null) {
                                                 Log.d(FB_LOG_TAG, response.getError().getErrorMessage());
+                                                showErrorInformationToast(response.getError().getErrorMessage());
+                                            }
                                             else
                                                 showNoteIsPublishedToast(note.getTitle());
                                         }
