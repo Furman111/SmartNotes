@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 import ru.furman.smartnotes.note.Note;
-import ru.furman.smartnotes.note.database.NotesContract.NotesTable;
+import ru.furman.smartnotes.note.database.NotesDBContract.NotesTable;
 
 public class NotesDB {
     private NotesDBHelper notesDbHelper;
