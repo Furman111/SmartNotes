@@ -19,13 +19,13 @@ import ru.furman.smartnotes.utils.ImageFiles;
 import ru.furman.smartnotes.note.Note;
 import ru.furman.smartnotes.R;
 import ru.furman.smartnotes.ui.ViewImageActivity;
-import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.note.database.NotesDB;
 import ru.furman.smartnotes.ui.editingnote.EditNoteActivity;
 import ru.furman.smartnotes.ui.viewingnote.ViewNoteActivity;
 
 public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder> {
 
-    private DB db;
+    private NotesDB notesDb;
     private Context ctx;
     private LruCache<String, Bitmap> memoryCache;
 
@@ -51,7 +51,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     }
 
     public NotesRecyclerViewAdapter(Context ctx) {
-        this.db = new DB(ctx);
+        this.notesDb = new NotesDB(ctx);
         this.ctx = ctx;
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory());
@@ -73,7 +73,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
     @Override
     public void onBindViewHolder(final NotesRecyclerViewAdapter.ViewHolder holder,int position) {
-        final List<Note> notes = db.getNotes();
+        final List<Note> notes = notesDb.getNotes();
         switch (notes.get(position).getImportance()) {
             case Note.GREEN_IMPORTANCE:
                 holder.background.setBackground(ContextCompat.getDrawable(ctx, R.drawable.green_list_item_gradient));
@@ -94,7 +94,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, EditNoteActivity.class);
-                intent.putExtra(NotesActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
+                intent.putExtra(NotesActivity.NOTE_TAG, notesDb.getNotes().get(holder.getAdapterPosition()));
                 ((NotesActivity) ctx).startActivityForResult(intent, NotesActivity.EDIT_NOTE_REQUEST_CODE);
             }
         });
@@ -123,7 +123,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, ViewNoteActivity.class);
-                intent.putExtra(NotesActivity.NOTE_TAG, db.getNotes().get(holder.getAdapterPosition()));
+                intent.putExtra(NotesActivity.NOTE_TAG, notesDb.getNotes().get(holder.getAdapterPosition()));
                 ((NotesActivity) ctx).startActivityForResult(intent, NotesActivity.VIEW_NOTE_REQUEST_CODE);
             }
         });
@@ -131,12 +131,12 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
     @Override
     public int getItemCount() {
-        return db.getNotes().size();
+        return notesDb.getNotes().size();
     }
 
     @Override
     public long getItemId(int position) {
-        return db.getNotes().get(position).getId();
+        return notesDb.getNotes().get(position).getId();
     }
 
     private class ImageLoader extends AsyncTask<ViewHolder, Void, ImageLoader.ResultContainer> {
@@ -159,7 +159,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         @Override
         protected ResultContainer doInBackground(ViewHolder... params) {
             ViewHolder vh = params[0];
-            photoPath = db.getNote(vh.getId()).getPhoto();
+            photoPath = notesDb.getNote(vh.getId()).getPhoto();
             Bitmap bitmap = ImageFiles.decodeSampledBitmapFromFile(photoPath, reqWidth, reqHeight);
 
             if (memoryCache.get(photoPath) == null)

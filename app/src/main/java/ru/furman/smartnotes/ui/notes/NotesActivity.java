@@ -14,13 +14,13 @@ import ru.furman.smartnotes.utils.ImageFiles;
 import ru.furman.smartnotes.ui.MapActivity;
 import ru.furman.smartnotes.note.Note;
 import ru.furman.smartnotes.R;
-import ru.furman.smartnotes.note.database.DB;
+import ru.furman.smartnotes.note.database.NotesDB;
 import ru.furman.smartnotes.ui.editingnote.EditNoteActivity;
 
 public class NotesActivity extends AppCompatActivity {
 
     private NotesRecyclerViewAdapter mAdapter;
-    private DB db;
+    private NotesDB notesDb;
     public static final String NOTE_TAG = "note";
 
     public static final int VIEW_NOTE_REQUEST_CODE = 1;
@@ -33,7 +33,7 @@ public class NotesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = new DB(this);
+        notesDb = new NotesDB(this);
 
         RecyclerView notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
         notesRecyclerView.setHasFixedSize(true);
@@ -52,10 +52,10 @@ public class NotesActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                String photo = db.getNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId()).getPhoto();
+                String photo = notesDb.getNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId()).getPhoto();
                 if (!photo.equals(Note.NO_PHOTO))
                     ImageFiles.deleteFile(photo);
-                db.deleteNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId());
+                notesDb.deleteNote(((NotesRecyclerViewAdapter.ViewHolder) viewHolder).getId());
                 mAdapter.notifyDataSetChanged();
             }
         };
