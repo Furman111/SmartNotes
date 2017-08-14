@@ -3,6 +3,8 @@ package ru.furman.smartnotes.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,6 +14,8 @@ import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import ru.furman.smartnotes.ui.editingnote.EditNoteActivity;
 
 public final class ImageFiles {
 
