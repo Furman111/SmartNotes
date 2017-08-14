@@ -81,13 +81,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case ACTION_CHANGE_NOTE_LOCATION:
                 String title = getIntent().getStringExtra(NOTE_TITLE);
                 LatLng loc = getIntent().getParcelableExtra(NOTE_LOCATION);
-
                 if (title == null) {
-                    currentLoc = DEFAULT_LOCATION;
+                    if (loc == null) {
+                        currentLoc = DEFAULT_LOCATION;
+                    }
+                    else
+                        currentLoc = loc;
                     Marker marker = map.addMarker(new MarkerOptions().title(getResources().getString(R.string.new_note))
-                            .position(DEFAULT_LOCATION)
+                            .position(currentLoc)
                             .draggable(true));
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM_BIG_MAP));
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), DEFAULT_ZOOM_BIG_MAP));
                     marker.showInfoWindow();
                 } else {
                     currentLoc = loc;

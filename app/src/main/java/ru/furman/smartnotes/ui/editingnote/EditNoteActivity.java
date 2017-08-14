@@ -331,10 +331,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onLowMemory() {
-        if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
-            ImageFiles.deleteFile(currentPhotoPath);
-        if (locationManager != null)
-            locationManager.removeUpdates(locationListener);
         mapView.onLowMemory();
         super.onLowMemory();
     }
