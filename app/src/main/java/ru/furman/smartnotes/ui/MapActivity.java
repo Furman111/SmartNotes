@@ -57,7 +57,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         notesDb = new NotesDB(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
 
@@ -161,6 +160,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
         switch (requestCode) {
             case SHOW_NOTE_REQUEST_CODE:
                 Note note = notesDb.getNote(editNoteId);

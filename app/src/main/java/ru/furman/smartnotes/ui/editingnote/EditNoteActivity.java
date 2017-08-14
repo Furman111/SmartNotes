@@ -83,6 +83,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.edit_note_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -231,7 +233,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        super.onCreate(savedInstanceState);
     }
 
     private String getImportance() {
@@ -261,17 +262,17 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
             ImageFiles.deleteFile(currentPhotoPath);
         if (locationManager != null)
             locationManager.removeUpdates(locationListener);
-        super.onBackPressed();
     }
 
     @Override
     protected void onStart() {
-        mapView.onStart();
         super.onStart();
+        mapView.onStart();
     }
 
     @Override
@@ -313,42 +314,46 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     protected void onResume() {
-        mapView.onResume();
         super.onResume();
+        mapView.onResume();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        mapView.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
-        mapView.onDestroy();
         super.onDestroy();
+        if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
+            ImageFiles.deleteFile(currentPhotoPath);
+        mapView.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
-        mapView.onLowMemory();
         super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     @Override
     protected void onStop() {
-        mapView.onStop();
         super.onStop();
+        mapView.onStop();
     }
 
     @Override
     protected void onPause() {
-        mapView.onPause();
         super.onPause();
+        mapView.onPause();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             case CAMERA_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
@@ -360,7 +365,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     currentPhotoPath = tempPhotoPath;
                     tempPhotoPath = null;
                 }
-                return;
+                break;
             case PHOTO_PICK_REQUEST_CODE:
                 if (data != null) {
                     Uri selectedPhoto = data.getData();
@@ -394,7 +399,7 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                     ImageLoader loader = new ImageLoader();
                     loader.execute(currentPhotoPath);
                 }
-                return;
+                break;
             case CHANGE_NOTE_LOCATION_REQUEST_CODE:
                 if (resultCode == MapActivity.RESULT_OK) {
                     newLocation = data.getParcelableExtra(MapActivity.CHOSEN_LOCATION);
@@ -407,10 +412,8 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
                         lng = currentLocation;
                     setMapLocation(lng);
                 }
-                return;
+                break;
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

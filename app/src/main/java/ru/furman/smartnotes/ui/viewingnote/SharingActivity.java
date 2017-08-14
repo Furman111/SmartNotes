@@ -70,6 +70,7 @@ public abstract class SharingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         callbackManagerFB = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManagerFB, new FacebookCallback<LoginResult>() {
             @Override
@@ -89,12 +90,11 @@ public abstract class SharingActivity extends AppCompatActivity {
         });
 
         twitterAuthClient = new TwitterAuthClient();
-
-        super.onCreate(savedInstanceState);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
             @Override
@@ -113,8 +113,6 @@ public abstract class SharingActivity extends AppCompatActivity {
 
         callbackManagerFB.onActivityResult(requestCode, resultCode, data);
         twitterAuthClient.onActivityResult(requestCode, resultCode, data);
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public static final String vkTokenKey = "VK_ACCESS_TOKEN";

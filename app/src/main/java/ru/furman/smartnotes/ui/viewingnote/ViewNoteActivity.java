@@ -67,6 +67,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.view_note_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -114,8 +116,6 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.getMapAsync(this);
         mapView.onCreate(savedInstanceState);
-
-        super.onCreate(savedInstanceState);
     }
 
     private void onCreateDialogFilePicker() {
@@ -219,6 +219,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
                 note = notesDb.getNote(note.getId());
@@ -243,7 +245,6 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -315,44 +316,44 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
 
     @Override
     protected void onStart() {
-        mapView.onStart();
         super.onStart();
+        mapView.onStart();
     }
 
     @Override
     protected void onStop() {
-        mapView.onStop();
         super.onStop();
+        mapView.onStop();
     }
 
     @Override
     protected void onPause() {
-        mapView.onPause();
         super.onPause();
+        mapView.onPause();
     }
 
     @Override
     public void onLowMemory() {
-        mapView.onLowMemory();
         super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        mapView.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
-        mapView.onDestroy();
         super.onDestroy();
+        mapView.onDestroy();
     }
 
     @Override
     protected void onResume() {
-        mapView.onResume();
         super.onResume();
+        mapView.onResume();
     }
 
     @Override

@@ -87,6 +87,8 @@ public class NotesActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         mAdapter.notifyDataSetChanged();
         switch (resultCode) {
             case EditNoteActivity.SAVED_RESULT_CODE:
@@ -96,6 +98,5 @@ public class NotesActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.note_is_deleted, Toast.LENGTH_SHORT).show();
                 break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
