@@ -327,8 +327,6 @@ public class EditNoteActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (currentPhotoPath != null && !currentPhotoPath.equals(oldPhotoPath))
-            ImageFiles.deleteFile(currentPhotoPath);
         mapView.onDestroy();
     }
 
