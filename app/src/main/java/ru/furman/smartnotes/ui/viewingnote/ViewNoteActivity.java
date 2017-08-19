@@ -103,7 +103,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         importBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(PermissionsUtil.isStoragePermissionsGranted(ViewNoteActivity.this))
+                if (PermissionsUtil.isStoragePermissionsGranted(ViewNoteActivity.this))
                     filePickerDialog.show();
                 else
                     PermissionsUtil.verifyStoragePermissions(ViewNoteActivity.this);
@@ -153,9 +153,9 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File(filePath + "/" + note.getTitle() + ".txt")));
             bufferedWriter.write(getString(R.string.note_title) + "\n" + note.getTitle() + "\n\n" + getString(R.string.note_body) + "\n" + note.getBody());
-            if(!note.getImportance().equals(Note.NO_IMPORTANCE)) {
+            if (!note.getImportance().equals(Note.NO_IMPORTANCE)) {
                 String importance = null;
-                switch (note.getImportance()){
+                switch (note.getImportance()) {
                     case Note.GREEN_IMPORTANCE:
                         importance = getResources().getStringArray(R.array.imprortance_array)[2];
                         break;
@@ -168,10 +168,10 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                 }
                 bufferedWriter.write("\n\n" + getString(R.string.importance_of_note) + " " + importance);
             }
-            if(note.getLocation().latitude!=Note.NO_LATITUDE){
-                bufferedWriter.write("\n\n"+getString(R.string.location)+"\n" +
-                        getString(R.string.lattitude)+": "+String.valueOf(note.getLocation().latitude)
-                        + "\n" + getString(R.string.longitude)+": "+String.valueOf(note.getLocation().longitude));
+            if (note.getLocation().latitude != Note.NO_LATITUDE) {
+                bufferedWriter.write("\n\n" + getString(R.string.location) + "\n" +
+                        getString(R.string.lattitude) + ": " + String.valueOf(note.getLocation().latitude)
+                        + "\n" + getString(R.string.longitude) + ": " + String.valueOf(note.getLocation().longitude));
             }
             bufferedWriter.close();
             Toast.makeText(ViewNoteActivity.this, getString(R.string.note_is_exported), Toast.LENGTH_SHORT).show();
@@ -256,8 +256,8 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
                 } else
                     Toast.makeText(this, R.string.storage_permissions_are_not_granted, Toast.LENGTH_LONG).show();
                 break;
-            }
         }
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -297,7 +297,7 @@ public class ViewNoteActivity extends SharingActivity implements OnMapReadyCallb
     }
 
     public void setLocationMap(LatLng location) {
-        if(map!=null) {
+        if (map != null) {
             if (location == null) {
                 if (marker != null)
                     marker.remove();

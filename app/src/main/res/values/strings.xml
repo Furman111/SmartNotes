@@ -19,7 +19,7 @@
     <string name="to_export_to_txt">Экспортировать в .txt</string>
     <string name="to_choose_directory">Выбрать директорию</string>
     <string name="to_choose">Выбрать</string>
-    <string name="storage_permissions_are_not_granted">Права для операций с фотографиями не были предоставлены</string>
+    <string name="storage_permissions_are_not_granted">Права для операций с файлами не были предоставлены</string>
     <string name="location_permissions_are_not_granted">Права для определения местоположения не были предоставлены</string>
     <string name="note_is_exported">Заметка экспортирована</string>
     <string name="error">Ошибка</string>
